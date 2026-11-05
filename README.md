@@ -91,6 +91,8 @@ The keeper then settles each policy against the official close at expiry, pays c
 
 USDC is both the settlement token (`0x3600…0000`) and the gas token, so a Saver needs nothing but USDC.
 
+**Built in Arc Studio:** https://studio.arc.io/app/7356f9d2-e713-4576-a2f0-4acfd62806e4. Studio was prompted with the InsureVEX spec and pointed at the live Arc deployment below.
+
 | Contract | Address |
 |---|---|
 | IdentityRegistry | [`0xB5297E51C700EcE40912C0857F866eCd09348484`](https://explorer.testnet.arc.io/address/0xB5297E51C700EcE40912C0857F866eCd09348484) |
@@ -156,7 +158,7 @@ cd backtest && python fetch_world.py && python run_world.py && python export_eng
 
 - **Whitechain:** live end to end with real test USDT (notes, Pro LP, tradfi covers on three exchanges, oracle settlement, NAV attestation, coupons, demo-note maturity).
 - **Hedera:** live end to end, with ATS equity and bond issuance, KYC, freeze, coupons, on-chain holdings checks and a native Schedule Service coupon.
-- **Arc:** live end to end in USDC. The Arc Studio project needs a signed-in Studio account.
+- **Arc:** live end to end in USDC; Arc Studio project linked above.
 - **Single quoter and reporter on testnet.** Production would use several and take the median; the contracts already support many through `QUOTER_ROLE` and `REPORTER_ROLE`.
 - **Brokerage holdings are attested by the server** (statement upload or broker API such as Zerodha Kite or IBKR). For tokenised stocks the contract reads the balance on-chain instead.
 - **T-bill custody is simulated on testnet.** The NAV agent's attested reserve stands in for the custodian statement.
