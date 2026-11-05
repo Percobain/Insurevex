@@ -24,7 +24,8 @@ async function main() {
   for (const [name, address, args] of jobs) {
     if (!address || (only && !only.includes(address))) continue;
     try {
-      await hre.run("verify:verify", { address, constructorArguments: args });
+      if (hre.network.config.chainId === 296) await hre.run("verify:sourcify", { address }); // HashScan (Sourcify)
+      else await hre.run("verify:verify", { address, constructorArguments: args });
       console.log("verified", name, address);
     } catch (e) {
       const m = String(e.message || e);

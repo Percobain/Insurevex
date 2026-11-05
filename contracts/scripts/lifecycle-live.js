@@ -16,7 +16,7 @@ async function main() {
   const c = d.contracts;
   const logFile = path.join(__dirname, "..", "deployments", `${network.name}.lifecycle.json`);
   const log = fs.existsSync(logFile) ? JSON.parse(fs.readFileSync(logFile, "utf8")) : [];
-  const explorer = { 1874: "https://explorer.testnet.whitechain.io/tx/", 296: "https://hashscan.io/testnet/transaction/", 5042002: "https://testnet.arcscan.app/tx/" }[chainId];
+  const explorer = { 1874: "https://explorer.testnet.whitechain.io/tx/", 296: "https://hashscan.io/testnet/transaction/", 5042002: "https://explorer.testnet.arc.io/tx/" }[chainId];
   const rec = async (step, p) => {
     const tx = await p; const r = await tx.wait();
     log.push({ step, tx: r.hash, url: explorer + r.hash, at: new Date().toISOString() });
@@ -32,26 +32,29 @@ async function main() {
   const market = await ethers.getContractAt("CoverMarket", c.CoverMarket);
   const tbill = await ethers.getContractAt("TBillVault", c.TBillVault);
   const U = (x) => ethers.parseUnits(String(x), 6);
-  console.log("stable balance", ethers.formatUnits(await usd.balanceOf(me.address), 6));
+  // Hedera's relay under-estimates gas for calls that hop through several contracts: use an explicit limit there.
+  const O = chainId === 296 ? { gasLimit: Number(process.env.HEDERA_GAS || 1_500_000) } : {};
+  const SYMB = await usd.symbol();
+  console.log("stable balance", ethers.formatUnits(await usd.balanceOf(me.address), 6), SYMB);
 
   if (STEPS.includes("risk") && (await pool.symbolCapBps()) !== 2500n)
-    await rec("pool.setRiskParams(R=50%, m=25%) testnet depth", pool.setRiskParams(5000, 2500, 5000, 4000));
+    await rec("pool.setRiskParams(R=50%, m=25%) testnet depth", pool.setRiskParams(5000, 2500, 5000, 4000, O));
 
   if (STEPS.includes("subscribe3y")) {
     const amt = U(process.env.SUB3Y || 50);
-    await rec("USDT approve -> 3Y note", usd.approve(c.Note3Y, amt));
-    await rec(`Saver subscribes ${ethers.formatUnits(amt, 6)} USDT to 3Y note`, note3.subscribe(amt));
+    await rec(`${SYMB} approve -> 3Y note`, usd.approve(c.Note3Y, amt, O));
+    await rec(`Saver subscribes ${ethers.formatUnits(amt, 6)} ${SYMB} to 3Y note`, note3.subscribe(amt, O));
   }
   if (STEPS.includes("subscribeDemo")) {
     const amt = U(process.env.SUBDEMO || 15);
-    await rec("USDT approve -> demo note", usd.approve(c.NoteDemo, amt));
-    await rec(`Saver subscribes ${ethers.formatUnits(amt, 6)} USDT to 3h demo note`, noteD.subscribe(amt));
+    await rec(`${SYMB} approve -> demo note`, usd.approve(c.NoteDemo, amt, O));
+    await rec(`Saver subscribes ${ethers.formatUnits(amt, 6)} ${SYMB} to 3h demo note`, noteD.subscribe(amt, O));
   }
 
   if (STEPS.includes("pro")) {
     const amt = U(process.env.PRO || 8);
-    await rec("USDT approve -> pool (Pro LP)", usd.approve(c.UnderwritingPool, amt));
-    await rec(`Pro LP deposits ${ethers.formatUnits(amt, 6)} USDT first-loss capital`, pool.depositPro(amt));
+    await rec(`${SYMB} approve -> pool (Pro LP)`, usd.approve(c.UnderwritingPool, amt, O));
+    await rec(`Pro LP deposits ${ethers.formatUnits(amt, 6)} ${SYMB} first-loss capital`, pool.depositPro(amt, O));
   }
 
   if (STEPS.includes("cover")) {
@@ -64,19 +67,19 @@ async function main() {
         deductibleBps: String(cv.deductibleBps), capBps: "2000", ...(cv.tenorDays ? { tenorDays: String(cv.tenorDays) } : { tenorMinutes: String(cv.tenorMinutes) }) });
       const q = await (await fetch(`${SERVER}/api/quote?${qs}`)).json();
       if (!q.ok) { console.log("quote refused", cv.symbol, q.pricing?.reason || q.error); continue; }
-      await rec(`USDT approve premium (${cv.symbol})`, usd.approve(c.CoverMarket, BigInt(q.quote.premium)));
-      await rec(`Holder buys ${cv.symbol} floor, premium ${q.premium} USDT`, market.buyCover(q.quote, q.signature));
+      await rec(`${SYMB} approve premium (${cv.symbol})`, usd.approve(c.CoverMarket, BigInt(q.quote.premium), O));
+      await rec(`Holder buys ${cv.symbol} floor, premium ${q.premium} ${SYMB}`, market.buyCover(q.quote, q.signature, O));
     }
   }
 
   if (STEPS.includes("tbill")) {
-    await rec("USDT approve -> T-bill custodian proceeds", usd.approve(c.TBillVault, U(1)));
-    await rec("T-bill vault: custodian funds yield", tbill.fundYield(U(1)));
-    await rec("T-bill NAV update + reserve attestation", tbill.updateNav(420, await tbill.totalAssets()));
+    await rec(`${SYMB} approve -> T-bill custodian proceeds`, usd.approve(c.TBillVault, U(1), O));
+    await rec("T-bill vault: custodian funds yield", tbill.fundYield(U(1), O));
+    await rec("T-bill NAV update + reserve attestation", tbill.updateNav(420, await tbill.totalAssets(), O));
   }
   if (STEPS.includes("claim")) {
     for (const [label, n] of [["3Y note", note3], ["demo note", noteD]]) {
-      if ((await n.pendingCoupon(me.address)) > 0n) await rec(`Saver claims USDT coupon (${label})`, n.claimCoupon());
+      if ((await n.pendingCoupon(me.address)) > 0n) await rec(`Saver claims ${SYMB} coupon (${label})`, n.claimCoupon(O));
       else console.log("no coupon pending on", label);
     }
   }
@@ -84,10 +87,10 @@ async function main() {
     const now = (await ethers.provider.getBlock("latest")).timestamp;
     if (now < Number(await noteD.maturity())) console.log("demo note not matured yet; maturity", new Date(Number(await noteD.maturity()) * 1000).toISOString());
     else {
-      if (!(await noteD.matured())) await rec("Demo note matures (T-bill floor + sleeve pulled back)", noteD.mature());
+      if (!(await noteD.matured())) await rec("Demo note matures (T-bill floor + sleeve pulled back)", noteD.mature(O));
       const before = await usd.balanceOf(me.address);
-      await rec("Saver redeems demo note: face + sleeve in USDT", noteD.redeem());
-      console.log("redeemed", ethers.formatUnits((await usd.balanceOf(me.address)) - before, 6), "USDT");
+      await rec(`Saver redeems demo note: face + sleeve in ${SYMB}`, noteD.redeem(O));
+      console.log("redeemed", ethers.formatUnits((await usd.balanceOf(me.address)) - before, 6), SYMB);
     }
   }
   console.log("pool", { totalAssets: ethers.formatUnits(await pool.totalAssets(), 6), locked: ethers.formatUnits(await pool.locked(), 6), capacity: ethers.formatUnits(await pool.capacity(), 6) });
