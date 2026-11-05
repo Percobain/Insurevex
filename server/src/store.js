@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const FILE = process.env.STORE_FILE || path.join(here, "..", "data", "store.json");
+const FILE = process.env.STORE_FILE || (process.env.VERCEL ? "/tmp/insurevex-store.json" : path.join(here, "..", "data", "store.json"));
 let db = {};
 try { db = JSON.parse(fs.readFileSync(FILE, "utf8")); } catch { db = {}; }
 let timer = null;

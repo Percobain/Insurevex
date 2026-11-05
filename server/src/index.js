@@ -7,7 +7,7 @@ import { MARKETS, resolveSymbol } from "./catalog.js";
 import { history } from "./prices.js";
 import { priceFloor, PARAMS, ENGINE_INFO, RECOMMENDED } from "./pricing.js";
 import { chain, activeChains, CHAINS, symbolId, signQuote, quoterKey } from "./chain.js";
-import { startKeeper, rememberSymbol } from "./keeper.js";
+import { startKeeper, rememberSymbol, tick } from "./keeper.js";
 import { store } from "./store.js";
 
 const app = express();
@@ -120,10 +120,10 @@ app.post("/api/holdings/attest", wrap(async (req, res) => {
 app.get("/api/state", wrap(async (req, res) => {
   const c = chain(req.query.chainId || 1874);
   if (!c) throw bad("chain not deployed");
-  const [ta, locked, cap, util, prem, pay, R, m, supply, nav, apy, reserve, policyCount] = await Promise.all([
+  const [ta, locked, cap, util, prem, pay, R, m, supply, nav, apy, reserve, policyCount, K, junior, proFee, proLoss] = await Promise.all([
     c.pool.totalAssets(), c.pool.locked(), c.pool.capacity(), c.pool.utilisationBps(), c.pool.totalPremiums(), c.pool.totalPayouts(),
     c.pool.reserveBps(), c.pool.symbolCapBps(), c.pool.totalSupply(), c.tbill.navPerShare(), c.tbill.apyBps(), c.tbill.attestedReserve(),
-    c.market.policyCount()]);
+    c.market.policyCount(), c.pool.marketCapBps(), c.pool.juniorAssets(), c.pool.proFeeBps(), c.pool.totalProLosses()]);
   const notes = await Promise.all(c.notes.map(async (n) => {
     const s = await n.contract.snapshot();
     return { key: n.key, address: n.address, name: n.name, supply: fmt6(s.supply), floorValue: fmt6(s.floorVal), sleeveValue: fmt6(s.sleeveVal),
@@ -133,7 +133,7 @@ app.get("/api/state", wrap(async (req, res) => {
   res.json({
     chainId: c.chainId, contracts: c.dep.contracts, explorer: c.cfg.explorer,
     pool: { totalAssets: fmt6(ta), locked: fmt6(locked), capacity: fmt6(cap), utilisationBps: Number(util), totalPremiums: fmt6(prem),
-      totalPayouts: fmt6(pay), lossRatio: prem > 0n ? Number(pay) / Number(prem) : null, reserveBps: Number(R), symbolCapBps: Number(m),
+      totalPayouts: fmt6(pay), lossRatio: prem > 0n ? Number(pay) / Number(prem) : null, reserveBps: Number(R), symbolCapBps: Number(m), marketCapBps: Number(K), proAssets: fmt6(junior), proFeeBps: Number(proFee), proLosses: fmt6(proLoss),
       sharePrice: supply > 0n ? Number(ta) / Number(supply) : 1 },
     tbill: { nav: Number(nav) / 1e18, apyBps: Number(apy), attestedReserve: fmt6(reserve) },
     notes, policies: { count: Number(policyCount) },
@@ -189,8 +189,28 @@ app.post("/api/kyc/request", wrap(async (req, res) => {
 }));
 app.get("/api/kyc/requests", (req, res) => res.json({ requests: store.get("kyc", []) }));
 
-const port = Number(process.env.PORT || 8080);
-app.listen(port, () => {
-  console.log(`InsureVEX server on :${port}; chains: ${activeChains().map((i) => CHAINS[i].name).join(", ") || "none"}`);
-  if (process.env.KEEPER !== "0" && quoterKey) startKeeper();
+// Keeper as an endpoint too, so a serverless deployment (Vercel cron) can run it. Protected by KEEPER_SECRET.
+app.post("/api/keeper/tick", wrap(async (req, res) => {
+  const secret = process.env.KEEPER_SECRET;
+  const auth = req.headers.authorization || "";
+  if (!secret || auth !== `Bearer ${secret}`) return res.status(401).json({ ok: false });
+  await tick();
+  res.json({ ok: true, at: new Date().toISOString() });
+}));
+app.get("/api/keeper/tick", (req, res) => {
+  // Vercel cron sends GET with the CRON_SECRET bearer
+  const secret = process.env.CRON_SECRET || process.env.KEEPER_SECRET;
+  if (!secret || (req.headers.authorization || "") !== `Bearer ${secret}`) return res.status(401).json({ ok: false });
+  tick().then(() => res.json({ ok: true })).catch((e) => res.status(500).json({ ok: false, error: e.message }));
 });
+
+export default app;
+
+// Long-running mode (local / VM): listen and run the keeper loop. On Vercel the platform imports the app instead.
+if (!process.env.VERCEL) {
+  const port = Number(process.env.PORT || 8080);
+  app.listen(port, () => {
+    console.log(`InsureVEX server on :${port}; chains: ${activeChains().map((i) => CHAINS[i].name).join(", ") || "none"}`);
+    if (process.env.KEEPER !== "0" && quoterKey) startKeeper();
+  });
+}

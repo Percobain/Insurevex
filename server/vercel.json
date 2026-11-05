@@ -1,0 +1,5 @@
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
+  "functions": { "api/index.js": { "maxDuration": 60, "includeFiles": "{data/engine.json,data/ztable.json,src/abi/**,deployments/**}" } },
+  "crons": [{ "path": "/api/keeper/tick", "schedule": "0 22 * * *" }]
+}
