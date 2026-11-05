@@ -37,7 +37,7 @@ export function chain(chainId) {
   const dep = loadDeployment(cfg.key);
   if (!dep) return null;
   const provider = new ethers.JsonRpcProvider(cfg.rpc, chainId, { staticNetwork: true, batchMaxCount: 20 });
-  const signer = quoterKey ? new ethers.NonceManager(new ethers.Wallet(quoterKey, provider)) : null;
+  const signer = quoterKey ? new ethers.Wallet(quoterKey, provider) : null; // fresh pending nonce per tx (keeper txs are sequential)
   const runner = signer || provider;
   const c = dep.contracts;
   const out = {
@@ -62,7 +62,7 @@ export function activeChains() {
 export const symbolId = (s) => ethers.id(s);
 
 const QUOTE_TYPES = { Quote: [
-  { name: "buyer", type: "address" }, { name: "symbol", type: "bytes32" }, { name: "notional", type: "uint256" },
+  { name: "buyer", type: "address" }, { name: "symbol", type: "bytes32" }, { name: "market", type: "bytes32" }, { name: "notional", type: "uint256" },
   { name: "shares", type: "uint256" }, { name: "heldShares", type: "uint256" }, { name: "deductibleBps", type: "uint32" },
   { name: "capBps", type: "uint32" }, { name: "premium", type: "uint256" }, { name: "startPrice", type: "uint256" },
   { name: "expiry", type: "uint64" }, { name: "validUntil", type: "uint64" }, { name: "nonce", type: "uint256" }] };

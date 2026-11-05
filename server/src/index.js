@@ -5,7 +5,7 @@ import cors from "cors";
 import { ethers } from "ethers";
 import { MARKETS, resolveSymbol } from "./catalog.js";
 import { history } from "./prices.js";
-import { priceFloor, PARAMS, ENGINE_INFO } from "./pricing.js";
+import { priceFloor, PARAMS, ENGINE_INFO, RECOMMENDED } from "./pricing.js";
 import { chain, activeChains, CHAINS, symbolId, signQuote, quoterKey } from "./chain.js";
 import { startKeeper, rememberSymbol } from "./keeper.js";
 import { store } from "./store.js";
@@ -20,7 +20,7 @@ const fmt6 = (x) => Number(ethers.formatUnits(x, 6));
 app.get("/api/health", (req, res) => res.json({
   ok: true, quoter: quoterKey ? new ethers.Wallet(quoterKey).address : null,
   chains: activeChains().map((id) => ({ chainId: id, name: CHAINS[id].name, contracts: chain(id).dep.contracts })),
-  engine: { ...ENGINE_INFO, markup: PARAMS.markup },
+  engine: { ...ENGINE_INFO, markup: PARAMS.markup, recommended: RECOMMENDED },
 }));
 
 // ------------------------------------------------------------------ markets and prices
@@ -33,9 +33,10 @@ app.get("/api/markets", wrap(async (req, res) => {
       if (!withPrices) return base;
       try {
         const h = await history(yahoo);
-        const q = priceFloor({ sigmaDaily: h.sigmaDaily, sessions: 20, deductible: 0.1, cap: 0.2 });
+        const q = priceFloor({ sigmaDaily: h.sigmaBlend, sessions: 21, deductible: 0.1, cap: 0.2, market: m.id });
+        const w = priceFloor({ sigmaDaily: h.sigmaBlend, sessions: 5, deductible: 0.03, cap: 0.1, market: m.id });
         return { ...base, currency: h.currency || m.currency, lastClose: h.close, lastCloseDate: new Date(h.closeTs * 1000).toISOString().slice(0, 10),
-          sigmaDaily: h.sigmaDaily, monthlyPremiumBps: Math.round(q.charged * 1e4), quotable: !q.refused };
+          sigmaDaily: h.sigmaBlend, monthlyPremiumBps: Math.round(q.charged * 1e4), weeklyPremiumBps: Math.round(w.charged * 1e4), quotable: !q.refused || !w.refused };
       } catch (e) { return { ...base, error: e.message, quotable: false }; }
     })),
   })));
@@ -47,7 +48,7 @@ app.get("/api/price", wrap(async (req, res) => {
   if (!sym) throw bad("unknown symbol");
   const h = await history(sym.yahoo, req.query.range || "1y");
   res.json({ symbol: sym.symbol, name: sym.name, close: h.close, date: new Date(h.closeTs * 1000).toISOString().slice(0, 10), currency: h.currency,
-    sigmaDaily: h.sigmaDaily, history: h.rows.map(([t, c]) => [new Date(t * 1000).toISOString().slice(0, 10), c]) });
+    sigmaDaily: h.sigmaBlend, history: h.rows.map(([t, c]) => [new Date(t * 1000).toISOString().slice(0, 10), c]) });
 }));
 
 // ------------------------------------------------------------------ quote
@@ -60,20 +61,30 @@ app.get("/api/quote", wrap(async (req, res) => {
   if (!sym) throw bad("unknown symbol");
   const notionalUsd = Number(req.query.notional);
   if (!(notionalUsd > 0 && notionalUsd <= 1e7)) throw bad("notional");
-  const deductibleBps = Number(req.query.deductibleBps ?? 1000);
-  const capBps = Number(req.query.capBps ?? 2000);
-  const tenorDays = Number(req.query.tenorDays ?? 28);
+  const deductibleBps = Number(req.query.deductibleBps ?? RECOMMENDED.deductibleBps);
+  const capBps = Number(req.query.capBps ?? RECOMMENDED.capBps);
+  const tenorDays = Number(req.query.tenorDays ?? RECOMMENDED.tenorDays);
   const tenorMinutes = req.query.tenorMinutes ? Number(req.query.tenorMinutes) : null; // testnet live-demo expiries
-  if (![300, 500, 750, 1000, 1500].includes(deductibleBps) || ![1000, 2000, 3000].includes(capBps)) throw bad("terms");
+  if (![300, 500, 750, 1000, 1500, 2000, 2500].includes(deductibleBps) || ![1000, 2000, 3000].includes(capBps)) throw bad("terms");
   if (!tenorMinutes && ![7, 14, 28].includes(tenorDays)) throw bad("tenor");
 
   const h = await history(sym.yahoo);
   const sessions = tenorMinutes ? 1 : Math.round((tenorDays * 5) / 7);
-  const p = priceFloor({ sigmaDaily: h.sigmaDaily, sessions, deductible: deductibleBps / 1e4, cap: capBps / 1e4 });
-  const pricing = { fairBps: p.fair * 1e4, premiumBps: p.charged * 1e4, markup: PARAMS.markup, sigmaDaily: h.sigmaDaily, sigmaPeriod: p.sigmaP,
+  const market = sym.market;
+  const p = priceFloor({ sigmaDaily: h.sigmaBlend, sessions, deductible: deductibleBps / 1e4, cap: capBps / 1e4, market });
+  const pricing = { model: ENGINE_INFO.model, marketFactor: p.factor, fairBps: p.fair * 1e4, premiumBps: p.charged * 1e4, markup: PARAMS.markup, sigmaDaily: h.sigmaBlend, sigmaPeriod: p.sigmaP,
     pPayout: p.pPayout, refused: p.refused, reason: p.reason, sessions, horizonUsed: p.horizonUsed, lastClose: h.close, currency: h.currency,
     lastCloseDate: new Date(h.closeTs * 1000).toISOString().slice(0, 10) };
-  if (p.refused) return res.json({ ok: false, pricing });
+  if (p.refused) {
+    // Instead of a flat "no": offer the nearest deeper deductible that is still quotable (backtest: a deeper
+    // deductible keeps cover available in volatile names at a premium the pool can carry).
+    const alternatives = [];
+    for (const b of [500, 750, 1000, 1500, 2000, 2500].filter((x) => x > deductibleBps)) {
+      const a = priceFloor({ sigmaDaily: h.sigmaBlend, sessions, deductible: b / 1e4, cap: capBps / 1e4, market });
+      if (!a.refused) alternatives.push({ deductibleBps: b, premiumBps: a.charged * 1e4, pPayout: a.pPayout });
+    }
+    return res.json({ ok: false, pricing, alternatives });
+  }
 
   const toWad = (x) => ethers.parseEther(Number(x).toFixed(18));
   const shares = req.query.shares ? toWad(req.query.shares) : toWad(notionalUsd / h.close);
@@ -82,7 +93,7 @@ app.get("/api/quote", wrap(async (req, res) => {
   const notional = ethers.parseUnits(notionalUsd.toFixed(6), 6);
   const premium = (notional * BigInt(Math.ceil(p.charged * 1e6))) / 1_000_000n;
   const quote = {
-    buyer: ethers.getAddress(buyer), symbol: symbolId(sym.symbol), notional: notional.toString(), shares: shares.toString(),
+    buyer: ethers.getAddress(buyer), symbol: symbolId(sym.symbol), market: ethers.id(sym.market), notional: notional.toString(), shares: shares.toString(),
     heldShares: heldShares.toString(), deductibleBps, capBps, premium: premium.toString(), startPrice: Math.round(h.live * 1e8).toString(),
     expiry: tenorMinutes ? now + tenorMinutes * 60 : now + tenorDays * 86400, validUntil: now + 10 * 60,
     nonce: BigInt(ethers.hexlify(ethers.randomBytes(16))).toString(),
@@ -96,11 +107,12 @@ app.get("/api/quote", wrap(async (req, res) => {
 
 // ------------------------------------------------------------------ holdings attestation
 app.post("/api/holdings/attest", wrap(async (req, res) => {
-  const { address, symbol, source = "statement", shares } = req.body || {};
+  const { address, symbol, source = "statement", broker = null, shares } = req.body || {};
+  if (!["kite", "statement", "ats", "ibkr"].includes(source)) throw bad("source");
   if (!ethers.isAddress(address) || !symbol || !(Number(shares) > 0)) throw bad("address, symbol, shares");
   // Demo connectors: "kite" (Zerodha holdings API), "statement" (broker PDF/CSV upload), "ats" (on-chain balance on Hedera).
   const ref = ethers.id(JSON.stringify({ address: address.toLowerCase(), symbol, source, shares, at: Date.now() }));
-  store.push("attestations", { address, symbol, source, shares: Number(shares), ref, at: new Date().toISOString() });
+  store.push("attestations", { address, symbol, source, broker, shares: Number(shares), ref, at: new Date().toISOString() });
   res.json({ heldShares: ethers.parseEther(Number(shares).toFixed(18)).toString(), ref, source });
 }));
 

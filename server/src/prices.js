@@ -3,7 +3,7 @@
 const cache = new Map(); // yahoo -> { at, data }
 const TTL = 10 * 60 * 1000;
 
-export async function history(yahoo, range = "1y") {
+export async function history(yahoo, range = "2y") {
   const hit = cache.get(yahoo + range);
   if (hit && Date.now() - hit.at < TTL) return hit.data;
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahoo)}?range=${range}&interval=1d`;
@@ -22,6 +22,14 @@ export async function history(yahoo, range = "1y") {
   const last20 = lr.slice(-20);
   const mean = last20.reduce((a, b) => a + b, 0) / last20.length;
   const sigmaDaily = Math.sqrt(last20.reduce((a, b) => a + (b - mean) ** 2, 0) / (last20.length - 1));
+  // EWMA (lambda 0.94) daily vol and 1-year vol: the winning backtest model blends them 50/50 (mean reversion).
+  let ew = lr.slice(0, 20).reduce((a, b) => a + b * b, 0) / 20;
+  for (const x of lr.slice(20)) ew = 0.94 * ew + 0.06 * x * x;
+  const ewmaDaily = Math.sqrt(ew);
+  const y = lr.slice(-252);
+  const ym = y.reduce((a, b) => a + b, 0) / y.length;
+  const vol1yDaily = Math.sqrt(y.reduce((a, b) => a + (b - ym) ** 2, 0) / (y.length - 1));
+  const sigmaBlend = Math.sqrt(0.5 * ewmaDaily ** 2 + 0.5 * vol1yDaily ** 2);
   const meta = r.meta || {};
   const data = {
     yahoo,
@@ -31,6 +39,9 @@ export async function history(yahoo, range = "1y") {
     live: meta.regularMarketPrice ?? rows[rows.length - 1][1],
     liveTs: meta.regularMarketTime ?? rows[rows.length - 1][0],
     sigmaDaily,
+    ewmaDaily,
+    vol1yDaily,
+    sigmaBlend,
     rows,
   };
   cache.set(yahoo + range, { at: Date.now(), data });
