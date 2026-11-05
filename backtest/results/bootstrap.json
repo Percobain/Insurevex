@@ -1,0 +1,12 @@
+{
+ "paths": 10000,
+ "horizon_months": 60,
+ "block_months": 12,
+ "p_drawdown_gt_20": 0.0228,
+ "p_5y_loss": 0.0048,
+ "p_any_year_below_minus10": 0.0802,
+ "apy_p5": 0.036030729186292514,
+ "apy_p50": 0.09743161695670133,
+ "apy_p95": 0.15732635615700208,
+ "leverage": 0.125
+}

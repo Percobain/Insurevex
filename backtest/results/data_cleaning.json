@@ -1,0 +1,6 @@
+{
+ "tickers": 543,
+ "spikes_removed": 84,
+ "stale_runs": 401,
+ "dropped_low_coverage": []
+}
