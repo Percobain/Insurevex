@@ -59,17 +59,5 @@ export function stableSymbol(chainId) {
 // DEFAULT_ADMIN_ROLE. Other roles are keccak256 of the role name: use roleId() from lib/format.
 export const DEFAULT_ADMIN_ROLE = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-// Junior "Pro" first-loss tranche of the UnderwritingPool. Kept as a local fragment so the app works whether or not
-// the re-exported pool ABI is in place yet.
-const u256 = [{ type: "uint256" }];
-export const PRO_ABI = [
-  { type: "function", name: "depositPro", stateMutability: "nonpayable", inputs: [{ name: "assets", type: "uint256" }], outputs: [] },
-  { type: "function", name: "withdrawPro", stateMutability: "nonpayable", inputs: [{ name: "assets", type: "uint256" }], outputs: [] },
-  { type: "function", name: "maxProWithdraw", stateMutability: "view", inputs: [{ name: "a", type: "address" }], outputs: u256 },
-  { type: "function", name: "proBalanceOf", stateMutability: "view", inputs: [{ name: "a", type: "address" }], outputs: u256 },
-  ...["juniorAssets", "proSupply", "proSharePrice", "proFeeBps", "totalProLosses", "physicalAssets", "capacityTotal"].map((name) => ({
-    type: "function", name, stateMutability: "view", inputs: [], outputs: u256,
-  })),
-  { type: "function", name: "setRiskParams", stateMutability: "nonpayable",
-    inputs: [{ name: "reserve_", type: "uint16" }, { name: "symbolCap_", type: "uint16" }, { name: "proFee_", type: "uint16" }], outputs: [] },
-];
+// Junior "Pro" first-loss tranche and risk limits live on the UnderwritingPool ABI (contracts v2).
+export const PRO_ABI = UnderwritingPool;

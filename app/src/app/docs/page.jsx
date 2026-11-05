@@ -150,7 +150,9 @@ export default function DocsPage() {
   const s = summary.data;
   const rec = s?.recommended;
   const rm = s?.recommended_metrics;
-  const oos = s?.walkforward_oos;
+  // Headline = walk-forward product choice with leverage fixed by policy (R50/u25). The leverage-optimising walk-forward
+  // (s.walkforward_oos) is shown in the research as the cautionary case: it chased APY in calm years and lost 24% in 2008.
+  const oos = s?.walkforward_policyB?.["0.125"] || s?.walkforward_oos;
   const boot = stress.data?.bootstrap || s?.bootstrap;
 
   return (

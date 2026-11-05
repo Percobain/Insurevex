@@ -2,7 +2,7 @@
 import { useReadContracts } from "wagmi";
 import { ABI, PRO_ABI, addr } from "./contracts";
 
-const POOL_FIELDS = ["totalAssets", "locked", "capacity", "utilisationBps", "reserveBps", "symbolCapBps", "totalPremiums", "totalPayouts", "totalSupply", "cash", "tbillAssets"];
+const POOL_FIELDS = ["totalAssets", "locked", "capacity", "utilisationBps", "reserveBps", "symbolCapBps", "marketCapBps", "totalPremiums", "totalPayouts", "totalSupply", "cash", "tbillAssets"];
 const TBILL_FIELDS = ["navPerShare", "apyBps", "attestedReserve", "totalAssets"];
 const PRO_FIELDS = ["juniorAssets", "proSupply", "proSharePrice", "proFeeBps", "totalProLosses", "physicalAssets", "capacityTotal"];
 

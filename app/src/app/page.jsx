@@ -70,7 +70,9 @@ export default function Landing() {
   const summary = useData("global_summary.json");
   const s = summary.data;
   const live = usePoolState(DEFAULT_CHAIN_ID);
-  const oos = s?.walkforward_oos;
+  // Headline = walk-forward product choice with leverage fixed by policy (R50/u25). The leverage-optimising walk-forward
+  // (s.walkforward_oos) is shown in the research as the cautionary case: it chased APY in calm years and lost 24% in 2008.
+  const oos = s?.walkforward_policyB?.["0.125"] || s?.walkforward_oos;
   return (
     <>
       <Section className="pt-12 sm:pt-20 pb-10">
@@ -121,7 +123,7 @@ export default function Landing() {
       <Section className="py-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <Stat label="Markets backtested" value={s ? fmtNum(s.markets) : "23"} sub={s ? `${fmtNum(s.names)} stocks, ${s.data_range?.[0]?.slice(0, 4)}–${s.data_range?.[1]?.slice(0, 4)}` : "2001–2026"} />
-          <Stat label="Pool APY, out of sample" value={oos ? fmtPct(oos.total_apy) : "—"} sub={oos ? `${fmtPct(oos.uw_apy)} above T-bills · walk-forward` : "loading backtest"} />
+          <Stat label="Pool APY, out of sample" value={oos ? fmtPct(oos.total_apy) : "—"} sub={oos ? `${fmtPct(oos.uw_apy)} above T-bills · walk-forward, R50/u25` : "loading backtest"} />
           <Stat label="Worst year for the pool" value={oos ? fmtPct(oos.worst_year) : "—"} sub={oos ? `${oos.worst_year_label} · max drawdown ${fmtPct(oos.maxdd)}` : ""} tone="bad" />
           <Stat label="Saver principal lost" value="$0" sub="in every simulated note, every market" tone="good" />
         </div>

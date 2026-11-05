@@ -73,6 +73,7 @@ export default function PoolPage() {
               <Meter label="Utilisation of working capital" value={locked} max={working} sub={`${fmtMoney(working, { sym: "" })} working capital = ${pro.available ? "Pro + " : ""}sleeves × (1 − reserve)`} />
               <Row k="Reserve R (never backs policies)" v={fmtPct(Number(p.reserveBps || 0) / 1e4, 0)} />
               <Row k="Per-stock cap m" v={fmtPct(Number(p.symbolCapBps || 0) / 1e4, 0)} />
+              <Row k="Per-market cap" v={fmtPct(Number(p.marketCapBps || 0) / 1e4, 0)} />
               <Row k="Cash / T-bills" v={`${fmtMoney(fromUnits(p.cash), { sym: "" })} / ${fmtMoney(fromUnits(p.tbillAssets), { sym: "" })}`} />
               <div className="text-xs text-muted">Pool <AddrLink address={addr(chainId, "UnderwritingPool")} chainId={chainId} /></div>
             </div>

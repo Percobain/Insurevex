@@ -91,7 +91,8 @@ export default function IssuerPage() {
   const [apy, setApy] = useState("4.20");
   const [reserve, setReserve] = useState("");
   const [rR, setRR] = useState("50");
-  const [rM, setRM] = useState("10");
+  const [rM, setRM] = useState("5");
+  const [rK, setRK] = useState("25");
   const [rF, setRF] = useState("40");
 
   if (!isConnected) return (<><PageHead eyebrow="Issuer console" title="Compliance and lifecycle controls." /><Section><Placeholder title="Connect the issuer wallet">Every control is an on-chain call gated by a role. The page enables the panels for the roles your wallet holds.</Placeholder></Section></>);
@@ -211,14 +212,15 @@ export default function IssuerPage() {
               </button>
             </Panel>
 
-            <Panel title="Pool risk limits" role="DEFAULT_ADMIN" allowed={isPoolAdmin} sub={`Current: reserve ${fmtPct(Number(s.pool.reserveBps || 0) / 1e4, 0)}, per-stock cap ${fmtPct(Number(s.pool.symbolCapBps || 0) / 1e4, 0)}. Contract bounds: reserve 20–90%, cap ≤ 25%.`}>
+            <Panel title="Pool risk limits" role="DEFAULT_ADMIN" allowed={isPoolAdmin} sub={`Current: reserve ${fmtPct(Number(s.pool.reserveBps || 0) / 1e4, 0)}, per-stock cap ${fmtPct(Number(s.pool.symbolCapBps || 0) / 1e4, 0)}, per-market cap ${fmtPct(Number(s.pool.marketCapBps || 0) / 1e4, 0)}. Contract bounds: reserve 20–90%, per-stock cap ≤ 25%, per-market cap ≥ per-stock cap.`}>
               <div className="grid grid-cols-3 gap-2">
                 <Field label="Reserve R %"><input className="input" value={rR} onChange={(e) => setRR(e.target.value)} /></Field>
                 <Field label="Per-stock cap m %"><input className="input" value={rM} onChange={(e) => setRM(e.target.value)} /></Field>
+                <Field label="Per-market cap %"><input className="input" value={rK} onChange={(e) => setRK(e.target.value)} /></Field>
                 <Field label="Pro fee %"><input className="input" value={rF} onChange={(e) => setRF(e.target.value)} /></Field>
               </div>
               <button type="button" className="btn-primary btn-sm" disabled={Boolean(busy)}
-                onClick={() => run("Set risk limits", { address: pool, abi: PRO_ABI, functionName: "setRiskParams", args: [Math.round(Number(rR) * 100), Math.round(Number(rM) * 100), Math.round(Number(rF) * 100)] })}>
+                onClick={() => run("Set risk limits", { address: pool, abi: PRO_ABI, functionName: "setRiskParams", args: [Math.round(Number(rR) * 100), Math.round(Number(rM) * 100), Math.round(Number(rK) * 100), Math.round(Number(rF) * 100)] })}>
                 Apply
               </button>
             </Panel>
