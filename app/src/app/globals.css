@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --paper: #f6f5f1;
+  --paper-rgb: 246 245 241;
+  --card: #ffffff;
+  --card-rgb: 255 255 255;
+  --sunk: #efede7;
+  --sunk-rgb: 239 237 231;
+  --ink: #111214;
+  --ink-rgb: 17 18 20;
+  --ink2: #4a4b4f;
+  --ink2-rgb: 74 75 79;
+  --muted: #7c7d80;
+  --muted-rgb: 124 125 128;
+  --line: #e2dfd7;
+  --line-rgb: 226 223 215;
+  --accent: #3d5afe;
+  --accent-rgb: 61 90 254;
+  --accent-ink: #ffffff;
+  --accent-ink-rgb: 255 255 255;
+  --accent-soft: #e8ecff;
+  --accent-soft-rgb: 232 236 255;
+  --good: #12805c;
+  --good-rgb: 18 128 92;
+  --bad: #c8372d;
+  --bad-rgb: 200 55 45;
+  --warn: #b7791f;
+  --warn-rgb: 183 121 31;
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-grid: #e4e3df;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #0d0e10;
+  --paper-rgb: 13 14 16;
+    --card: #15171a;
+  --card-rgb: 21 23 26;
+    --sunk: #1b1d21;
+  --sunk-rgb: 27 29 33;
+    --ink: #f1f0ec;
+  --ink-rgb: 241 240 236;
+    --ink2: #c3c2b9;
+  --ink2-rgb: 195 194 185;
+    --muted: #8d8e93;
+  --muted-rgb: 141 142 147;
+    --line: #272a2f;
+  --line-rgb: 39 42 47;
+    --accent: #7187ff;
+  --accent-rgb: 113 135 255;
+    --accent-ink: #0d0e10;
+  --accent-ink-rgb: 13 14 16;
+    --accent-soft: #1d2340;
+  --accent-soft-rgb: 29 35 64;
+    --good: #3fbf8f;
+  --good-rgb: 63 191 143;
+    --bad: #f06a5f;
+  --bad-rgb: 240 106 95;
+    --warn: #e0a940;
+  --warn-rgb: 224 169 64;
+    --chart-1: #3987e5;
+    --chart-2: #d95926;
+    --chart-3: #199e70;
+    --chart-4: #c98500;
+    --chart-grid: #2a2c31;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0d0e10;
+  --paper-rgb: 13 14 16;
+  --card: #15171a;
+  --card-rgb: 21 23 26;
+  --sunk: #1b1d21;
+  --sunk-rgb: 27 29 33;
+  --ink: #f1f0ec;
+  --ink-rgb: 241 240 236;
+  --ink2: #c3c2b9;
+  --ink2-rgb: 195 194 185;
+  --muted: #8d8e93;
+  --muted-rgb: 141 142 147;
+  --line: #272a2f;
+  --line-rgb: 39 42 47;
+  --accent: #7187ff;
+  --accent-rgb: 113 135 255;
+  --accent-ink: #0d0e10;
+  --accent-ink-rgb: 13 14 16;
+  --accent-soft: #1d2340;
+  --accent-soft-rgb: 29 35 64;
+  --good: #3fbf8f;
+  --good-rgb: 63 191 143;
+  --bad: #f06a5f;
+  --bad-rgb: 240 106 95;
+  --warn: #e0a940;
+  --warn-rgb: 224 169 64;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-grid: #2a2c31;
+}
+
+html,
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  overflow-x: hidden;
+  font-family: var(--font-sans), ui-sans-serif, system-ui;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-card min-w-0;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 h-11 text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-accentInk hover:brightness-110;
+  }
+  .btn-ghost {
+    @apply btn border border-line text-ink hover:bg-sunk;
+  }
+  .btn-sm {
+    @apply h-9 px-3 text-xs rounded-lg;
+  }
+  .input {
+    @apply w-full h-11 rounded-xl border border-line bg-card px-3 text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40 tabular;
+  }
+  .label {
+    @apply text-xs font-medium uppercase tracking-[0.08em] text-muted;
+  }
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-accent;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-xs text-ink2;
+  }
+  .seg {
+    @apply inline-flex rounded-xl border border-line bg-sunk p-1 gap-1;
+  }
+  .seg-item {
+    @apply h-8 px-3 rounded-lg text-sm text-ink2 hover:text-ink;
+  }
+  .seg-item[data-on="true"] {
+    @apply bg-card text-ink shadow-sm border border-line;
+  }
+  .table-x {
+    @apply w-full text-sm tabular;
+  }
+  .table-x th {
+    @apply text-left font-medium text-muted text-xs uppercase tracking-wider py-2 px-3 border-b border-line whitespace-nowrap;
+  }
+  .table-x td {
+    @apply py-2.5 px-3 border-b border-line whitespace-nowrap;
+  }
+}
