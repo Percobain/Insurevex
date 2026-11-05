@@ -1,86 +1,110 @@
 [
   {
     "step": "pool.setRiskParams(R=50%, m=25%) testnet depth",
-    "tx": "0xb707a3cfffac9e4e3943b56b926eac36729c2c60b404a8dfd22c4dce31c35389",
-    "url": "https://explorer.testnet.whitechain.io/tx/0xb707a3cfffac9e4e3943b56b926eac36729c2c60b404a8dfd22c4dce31c35389",
-    "at": "2026-11-05T21:38:43.449Z"
+    "tx": "0x49ea0d98a4e7b8eb0663a0075e84a9ffa53abc1cb7761d634e5f4750a44ba1b1",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x49ea0d98a4e7b8eb0663a0075e84a9ffa53abc1cb7761d634e5f4750a44ba1b1",
+    "at": "2026-11-05T21:58:39.902Z"
   },
   {
     "step": "USDT approve -> 3Y note",
-    "tx": "0x6ae42219945d2461c078080991936cd906f1705ad8fc314ac67048a5f954e1e7",
-    "url": "https://explorer.testnet.whitechain.io/tx/0x6ae42219945d2461c078080991936cd906f1705ad8fc314ac67048a5f954e1e7",
-    "at": "2026-11-05T21:38:46.646Z"
+    "tx": "0x8dd11aa7ac88af1252ab98abd4a2f3978c6c2ca93bd30c4848896562f5ad758a",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x8dd11aa7ac88af1252ab98abd4a2f3978c6c2ca93bd30c4848896562f5ad758a",
+    "at": "2026-11-05T21:58:42.957Z"
   },
   {
-    "step": "Saver subscribes 50.0 USDT to 3Y note",
-    "tx": "0x90e66df4b0c51bb3a2b20b3fa6be376c5b5cb4d2282c830b3ea5898d01968e89",
-    "url": "https://explorer.testnet.whitechain.io/tx/0x90e66df4b0c51bb3a2b20b3fa6be376c5b5cb4d2282c830b3ea5898d01968e89",
-    "at": "2026-11-05T21:38:49.891Z"
+    "step": "Saver subscribes 25.0 USDT to 3Y note",
+    "tx": "0xc88c0d3ace047800850e18e2508b00286c2075e3236a8a9d538f04ee053f5dfb",
+    "url": "https://explorer.testnet.whitechain.io/tx/0xc88c0d3ace047800850e18e2508b00286c2075e3236a8a9d538f04ee053f5dfb",
+    "at": "2026-11-05T21:58:46.027Z"
   },
   {
     "step": "USDT approve -> demo note",
-    "tx": "0xedd2295346191c126badc132d20c36f8816496e7b950acf4214db5509945122e",
-    "url": "https://explorer.testnet.whitechain.io/tx/0xedd2295346191c126badc132d20c36f8816496e7b950acf4214db5509945122e",
-    "at": "2026-11-05T21:38:52.958Z"
+    "tx": "0x5395eb4bc8934f4c30e7125ca3acd8d622f659fcf9e0523b8976a734855ad5a1",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x5395eb4bc8934f4c30e7125ca3acd8d622f659fcf9e0523b8976a734855ad5a1",
+    "at": "2026-11-05T21:58:53.536Z"
   },
   {
-    "step": "Saver subscribes 15.0 USDT to 3h demo note",
-    "tx": "0x8e703ea8b3563757df844e385f6ffcdff756881e70ce084f1d672121f1ca18d2",
-    "url": "https://explorer.testnet.whitechain.io/tx/0x8e703ea8b3563757df844e385f6ffcdff756881e70ce084f1d672121f1ca18d2",
-    "at": "2026-11-05T21:38:56.106Z"
+    "step": "Saver subscribes 8.0 USDT to 3h demo note",
+    "tx": "0x1cf178787d6291cddd6e0eebadc3e6dda0d1f9b680804eab37fbea8db585a565",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x1cf178787d6291cddd6e0eebadc3e6dda0d1f9b680804eab37fbea8db585a565",
+    "at": "2026-11-05T21:58:56.573Z"
   },
   {
-    "step": "USDT approve premium (NYSEARCA:SPY)",
-    "tx": "0x07b4a8274abc2a986ca6f97c6a47dc3eb0ee3731bdcdaecb3a9892f134fed70e",
-    "url": "https://explorer.testnet.whitechain.io/tx/0x07b4a8274abc2a986ca6f97c6a47dc3eb0ee3731bdcdaecb3a9892f134fed70e",
-    "at": "2026-11-05T21:38:59.842Z"
+    "step": "USDT approve -> pool (Pro LP)",
+    "tx": "0xa8e3faa402aa29bfba4e06440a7093ba4ba0c99116f3bdb144a3fedce25d385a",
+    "url": "https://explorer.testnet.whitechain.io/tx/0xa8e3faa402aa29bfba4e06440a7093ba4ba0c99116f3bdb144a3fedce25d385a",
+    "at": "2026-11-05T21:58:59.863Z"
   },
   {
-    "step": "Holder buys NYSEARCA:SPY floor, premium 0.000292 USDT",
-    "tx": "0x276c656a9675e5359ca478e3d3f45599403f775549cc3d9c16870ae215026e91",
-    "url": "https://explorer.testnet.whitechain.io/tx/0x276c656a9675e5359ca478e3d3f45599403f775549cc3d9c16870ae215026e91",
-    "at": "2026-11-05T21:39:02.894Z"
-  },
-  {
-    "step": "USDT approve -> T-bill custodian proceeds",
-    "tx": "0x5a08f1f8fdaaf3affbcb0b1f1d459df185fd16291b2cd5eec8bd98c23c008783",
-    "url": "https://explorer.testnet.whitechain.io/tx/0x5a08f1f8fdaaf3affbcb0b1f1d459df185fd16291b2cd5eec8bd98c23c008783",
-    "at": "2026-11-05T21:39:05.955Z"
-  },
-  {
-    "step": "T-bill vault: custodian funds yield",
-    "tx": "0x73ac73b810abb00a8a33fff2060dd291e81a9bd29f2d9649f63d3374af85e1db",
-    "url": "https://explorer.testnet.whitechain.io/tx/0x73ac73b810abb00a8a33fff2060dd291e81a9bd29f2d9649f63d3374af85e1db",
-    "at": "2026-11-05T21:39:08.990Z"
-  },
-  {
-    "step": "T-bill NAV update + reserve attestation",
-    "tx": "0x9b27f06f8cd4b7c3683c3a9033182f5cf0bedec18b9a2321db0ee46a8954d97a",
-    "url": "https://explorer.testnet.whitechain.io/tx/0x9b27f06f8cd4b7c3683c3a9033182f5cf0bedec18b9a2321db0ee46a8954d97a",
-    "at": "2026-11-05T21:39:16.495Z"
+    "step": "Pro LP deposits 8.0 USDT first-loss capital",
+    "tx": "0xff8700f460ae97a73a26461d7e9c340d1bd147ed9b6a0791bacff524599f10bd",
+    "url": "https://explorer.testnet.whitechain.io/tx/0xff8700f460ae97a73a26461d7e9c340d1bd147ed9b6a0791bacff524599f10bd",
+    "at": "2026-11-05T21:59:02.901Z"
   },
   {
     "step": "USDT approve premium (NASDAQ:MSFT)",
-    "tx": "0x929db8135e3b21026eb843bbdf41d6d0052d9b309d33504364ed1b50fa88f81c",
-    "url": "https://explorer.testnet.whitechain.io/tx/0x929db8135e3b21026eb843bbdf41d6d0052d9b309d33504364ed1b50fa88f81c",
-    "at": "2026-11-05T21:39:35.516Z"
+    "tx": "0x9cbac0626e86445da5ac7ad71ab0f06227a885a44f0e3d213ada2aacaeb21ce2",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x9cbac0626e86445da5ac7ad71ab0f06227a885a44f0e3d213ada2aacaeb21ce2",
+    "at": "2026-11-05T21:59:05.986Z"
   },
   {
-    "step": "Holder buys NASDAQ:MSFT floor, premium 0.026852 USDT",
-    "tx": "0xf471c5cbd5d24356ce26721c8ea7a95c43f9841685ba31afe09161b1ac4fee39",
-    "url": "https://explorer.testnet.whitechain.io/tx/0xf471c5cbd5d24356ce26721c8ea7a95c43f9841685ba31afe09161b1ac4fee39",
-    "at": "2026-11-05T21:39:38.812Z"
+    "step": "Holder buys NASDAQ:MSFT floor, premium 0.018244 USDT",
+    "tx": "0xa34d1543eb98e185d537fa2398e2cbf445637c6b932c3284d80a76f90dfc2cc4",
+    "url": "https://explorer.testnet.whitechain.io/tx/0xa34d1543eb98e185d537fa2398e2cbf445637c6b932c3284d80a76f90dfc2cc4",
+    "at": "2026-11-05T21:59:09.035Z"
   },
   {
     "step": "USDT approve premium (NSE:NIFTY)",
-    "tx": "0xb69ade968d8e4f11ef2d9d7a37301cb5b5378f19d8718bc31f2fdb6e2e6e287f",
-    "url": "https://explorer.testnet.whitechain.io/tx/0xb69ade968d8e4f11ef2d9d7a37301cb5b5378f19d8718bc31f2fdb6e2e6e287f",
-    "at": "2026-11-05T21:39:46.427Z"
+    "tx": "0xf33e1f0c2a5caacc5c48da5aca5029a6044fbe6e55d7d7935f7f333e8f1943ed",
+    "url": "https://explorer.testnet.whitechain.io/tx/0xf33e1f0c2a5caacc5c48da5aca5029a6044fbe6e55d7d7935f7f333e8f1943ed",
+    "at": "2026-11-05T21:59:16.521Z"
   },
   {
-    "step": "Holder buys NSE:NIFTY floor, premium 0.002235 USDT",
-    "tx": "0xd9887c9dd6329901dfa175e8e0238ba540dd410a00d9ee4da96acae88ee55688",
-    "url": "https://explorer.testnet.whitechain.io/tx/0xd9887c9dd6329901dfa175e8e0238ba540dd410a00d9ee4da96acae88ee55688",
-    "at": "2026-11-05T21:39:49.596Z"
+    "step": "Holder buys NSE:NIFTY floor, premium 0.001976 USDT",
+    "tx": "0x0a004bb9e5b1176de2cbdbaae8b77f60d0fdaf466e25a058b0176a73958fc0f9",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x0a004bb9e5b1176de2cbdbaae8b77f60d0fdaf466e25a058b0176a73958fc0f9",
+    "at": "2026-11-05T21:59:19.594Z"
+  },
+  {
+    "step": "USDT approve premium (TSE:7203)",
+    "tx": "0x121547a501ca07a0d5a3c41bcdd1a963623fa7f0037280a4bc2b419b25f04a6d",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x121547a501ca07a0d5a3c41bcdd1a963623fa7f0037280a4bc2b419b25f04a6d",
+    "at": "2026-11-05T21:59:23.019Z"
+  },
+  {
+    "step": "Holder buys TSE:7203 floor, premium 0.017426 USDT",
+    "tx": "0xbaec2af322ca3ed46433f6346f57330840946ae879ab97ee7eee863ba432cca4",
+    "url": "https://explorer.testnet.whitechain.io/tx/0xbaec2af322ca3ed46433f6346f57330840946ae879ab97ee7eee863ba432cca4",
+    "at": "2026-11-05T21:59:26.057Z"
+  },
+  {
+    "step": "USDT approve premium (NYSEARCA:SPY)",
+    "tx": "0x51924f51cc7eef981df14809d0003e56846853b006822d6e659f939ff20cdde7",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x51924f51cc7eef981df14809d0003e56846853b006822d6e659f939ff20cdde7",
+    "at": "2026-11-05T21:59:33.602Z"
+  },
+  {
+    "step": "Holder buys NYSEARCA:SPY floor, premium 0.00034 USDT",
+    "tx": "0x68ea88252364ea539a9ef2babf716cd66a7fcfe196a74b522607497784dff12a",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x68ea88252364ea539a9ef2babf716cd66a7fcfe196a74b522607497784dff12a",
+    "at": "2026-11-05T21:59:36.644Z"
+  },
+  {
+    "step": "USDT approve -> T-bill custodian proceeds",
+    "tx": "0x232a052909835899dbeb2bc03a4ad32bdcdfbd8c8011b8f89d26855243a8087f",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x232a052909835899dbeb2bc03a4ad32bdcdfbd8c8011b8f89d26855243a8087f",
+    "at": "2026-11-05T21:59:39.688Z"
+  },
+  {
+    "step": "T-bill vault: custodian funds yield",
+    "tx": "0x12dc01385d6dba151d0920363a94e35dc7886cc0648c81844161a33385b60f82",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x12dc01385d6dba151d0920363a94e35dc7886cc0648c81844161a33385b60f82",
+    "at": "2026-11-05T21:59:42.821Z"
+  },
+  {
+    "step": "T-bill NAV update + reserve attestation",
+    "tx": "0x4749de7a2e3f334117572724ec88fcf4380e23eab4f3fad0e2fe022edab44c1b",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x4749de7a2e3f334117572724ec88fcf4380e23eab4f3fad0e2fe022edab44c1b",
+    "at": "2026-11-05T21:59:46.384Z"
   }
 ]

@@ -33,7 +33,7 @@
    },
    {
     "internalType": "uint64",
-    "name": "subscriptionDays",
+    "name": "subscriptionWindow",
     "type": "uint64"
    },
    {

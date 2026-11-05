@@ -35,7 +35,7 @@ The buyer must approve `premium` to CoverMarket, then call `buyCover(quote, sign
 | GET | `/api/health` | `{ ok, chains, quoter }` |
 | GET | `/api/markets` | `{ markets: [{ id, name, country, flag, currency, exchange, symbols: [{ symbol, ticker, name, yahoo, currency, lastClose, lastCloseDate, sigmaDaily, quotable }] }] }` |
 | GET | `/api/price?symbol=NSE:RELIANCE` | `{ symbol, close, date, currency, sigmaDaily, history: [[date, close]...] }` |
-| GET | `/api/quote?chainId&buyer&symbol&notional&shares&heldShares&deductibleBps&capBps&tenorDays` | `{ ok, quote, signature, pricing: { fairBps, premiumBps, markup, sigmaPeriod, refused, reason }, contract }` (`notional` in whole USD) |
+| GET | `/api/quote?chainId&buyer&symbol&notional&shares&heldShares&deductibleBps&capBps&tenorDays` | `{ ok, quote, signature, pricing: { fairBps, premiumBps, markup, sigmaPeriod, pPayout, refused, reason, lastClose, currency }, premium, maxPayout, contract }` (`notional` in whole USD; `deductibleBps` in 300/500/750/1000/1500/2000/2500; `capBps` 1000/2000/3000; `tenorDays` 7/14/28, or `tenorMinutes` for live testnet demos). When refused: `{ ok: false, pricing, alternatives: [{ deductibleBps, premiumBps, pPayout }] }`, the nearest deeper deductibles that are quotable; offer them in the UI. |
 | POST | `/api/holdings/attest` | body `{ address, symbol, source: "kite"\|"statement"\|"ats", shares }` -> `{ heldShares, ref, source }` |
 | GET | `/api/state?chainId` | `{ pool: { totalAssets, locked, capacity, utilisationBps, totalPremiums, totalPayouts, reserveBps, symbolCapBps, sharePrice }, tbill: { nav, apyBps, attestedReserve }, notes: [snapshot...], policies: { count, open } }` |
 | GET | `/api/policies?chainId&holder` | `{ policies: [...] }` |

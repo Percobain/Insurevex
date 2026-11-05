@@ -222,6 +222,11 @@
   "type": "error"
  },
  {
+  "inputs": [],
+  "name": "ReentrancyGuardReentrantCall",
+  "type": "error"
+ },
+ {
   "inputs": [
    {
     "internalType": "address",
@@ -276,6 +281,18 @@
     "indexed": false,
     "internalType": "uint256",
     "name": "amount",
+    "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "fromPro",
+    "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "fromSenior",
     "type": "uint256"
    }
   ],
@@ -391,9 +408,71 @@
     "internalType": "uint256",
     "name": "amount",
     "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "toPro",
+    "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "toSenior",
+    "type": "uint256"
    }
   ],
   "name": "PremiumBooked",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "lp",
+    "type": "address"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "assets",
+    "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "shares",
+    "type": "uint256"
+   }
+  ],
+  "name": "ProDeposit",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "lp",
+    "type": "address"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "assets",
+    "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "shares",
+    "type": "uint256"
+   }
+  ],
+  "name": "ProWithdraw",
   "type": "event"
  },
  {
@@ -409,6 +488,18 @@
     "indexed": false,
     "internalType": "uint16",
     "name": "symbolCapBps",
+    "type": "uint16"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint16",
+    "name": "marketCapBps",
+    "type": "uint16"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint16",
+    "name": "proFeeBps",
     "type": "uint16"
    }
   ],
@@ -742,6 +833,19 @@
  },
  {
   "inputs": [],
+  "name": "capacityTotal",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
   "name": "cash",
   "outputs": [
    {
@@ -822,6 +926,25 @@
    {
     "internalType": "uint256",
     "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "assets",
+    "type": "uint256"
+   }
+  ],
+  "name": "depositPro",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "shares",
     "type": "uint256"
    }
   ],
@@ -929,10 +1052,28 @@
   "type": "function"
  },
  {
+  "inputs": [],
+  "name": "juniorAssets",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
   "inputs": [
    {
     "internalType": "bytes32",
     "name": "symbol",
+    "type": "bytes32"
+   },
+   {
+    "internalType": "bytes32",
+    "name": "market",
     "type": "bytes32"
    },
    {
@@ -967,7 +1108,58 @@
     "type": "bytes32"
    }
   ],
+  "name": "lockedByMarket",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "bytes32",
+    "name": "",
+    "type": "bytes32"
+   }
+  ],
   "name": "lockedBySymbol",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "marketCapBps",
+  "outputs": [
+   {
+    "internalType": "uint16",
+    "name": "",
+    "type": "uint16"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "bytes32",
+    "name": "market",
+    "type": "bytes32"
+   }
+  ],
+  "name": "marketCapacity",
   "outputs": [
    {
     "internalType": "uint256",
@@ -1006,6 +1198,25 @@
    }
   ],
   "name": "maxMint",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "lp",
+    "type": "address"
+   }
+  ],
+  "name": "maxProWithdraw",
   "outputs": [
    {
     "internalType": "uint256",
@@ -1112,6 +1323,19 @@
   "type": "function"
  },
  {
+  "inputs": [],
+  "name": "physicalAssets",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
   "inputs": [
    {
     "internalType": "uint256",
@@ -1190,6 +1414,64 @@
  {
   "inputs": [
    {
+    "internalType": "address",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "name": "proBalanceOf",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "proFeeBps",
+  "outputs": [
+   {
+    "internalType": "uint16",
+    "name": "",
+    "type": "uint16"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "proSharePrice",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "proSupply",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
     "internalType": "uint256",
     "name": "shares",
     "type": "uint256"
@@ -1221,6 +1503,11 @@
    {
     "internalType": "bytes32",
     "name": "symbol",
+    "type": "bytes32"
+   },
+   {
+    "internalType": "bytes32",
+    "name": "market",
     "type": "bytes32"
    },
    {
@@ -1303,6 +1590,16 @@
    {
     "internalType": "uint16",
     "name": "symbolCap_",
+    "type": "uint16"
+   },
+   {
+    "internalType": "uint16",
+    "name": "marketCap_",
+    "type": "uint16"
+   },
+   {
+    "internalType": "uint16",
+    "name": "proFee_",
     "type": "uint16"
    }
   ],
@@ -1455,6 +1752,19 @@
  },
  {
   "inputs": [],
+  "name": "totalProLosses",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
   "name": "totalSupply",
   "outputs": [
    {
@@ -1562,6 +1872,25 @@
    {
     "internalType": "uint256",
     "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "assets",
+    "type": "uint256"
+   }
+  ],
+  "name": "withdrawPro",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "shares",
     "type": "uint256"
    }
   ],

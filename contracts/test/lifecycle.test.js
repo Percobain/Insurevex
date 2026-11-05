@@ -4,13 +4,14 @@ const { time } = require("@nomicfoundation/hardhat-network-helpers");
 
 const U = (n) => ethers.parseUnits(String(n), 6);
 const SYM = ethers.id("NASDAQ:NVDA");
+const MKT = ethers.id("US");
 const DAY = 86400;
 
 async function signQuote(market, signer, q) {
   const net = await ethers.provider.getNetwork();
   const domain = { name: "InsureVEX CoverMarket", version: "1", chainId: net.chainId, verifyingContract: await market.getAddress() };
   const types = { Quote: [
-    { name: "buyer", type: "address" }, { name: "symbol", type: "bytes32" }, { name: "notional", type: "uint256" },
+    { name: "buyer", type: "address" }, { name: "symbol", type: "bytes32" }, { name: "market", type: "bytes32" }, { name: "notional", type: "uint256" },
     { name: "shares", type: "uint256" }, { name: "heldShares", type: "uint256" }, { name: "deductibleBps", type: "uint32" },
     { name: "capBps", type: "uint32" }, { name: "premium", type: "uint256" }, { name: "startPrice", type: "uint256" },
     { name: "expiry", type: "uint64" }, { name: "validUntil", type: "uint64" }, { name: "nonce", type: "uint256" }] };
@@ -66,9 +67,9 @@ describe("InsureVEX lifecycle", function () {
   it("sells a fully collateralised floor, enforces holdings, pays the crash, and settles from the oracle", async () => {
     await usd.connect(saver).approve(note, U(100_000));
     await note.connect(saver).subscribe(U(100_000)); // sleeve ~10.7k in the pool
-    await pool.setRiskParams(5000, 2500); // m = 25% for this test
+    await pool.setRiskParams(5000, 2500, 10000, 4000); // m = 25% for this test
     const now = await time.latest();
-    const q = { buyer: holder.address, symbol: SYM, notional: U(5_000), shares: ethers.parseEther("50"), heldShares: ethers.parseEther("50"),
+    const q = { buyer: holder.address, symbol: SYM, market: MKT, notional: U(5_000), shares: ethers.parseEther("50"), heldShares: ethers.parseEther("50"),
       deductibleBps: 1000, capBps: 2000, premium: U(120), startPrice: 200e8, expiry: now + 28 * DAY, validUntil: now + 600, nonce: 1 };
     const sig = await signQuote(market, admin, q);
     await usd.connect(holder).approve(market, U(1000));
@@ -95,9 +96,9 @@ describe("InsureVEX lifecycle", function () {
   it("caps the payout at c and pays nothing inside the deductible", async () => {
     await usd.connect(saver).approve(note, U(100_000));
     await note.connect(saver).subscribe(U(100_000));
-    await pool.setRiskParams(5000, 2500);
+    await pool.setRiskParams(5000, 2500, 10000, 4000);
     const now = await time.latest();
-    const base = { buyer: holder.address, symbol: SYM, notional: U(2_000), shares: ethers.parseEther("10"), heldShares: ethers.parseEther("100"),
+    const base = { buyer: holder.address, symbol: SYM, market: MKT, notional: U(2_000), shares: ethers.parseEther("10"), heldShares: ethers.parseEther("100"),
       deductibleBps: 1000, capBps: 2000, premium: U(50), startPrice: 100e8, expiry: now + 7 * DAY, validUntil: now + 600 };
     await usd.connect(holder).approve(market, U(1000));
     const q1 = { ...base, nonce: 11 }; await market.connect(holder).buyCover(q1, await signQuote(market, admin, q1));
@@ -114,7 +115,7 @@ describe("InsureVEX lifecycle", function () {
     await usd.connect(saver).approve(note, U(10_000));
     await note.connect(saver).subscribe(U(10_000)); // sleeve ~1,071 -> working 535 -> symbol cap 53.5
     const now = await time.latest();
-    const q = { buyer: holder.address, symbol: SYM, notional: U(1_000), shares: 1n, heldShares: 10n, deductibleBps: 1000, capBps: 2000,
+    const q = { buyer: holder.address, symbol: SYM, market: MKT, notional: U(1_000), shares: 1n, heldShares: 10n, deductibleBps: 1000, capBps: 2000,
       premium: U(10), startPrice: 1e8, expiry: now + 7 * DAY, validUntil: now + 600, nonce: 21 };
     await usd.connect(holder).approve(market, U(100));
     await expect(market.connect(holder).buyCover(q, await signQuote(market, admin, q))).to.be.revertedWith("pool capacity");
@@ -123,11 +124,12 @@ describe("InsureVEX lifecycle", function () {
   it("pays underwriting profit as coupons and returns full principal at maturity even after a loss", async () => {
     await usd.connect(saver).approve(note, U(50_000));
     await note.connect(saver).subscribe(U(50_000));
+    await pool.setRiskParams(5000, 1000, 10000, 4000);
     // premiums flow in from quiet months
     const now = await time.latest();
     await usd.connect(holder).approve(market, U(10_000));
     for (let i = 0; i < 3; i++) {
-      const q = { buyer: holder.address, symbol: ethers.id("NSE:RELIANCE" + i), notional: U(1_000), shares: 1n, heldShares: 1n,
+      const q = { buyer: holder.address, symbol: ethers.id("NSE:RELIANCE" + i), market: MKT, notional: U(1_000), shares: 1n, heldShares: 1n,
         deductibleBps: 1000, capBps: 2000, premium: U(40), startPrice: 1e8, expiry: now + 20 * DAY, validUntil: now + 600, nonce: 100 + i };
       await market.connect(holder).buyCover(q, await signQuote(market, admin, q));
     }
@@ -140,7 +142,7 @@ describe("InsureVEX lifecycle", function () {
     await note.connect(saver).claimCoupon();
 
     // a crash wipes part of the sleeve; principal must still come back in full
-    const q = { buyer: holder.address, symbol: ethers.id("NYSE:XYZ"), notional: U(1_000), shares: 1n, heldShares: 1n,
+    const q = { buyer: holder.address, symbol: ethers.id("NYSE:XYZ"), market: MKT, notional: U(1_000), shares: 1n, heldShares: 1n,
       deductibleBps: 1000, capBps: 2000, premium: U(20), startPrice: 1e8, expiry: (await time.latest()) + 7 * DAY,
       validUntil: (await time.latest()) + 600, nonce: 999 };
     await market.connect(holder).buyCover(q, await signQuote(market, admin, q));
@@ -158,5 +160,43 @@ describe("InsureVEX lifecycle", function () {
     const got = (await usd.balanceOf(saver.address)) - before;
     expect(got).to.be.greaterThanOrEqual(U(50_000)); // principal protected
     await expect(note.connect(saver).transfer(holder.address, 1)).to.be.revertedWith("matured: no transfers");
+  });
+
+  it("Pro tranche takes premiums for first loss and absorbs a crash before the Saver sleeve", async () => {
+    await usd.connect(saver).approve(note, U(50_000));
+    await note.connect(saver).subscribe(U(50_000)); // senior sleeve ~5,357
+    await idr.setIdentity(outsider.address, true, 826, (await time.latest()) + 365 * DAY); // Pro LP (UK)
+    await usd.transfer(outsider.address, U(5_000));
+    await usd.connect(outsider).approve(pool, U(5_000));
+    await pool.connect(outsider).depositPro(U(2_000));
+    const seniorBefore = await pool.totalAssets();
+    expect(await pool.juniorAssets()).to.equal(U(2_000));
+    // capacity = 50% x senior + junior
+    expect(await pool.capacityTotal()).to.equal(seniorBefore / 2n + U(2_000));
+
+    const now = await time.latest();
+    const q = { buyer: holder.address, symbol: SYM, market: MKT, notional: U(1_000), shares: 1n, heldShares: 1n, deductibleBps: 1000, capBps: 2000,
+      premium: U(30), startPrice: 100e8, expiry: now + 7 * DAY, validUntil: now + 600, nonce: 777 };
+    await usd.connect(holder).approve(market, U(30));
+    await market.connect(holder).buyCover(q, await signQuote(market, admin, q));
+    const juniorAfterPremium = await pool.juniorAssets();
+    expect(juniorAfterPremium).to.be.greaterThan(U(2_000)); // capacity share + first-loss fee
+    expect(await pool.totalAssets()).to.be.greaterThan(seniorBefore); // senior also earns
+
+    // Pro cannot run while its capital backs the open policy beyond free capacity
+    expect(await pool.maxProWithdraw(outsider.address)).to.be.lessThan(juniorAfterPremium + 1n);
+
+    await time.increaseTo(q.expiry);
+    await oracle.post(SYM, q.expiry, 60e8); // -40% -> capped 20% -> 200 payout
+    const seniorPre = await pool.totalAssets();
+    await market.settle(0);
+    expect(await pool.juniorAssets()).to.equal(juniorAfterPremium - U(200)); // Pro took the whole loss
+    expect(await pool.totalAssets()).to.equal(seniorPre); // senior sleeve untouched
+    expect(await pool.totalProLosses()).to.equal(U(200));
+
+    // Pro exits with what is left
+    const max = await pool.maxProWithdraw(outsider.address);
+    await pool.connect(outsider).withdrawPro(max);
+    expect(await pool.juniorAssets()).to.be.lessThan(2n);
   });
 });

@@ -422,6 +422,11 @@
       "type": "bytes32"
      },
      {
+      "internalType": "bytes32",
+      "name": "market",
+      "type": "bytes32"
+     },
+     {
       "internalType": "uint256",
       "name": "notional",
       "type": "uint256"
@@ -583,6 +588,11 @@
       "type": "bytes32"
      },
      {
+      "internalType": "bytes32",
+      "name": "market",
+      "type": "bytes32"
+     },
+     {
       "internalType": "uint256",
       "name": "notional",
       "type": "uint256"
@@ -719,6 +729,11 @@
      {
       "internalType": "bytes32",
       "name": "symbol",
+      "type": "bytes32"
+     },
+     {
+      "internalType": "bytes32",
+      "name": "market",
       "type": "bytes32"
      },
      {
@@ -884,6 +899,11 @@
    {
     "internalType": "bytes32",
     "name": "symbol",
+    "type": "bytes32"
+   },
+   {
+    "internalType": "bytes32",
+    "name": "market",
     "type": "bytes32"
    },
    {

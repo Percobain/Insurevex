@@ -7,18 +7,26 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {IdentityRegistry} from "../compliance/IdentityRegistry.sol";
 import {TBillVault} from "../rwa/TBillVault.sol";
 
-/// @title UnderwritingPool (vxUW)
-/// @notice The pool of Savers' sleeves that sells crash floors. Every open policy is FULLY collateralised:
-///         its maximum payout is locked here until it settles. Risk rules enforced on-chain (from the backtest):
-///           - reserve R: only (1 - R) of pool assets may ever back policies;
-///           - per-symbol cap m: one stock may use at most m of that capacity;
-///           - withdrawals can never touch locked collateral.
-///         Idle cash is parked in the tokenised T-bill vault so the pool earns the T-bill yield on top of premiums.
-contract UnderwritingPool is ERC4626, AccessControl, Pausable {
+/// @title UnderwritingPool (senior vxUW + junior "Pro" tranche)
+/// @notice The pool that sells crash floors. Two tranches share one book:
+///           - SENIOR (ERC-4626 shares, vxUW): the Savers' sleeves. Keeps a reserve R that never backs policies.
+///           - JUNIOR / Pro (vxPRO, tracked here): fully working, FIRST-LOSS capital. It earns its share of premiums
+///             by the capacity it adds, plus `proFeeBps` of the senior premium for taking first loss.
+///         Loss order on a payout: premiums already earned -> Pro tranche -> senior sleeves. The Savers' T-bill floor
+///         lives outside this pool and is never touched.
+///         Backtest (2005-2026): with Pro capital >= 0.5x the sleeves, the senior tranche never had a losing period.
+///
+///         Risk rules enforced on-chain:
+///           - capacity = (1 - R) x senior + junior; every open policy's max payout is locked (full collateral);
+///           - per-symbol cap m of capacity;
+///           - withdrawals can never touch locked collateral; Pro cannot leave while it backs open policies.
+///         Idle cash can sit in the tokenised T-bill vault; that yield accrues to the senior tranche.
+contract UnderwritingPool is ERC4626, AccessControl, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     bytes32 public constant MARKET_ROLE = keccak256("MARKET_ROLE");
@@ -27,19 +35,30 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable {
     IdentityRegistry public immutable identity;
     TBillVault public tbill; // optional idle-cash sleeve
 
-    uint16 public reserveBps = 5_000; // R
-    uint16 public symbolCapBps = 1_000; // m, share of working capacity per symbol
+    uint16 public reserveBps = 5_000; // R (senior only)
+    uint16 public symbolCapBps = 500; // m, share of capacity per symbol (backtest: 5%)
+    uint16 public marketCapBps = 2_500; // share of capacity per market (backtest: 25%)
+    uint16 public proFeeBps = 4_000; // share of the senior tranche's premium paid to Pro for first loss
     uint256 public locked; // sum of max payouts of open policies
     mapping(bytes32 => uint256) public lockedBySymbol;
+    mapping(bytes32 => uint256) public lockedByMarket;
 
     uint256 public totalPremiums;
     uint256 public totalPayouts;
+    uint256 public totalProLosses;
+
+    // junior (Pro) tranche
+    uint256 public juniorAssets;
+    uint256 public proSupply;
+    mapping(address => uint256) public proBalanceOf;
 
     event Locked(bytes32 indexed symbol, uint256 amount, uint256 totalLocked);
     event Unlocked(bytes32 indexed symbol, uint256 amount, uint256 totalLocked);
-    event PremiumBooked(bytes32 indexed symbol, uint256 amount);
-    event ClaimPaid(bytes32 indexed symbol, address indexed to, uint256 amount);
-    event RiskParams(uint16 reserveBps, uint16 symbolCapBps);
+    event PremiumBooked(bytes32 indexed symbol, uint256 amount, uint256 toPro, uint256 toSenior);
+    event ClaimPaid(bytes32 indexed symbol, address indexed to, uint256 amount, uint256 fromPro, uint256 fromSenior);
+    event ProDeposit(address indexed lp, uint256 assets, uint256 shares);
+    event ProWithdraw(address indexed lp, uint256 assets, uint256 shares);
+    event RiskParams(uint16 reserveBps, uint16 symbolCapBps, uint16 marketCapBps, uint16 proFeeBps);
     event IdleInvested(uint256 assets);
     event IdleDivested(uint256 assets);
 
@@ -61,30 +80,51 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable {
         return address(tbill) == address(0) ? 0 : tbill.convertToAssets(tbill.balanceOf(address(this)));
     }
 
-    function totalAssets() public view override returns (uint256) {
+    /// @notice Everything the pool holds (both tranches).
+    function physicalAssets() public view returns (uint256) {
         return cash() + tbillAssets();
     }
 
-    /// @notice Max payout the pool may still commit (working capital minus what is already locked).
+    /// @notice Senior (Saver sleeve) assets: the ERC-4626 NAV.
+    function totalAssets() public view override returns (uint256) {
+        uint256 p = physicalAssets();
+        return p > juniorAssets ? p - juniorAssets : 0;
+    }
+
+    function capacityTotal() public view returns (uint256) {
+        return (totalAssets() * (10_000 - reserveBps)) / 10_000 + juniorAssets;
+    }
+
+    /// @notice Max payout the pool may still commit.
     function capacity() public view returns (uint256) {
-        uint256 working = (totalAssets() * (10_000 - reserveBps)) / 10_000;
-        return working > locked ? working - locked : 0;
+        uint256 c = capacityTotal();
+        return c > locked ? c - locked : 0;
     }
 
     function symbolCapacity(bytes32 symbol) public view returns (uint256) {
-        uint256 cap = (totalAssets() * (10_000 - reserveBps) / 10_000) * symbolCapBps / 10_000;
+        uint256 cap = (capacityTotal() * symbolCapBps) / 10_000;
         uint256 used = lockedBySymbol[symbol];
         uint256 left = cap > used ? cap - used : 0;
         uint256 c = capacity();
         return left < c ? left : c;
     }
 
-    function utilisationBps() external view returns (uint256) {
-        uint256 working = (totalAssets() * (10_000 - reserveBps)) / 10_000;
-        return working == 0 ? 0 : (locked * 10_000) / working;
+    function marketCapacity(bytes32 market) public view returns (uint256) {
+        uint256 cap = (capacityTotal() * marketCapBps) / 10_000;
+        uint256 used = lockedByMarket[market];
+        return cap > used ? cap - used : 0;
     }
 
-    // ---------------------------------------------------------------- ERC-4626 gates
+    function utilisationBps() external view returns (uint256) {
+        uint256 c = capacityTotal();
+        return c == 0 ? 0 : (locked * 10_000) / c;
+    }
+
+    function proSharePrice() public view returns (uint256) {
+        return proSupply == 0 ? 1e18 : (juniorAssets * 1e18) / proSupply;
+    }
+
+    // ---------------------------------------------------------------- senior (ERC-4626) gates
     function maxDeposit(address receiver) public view override returns (uint256) {
         return paused() || !identity.isVerified(receiver) ? 0 : type(uint256).max;
     }
@@ -93,10 +133,14 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable {
         return maxDeposit(receiver);
     }
 
-    /// @dev Only unlocked cash can leave. Locked collateral always stays for open policies.
+    /// @dev Senior can take only what is not needed as collateral after the Pro tranche has been counted.
     function maxWithdraw(address owner) public view override returns (uint256) {
         if (paused()) return 0;
-        uint256 free = totalAssets() > locked ? totalAssets() - locked : 0;
+        uint256 needFromSenior = locked > juniorAssets ? ((locked - juniorAssets) * 10_000) / (10_000 - reserveBps) : 0;
+        uint256 s = totalAssets();
+        uint256 free = s > needFromSenior ? s - needFromSenior : 0;
+        uint256 c = cash() + tbillAssets();
+        if (free > c) free = c;
         uint256 own = _convertToAssets(balanceOf(owner), Math.Rounding.Floor);
         return own < free ? own : free;
     }
@@ -117,28 +161,70 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable {
         super._update(from, to, value);
     }
 
+    // ---------------------------------------------------------------- junior (Pro) tranche
+    function depositPro(uint256 assets) external nonReentrant whenNotPaused returns (uint256 shares) {
+        require(identity.isVerified(msg.sender), "KYC");
+        require(assets > 0, "zero");
+        shares = proSupply == 0 || juniorAssets == 0 ? assets : (assets * proSupply) / juniorAssets;
+        IERC20(asset()).safeTransferFrom(msg.sender, address(this), assets);
+        juniorAssets += assets;
+        proSupply += shares;
+        proBalanceOf[msg.sender] += shares;
+        emit ProDeposit(msg.sender, assets, shares);
+    }
+
+    function maxProWithdraw(address lp) public view returns (uint256) {
+        uint256 own = proSupply == 0 ? 0 : (proBalanceOf[lp] * juniorAssets) / proSupply;
+        uint256 free = capacity(); // Pro can only leave with what is not backing open policies
+        if (free > juniorAssets) free = juniorAssets;
+        return own < free ? own : free;
+    }
+
+    function withdrawPro(uint256 assets) external nonReentrant whenNotPaused returns (uint256 shares) {
+        require(assets > 0 && assets <= maxProWithdraw(msg.sender), "Pro capital backing open policies");
+        shares = (assets * proSupply + juniorAssets - 1) / juniorAssets; // round shares up
+        proBalanceOf[msg.sender] -= shares;
+        proSupply -= shares;
+        juniorAssets -= assets;
+        _ensureCash(assets);
+        IERC20(asset()).safeTransfer(msg.sender, assets);
+        emit ProWithdraw(msg.sender, assets, shares);
+    }
+
     // ---------------------------------------------------------------- market hooks
-    function lock(bytes32 symbol, uint256 maxPayout) external onlyRole(MARKET_ROLE) whenNotPaused {
+    function lock(bytes32 symbol, bytes32 market, uint256 maxPayout) external onlyRole(MARKET_ROLE) whenNotPaused {
         require(maxPayout <= symbolCapacity(symbol), "pool capacity");
+        require(maxPayout <= marketCapacity(market), "market cap");
         locked += maxPayout;
         lockedBySymbol[symbol] += maxPayout;
+        lockedByMarket[market] += maxPayout;
         emit Locked(symbol, maxPayout, locked);
     }
 
+    /// @dev Called after the premium has arrived. Split by capacity contributed, plus the first-loss fee to Pro.
     function bookPremium(bytes32 symbol, uint256 amount) external onlyRole(MARKET_ROLE) {
         totalPremiums += amount;
-        emit PremiumBooked(symbol, amount);
+        uint256 seniorCap = ((totalAssets() - Math.min(totalAssets(), amount)) * (10_000 - reserveBps)) / 10_000;
+        uint256 capTotal = seniorCap + juniorAssets;
+        uint256 toPro = capTotal == 0 ? 0 : (amount * juniorAssets) / capTotal;
+        if (juniorAssets > 0) toPro += ((amount - toPro) * proFeeBps) / 10_000;
+        juniorAssets += toPro;
+        emit PremiumBooked(symbol, amount, toPro, amount - toPro);
     }
 
-    function release(bytes32 symbol, uint256 maxPayout, address to, uint256 payout) external onlyRole(MARKET_ROLE) {
+    function release(bytes32 symbol, bytes32 market, uint256 maxPayout, address to, uint256 payout) external onlyRole(MARKET_ROLE) {
         locked -= maxPayout;
         lockedBySymbol[symbol] -= maxPayout;
+        lockedByMarket[market] -= maxPayout;
         emit Unlocked(symbol, maxPayout, locked);
         if (payout > 0) {
+            uint256 fromPro = payout < juniorAssets ? payout : juniorAssets; // first loss
+            juniorAssets -= fromPro;
+            totalProLosses += fromPro;
             _ensureCash(payout);
             totalPayouts += payout;
             IERC20(asset()).safeTransfer(to, payout);
-            emit ClaimPaid(symbol, to, payout);
+            emit ClaimPaid(symbol, to, payout, fromPro, payout - fromPro);
         }
     }
 
@@ -168,12 +254,16 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable {
         if (shares > 0) tbill.redeem(shares, address(this), address(this));
     }
 
-    function setRiskParams(uint16 reserve_, uint16 symbolCap_) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setRiskParams(uint16 reserve_, uint16 symbolCap_, uint16 marketCap_, uint16 proFee_) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(reserve_ >= 2_000 && reserve_ <= 9_000, "reserve 20-90%");
         require(symbolCap_ > 0 && symbolCap_ <= 2_500, "symbol cap <= 25%");
+        require(marketCap_ >= symbolCap_ && marketCap_ <= 10_000, "market cap");
+        require(proFee_ <= 6_000, "pro fee <= 60%");
         reserveBps = reserve_;
         symbolCapBps = symbolCap_;
-        emit RiskParams(reserve_, symbolCap_);
+        marketCapBps = marketCap_;
+        proFeeBps = proFee_;
+        emit RiskParams(reserve_, symbolCap_, marketCap_, proFee_);
     }
 
     function pause() external onlyRole(DEFAULT_ADMIN_ROLE) { _pause(); }

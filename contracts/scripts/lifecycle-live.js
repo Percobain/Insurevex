@@ -6,7 +6,7 @@ const path = require("path");
 const { ethers, network } = require("hardhat");
 
 const SERVER = process.env.SERVER || "http://localhost:8080";
-const STEPS = (process.env.STEPS || "risk,subscribe3y,subscribeDemo,cover,tbill").split(",");
+const STEPS = (process.env.STEPS || "risk,subscribe3y,subscribeDemo,pro,cover,tbill").split(",");
 
 async function main() {
   const chainId = Number((await ethers.provider.getNetwork()).chainId);
@@ -35,7 +35,7 @@ async function main() {
   console.log("stable balance", ethers.formatUnits(await usd.balanceOf(me.address), 6));
 
   if (STEPS.includes("risk") && (await pool.symbolCapBps()) !== 2500n)
-    await rec("pool.setRiskParams(R=50%, m=25%) testnet depth", pool.setRiskParams(5000, 2500));
+    await rec("pool.setRiskParams(R=50%, m=25%) testnet depth", pool.setRiskParams(5000, 2500, 5000, 4000));
 
   if (STEPS.includes("subscribe3y")) {
     const amt = U(process.env.SUB3Y || 50);
@@ -46,6 +46,12 @@ async function main() {
     const amt = U(process.env.SUBDEMO || 15);
     await rec("USDT approve -> demo note", usd.approve(c.NoteDemo, amt));
     await rec(`Saver subscribes ${ethers.formatUnits(amt, 6)} USDT to 3h demo note`, noteD.subscribe(amt));
+  }
+
+  if (STEPS.includes("pro")) {
+    const amt = U(process.env.PRO || 8);
+    await rec("USDT approve -> pool (Pro LP)", usd.approve(c.UnderwritingPool, amt));
+    await rec(`Pro LP deposits ${ethers.formatUnits(amt, 6)} USDT first-loss capital`, pool.depositPro(amt));
   }
 
   if (STEPS.includes("cover")) {

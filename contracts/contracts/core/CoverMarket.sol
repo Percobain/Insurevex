@@ -32,12 +32,13 @@ contract CoverMarket is AccessControl, Pausable, ReentrancyGuard, EIP712 {
     bytes32 public constant SETTLER_ROLE = keccak256("SETTLER_ROLE");
 
     bytes32 public constant QUOTE_TYPEHASH = keccak256(
-        "Quote(address buyer,bytes32 symbol,uint256 notional,uint256 shares,uint256 heldShares,uint32 deductibleBps,uint32 capBps,uint256 premium,uint256 startPrice,uint64 expiry,uint64 validUntil,uint256 nonce)"
+        "Quote(address buyer,bytes32 symbol,bytes32 market,uint256 notional,uint256 shares,uint256 heldShares,uint32 deductibleBps,uint32 capBps,uint256 premium,uint256 startPrice,uint64 expiry,uint64 validUntil,uint256 nonce)"
     );
 
     struct Quote {
         address buyer;
         bytes32 symbol; // keccak256("NSE:RELIANCE"), keccak256("NASDAQ:NVDA") ...
+        bytes32 market; // keccak256("IN"), keccak256("US") ... used for the per-market exposure cap
         uint256 notional; // protected value in settlement-token units (6 dp)
         uint256 shares; // shares covered (1e18). Used for the insurable-interest check
         uint256 heldShares; // shares the buyer holds per the attestation (1e18); ignored for on-chain tokens
@@ -55,6 +56,7 @@ contract CoverMarket is AccessControl, Pausable, ReentrancyGuard, EIP712 {
     struct Policy {
         address holder;
         bytes32 symbol;
+        bytes32 market;
         uint256 notional;
         uint256 shares;
         uint32 deductibleBps;
@@ -102,7 +104,7 @@ contract CoverMarket is AccessControl, Pausable, ReentrancyGuard, EIP712 {
 
     // ---------------------------------------------------------------- buy
     function hashQuote(Quote calldata q) public view returns (bytes32) {
-        return _hashTypedDataV4(keccak256(abi.encode(QUOTE_TYPEHASH, q.buyer, q.symbol, q.notional, q.shares, q.heldShares,
+        return _hashTypedDataV4(keccak256(abi.encode(QUOTE_TYPEHASH, q.buyer, q.symbol, q.market, q.notional, q.shares, q.heldShares,
             q.deductibleBps, q.capBps, q.premium, q.startPrice, q.expiry, q.validUntil, q.nonce)));
     }
 
@@ -123,12 +125,12 @@ contract CoverMarket is AccessControl, Pausable, ReentrancyGuard, EIP712 {
         coveredShares[msg.sender][q.symbol] = newCovered;
 
         uint256 maxPayout = (q.notional * q.capBps) / 10_000;
-        pool.lock(q.symbol, maxPayout); // reverts if reserve / per-symbol cap would be breached
+        pool.lock(q.symbol, q.market, maxPayout); // reverts if reserve / per-symbol / per-market cap would be breached
         stable.safeTransferFrom(msg.sender, address(pool), q.premium);
         pool.bookPremium(q.symbol, q.premium);
 
         id = policies.length;
-        policies.push(Policy(msg.sender, q.symbol, q.notional, q.shares, q.deductibleBps, q.capBps, q.premium, q.startPrice,
+        policies.push(Policy(msg.sender, q.symbol, q.market, q.notional, q.shares, q.deductibleBps, q.capBps, q.premium, q.startPrice,
             uint64(block.timestamp), q.expiry, Status.Open, 0, 0));
         _byHolder[msg.sender].push(id);
         emit CoverBought(id, msg.sender, q.symbol, q.notional, q.deductibleBps, q.capBps, q.premium, q.startPrice, q.expiry);
@@ -176,7 +178,7 @@ contract CoverMarket is AccessControl, Pausable, ReentrancyGuard, EIP712 {
         }
         p.payout = payout;
         coveredShares[p.holder][p.symbol] -= p.shares;
-        pool.release(p.symbol, (p.notional * p.capBps) / 10_000, p.holder, payout);
+        pool.release(p.symbol, p.market, (p.notional * p.capBps) / 10_000, p.holder, payout);
         emit CoverSettled(id, p.holder, p.symbol, px, retBps, payout);
     }
 
