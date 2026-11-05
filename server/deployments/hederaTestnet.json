@@ -1,0 +1,42 @@
+{
+  "chainId": 296,
+  "network": "hederaTestnet",
+  "deployer": "0x1d83F122EF31885B83139ABCb4f8fB4eF319DDF9",
+  "deployedAt": "2026-11-05T23:04:03.644Z",
+  "contracts": {
+    "TestUSD": "0xB5297E51C700EcE40912C0857F866eCd09348484",
+    "stable": "0xB5297E51C700EcE40912C0857F866eCd09348484",
+    "IdentityRegistry": "0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4",
+    "PriceOracle": "0x6ea034B50D2053A83c0d8193F907F91691a03601",
+    "TBillVault": "0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8",
+    "UnderwritingPool": "0x167a116213EfE0Be71A3CB1d31802559b65db71b",
+    "CoverMarket": "0x1019DE31d6710DfE1B33A87c31a4b65f4B803306",
+    "Note3Y": "0xA64f0E730399de66fA6278c64BBb4A708d6d17f3",
+    "NoteDemo": "0xa0DaaFe98808145f717a764C940e4F3c26248651"
+  },
+  "notes": [
+    {
+      "key": "Note3Y",
+      "address": "0xA64f0E730399de66fA6278c64BBb4A708d6d17f3",
+      "name": "InsureVEX 3Y Protected Note",
+      "termDays": 1095,
+      "floorRateBps": 400,
+      "subscriptionWindow": 7776000,
+      "couponInterval": 3600
+    },
+    {
+      "key": "NoteDemo",
+      "address": "0xa0DaaFe98808145f717a764C940e4F3c26248651",
+      "name": "InsureVEX Demo Note (3h)",
+      "termSeconds": 10800,
+      "floorRateBps": 400,
+      "subscriptionWindow": 7200,
+      "couponInterval": 600
+    }
+  ],
+  "startBlock": 42715184,
+  "ats": {
+    "equityNVDA": "0xe77F4a19C336841643b7a671557fdBa2eFd0465E",
+    "noteBond3Y": "0x2bCfC2Bb864f651d78a0838ae2068141B2F57703"
+  }
+}

@@ -1,0 +1,98 @@
+[
+  {
+    "step": "pool.setRiskParams(R=50%, m=25%) testnet depth",
+    "tx": "0x22d641ff2e634a2bfb05b48f241417d9c4679d370458fc5ed1fc3127e148bd6d",
+    "url": "https://explorer.testnet.arc.io/tx/0x22d641ff2e634a2bfb05b48f241417d9c4679d370458fc5ed1fc3127e148bd6d",
+    "at": "2026-11-05T22:59:56.991Z"
+  },
+  {
+    "step": "USDC approve -> 3Y note",
+    "tx": "0x75dbb273562d9a3a741affb180f1511f2ec4c6178861ad1d387b9e8bd60c3c3e",
+    "url": "https://explorer.testnet.arc.io/tx/0x75dbb273562d9a3a741affb180f1511f2ec4c6178861ad1d387b9e8bd60c3c3e",
+    "at": "2026-11-05T22:59:58.936Z"
+  },
+  {
+    "step": "Saver subscribes 6.0 USDC to 3Y note",
+    "tx": "0x327c5789c69639c5caf98037f25c979edce6fc2515ccd9f2dd26d150d2946043",
+    "url": "https://explorer.testnet.arc.io/tx/0x327c5789c69639c5caf98037f25c979edce6fc2515ccd9f2dd26d150d2946043",
+    "at": "2026-11-05T23:00:00.942Z"
+  },
+  {
+    "step": "USDC approve -> demo note",
+    "tx": "0x82e452bd16c5e4503e9997aab7da808ad1bd45b5d97d6026075faff57fd356fb",
+    "url": "https://explorer.testnet.arc.io/tx/0x82e452bd16c5e4503e9997aab7da808ad1bd45b5d97d6026075faff57fd356fb",
+    "at": "2026-11-05T23:00:03.231Z"
+  },
+  {
+    "step": "Saver subscribes 2.0 USDC to 3h demo note",
+    "tx": "0xa755cb41b4f3bb508fe3906a28e43d96d8932f899f46ab7899467c0ebf8499c7",
+    "url": "https://explorer.testnet.arc.io/tx/0xa755cb41b4f3bb508fe3906a28e43d96d8932f899f46ab7899467c0ebf8499c7",
+    "at": "2026-11-05T23:00:05.836Z"
+  },
+  {
+    "step": "USDC approve -> pool (Pro LP)",
+    "tx": "0x2ba3dffcad16c8b339fedcac58b55ffc6295e2ed28898fcf50039f784a569f32",
+    "url": "https://explorer.testnet.arc.io/tx/0x2ba3dffcad16c8b339fedcac58b55ffc6295e2ed28898fcf50039f784a569f32",
+    "at": "2026-11-05T23:00:07.972Z"
+  },
+  {
+    "step": "Pro LP deposits 3.0 USDC first-loss capital",
+    "tx": "0x1a90dc898e25f7a938a64bc21e7285346d2a14243a5ddf8505c7fd12dab18495",
+    "url": "https://explorer.testnet.arc.io/tx/0x1a90dc898e25f7a938a64bc21e7285346d2a14243a5ddf8505c7fd12dab18495",
+    "at": "2026-11-05T23:00:09.982Z"
+  },
+  {
+    "step": "USDC approve premium (NASDAQ:MSFT)",
+    "tx": "0x34d01887f342500fda26ec4e69e331a8407d786144338478cf482c6d130afe83",
+    "url": "https://explorer.testnet.arc.io/tx/0x34d01887f342500fda26ec4e69e331a8407d786144338478cf482c6d130afe83",
+    "at": "2026-11-05T23:00:12.400Z"
+  },
+  {
+    "step": "Holder buys NASDAQ:MSFT floor, premium 0.009122 USDC",
+    "tx": "0x8ecd92dc0fc0780efd81bf4771a570d5a386e96d66f683f48819b8eddd89230f",
+    "url": "https://explorer.testnet.arc.io/tx/0x8ecd92dc0fc0780efd81bf4771a570d5a386e96d66f683f48819b8eddd89230f",
+    "at": "2026-11-05T23:00:13.404Z"
+  },
+  {
+    "step": "USDC approve premium (HKEX:0700)",
+    "tx": "0x7eb850d028abdfcc92aad63991715e679bd5de77f9c096fd1bac7a9f54cd8d0c",
+    "url": "https://explorer.testnet.arc.io/tx/0x7eb850d028abdfcc92aad63991715e679bd5de77f9c096fd1bac7a9f54cd8d0c",
+    "at": "2026-11-05T23:00:15.459Z"
+  },
+  {
+    "step": "Holder buys HKEX:0700 floor, premium 0.010327 USDC",
+    "tx": "0x187277a97abfe6956d0bd312aed741b9a354e403a0a7bb2836b1737b22c3c0d9",
+    "url": "https://explorer.testnet.arc.io/tx/0x187277a97abfe6956d0bd312aed741b9a354e403a0a7bb2836b1737b22c3c0d9",
+    "at": "2026-11-05T23:00:18.037Z"
+  },
+  {
+    "step": "USDC approve premium (NYSEARCA:SPY)",
+    "tx": "0x70af371dd02621b359e293d2dfc172656b88a7b71fa68cd14e277dd33d190909",
+    "url": "https://explorer.testnet.arc.io/tx/0x70af371dd02621b359e293d2dfc172656b88a7b71fa68cd14e277dd33d190909",
+    "at": "2026-11-05T23:00:19.445Z"
+  },
+  {
+    "step": "Holder buys NYSEARCA:SPY floor, premium 0.00017 USDC",
+    "tx": "0x36b39ff2c872866f09125763f32aee37debc2ab4e307b03416d15b66047a1d1d",
+    "url": "https://explorer.testnet.arc.io/tx/0x36b39ff2c872866f09125763f32aee37debc2ab4e307b03416d15b66047a1d1d",
+    "at": "2026-11-05T23:00:21.369Z"
+  },
+  {
+    "step": "USDC approve -> T-bill custodian proceeds",
+    "tx": "0x4083fb9e7820360cd418a533baae70d1c5a9a9928d789b6ecde851161c7aaa2b",
+    "url": "https://explorer.testnet.arc.io/tx/0x4083fb9e7820360cd418a533baae70d1c5a9a9928d789b6ecde851161c7aaa2b",
+    "at": "2026-11-05T23:00:22.647Z"
+  },
+  {
+    "step": "T-bill vault: custodian funds yield",
+    "tx": "0x9aa5aca1f93b5a9f81dbaf0215d9e2ff5cbca884c5baa1f9788fd7a177fe368f",
+    "url": "https://explorer.testnet.arc.io/tx/0x9aa5aca1f93b5a9f81dbaf0215d9e2ff5cbca884c5baa1f9788fd7a177fe368f",
+    "at": "2026-11-05T23:00:24.701Z"
+  },
+  {
+    "step": "T-bill NAV update + reserve attestation",
+    "tx": "0x4b70ccaa878a96d640060060dac8d227649a14ae61afd146dbeaa957fbb4d736",
+    "url": "https://explorer.testnet.arc.io/tx/0x4b70ccaa878a96d640060060dac8d227649a14ae61afd146dbeaa957fbb4d736",
+    "at": "2026-11-05T23:00:26.253Z"
+  }
+]

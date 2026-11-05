@@ -6,7 +6,7 @@
 |---|---|---|---|---|---|
 | Whitechain Sepolia | 1874 | https://rpc.testnet.whitechain.io | https://explorer.testnet.whitechain.io | WBT | official test USDT `0xcedfB56113143d55b2358b8CFbB0dEB5Ad2f55a7` (6 dp) |
 | Hedera testnet | 296 | https://testnet.hashio.io/api | https://hashscan.io/testnet | HBAR | InsureVEX test USD (6 dp); tokenised stocks and the note are issued with Asset Tokenization Studio (ATS) |
-| Arc testnet | 5042002 | https://rpc.testnet.arc.network | https://testnet.arcscan.app | USDC | USDC ERC-20 `0x3600000000000000000000000000000000000000` (6 dp) |
+| Arc testnet | 5042002 | https://rpc.testnet.arc.network | https://explorer.testnet.arc.io | USDC | USDC ERC-20 `0x3600000000000000000000000000000000000000` (6 dp) |
 
 Addresses: `contracts/deployments/<network>.json` (copied to `app/src/deployments/` and read by the server).
 Keys: `contracts.{stable, IdentityRegistry, PriceOracle, TBillVault, UnderwritingPool, CoverMarket, Note3Y, NoteDemo}`;

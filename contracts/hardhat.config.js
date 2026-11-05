@@ -15,7 +15,7 @@ module.exports = {
     // Whitechain Sepolia (OP Stack L2, gas in WBT). Payments use the official test USDT.
     whitechainSepolia: { url: process.env.WHITECHAIN_RPC || "https://rpc.testnet.whitechain.io", chainId: 1874, accounts },
     // Hedera testnet JSON-RPC relay (Hashio). Gas in HBAR.
-    hederaTestnet: { url: process.env.HEDERA_RPC || "https://testnet.hashio.io/api", chainId: 296, accounts, timeout: 180000, gasMultiplier: 1.1 },
+    hederaTestnet: { url: process.env.HEDERA_RPC || "https://testnet.hashio.io/api", chainId: 296, accounts, timeout: 180000, gasMultiplier: 1.5, gas: process.env.HEDERA_GAS ? Number(process.env.HEDERA_GAS) : "auto" },
     // Arc testnet (Circle). Gas is USDC.
     arcTestnet: { url: process.env.ARC_RPC || "https://rpc.testnet.arc.network", chainId: 5042002, accounts },
   },
@@ -25,8 +25,9 @@ module.exports = {
       { network: "whitechainSepolia", chainId: 1874,
         urls: { apiURL: "https://explorer.testnet.whitechain.io/api", browserURL: "https://explorer.testnet.whitechain.io" } },
       { network: "arcTestnet", chainId: 5042002,
-        urls: { apiURL: "https://testnet.arcscan.app/api", browserURL: "https://testnet.arcscan.app" } },
+        urls: { apiURL: "https://explorer.testnet.arc.io/api", browserURL: "https://explorer.testnet.arc.io" } },
     ],
   },
-  sourcify: { enabled: true }, // HashScan verifies Hedera contracts through Sourcify
+  // HashScan verifies Hedera contracts through its own Sourcify server.
+  sourcify: { enabled: true }, // sourcify.dev supports Hedera testnet (296); HashScan shows Sourcify-verified sources
 };

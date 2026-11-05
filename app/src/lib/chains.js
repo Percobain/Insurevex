@@ -23,7 +23,7 @@ export const arcTestnet = defineChain({
   name: "Arc Testnet",
   nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 },
   rpcUrls: { default: { http: ["https://rpc.testnet.arc.network"] } },
-  blockExplorers: { default: { name: "ArcScan", url: "https://testnet.arcscan.app" } },
+  blockExplorers: { default: { name: "ArcScan", url: "https://explorer.testnet.arc.io" } },
   testnet: true,
 });
 
@@ -52,8 +52,8 @@ export const CHAIN_META = {
     short: "Arc",
     stable: "USDC",
     role: "USDC-native settlement, gas paid in USDC",
-    tx: (h) => `https://testnet.arcscan.app/tx/${h}`,
-    address: (a) => `https://testnet.arcscan.app/address/${a}`,
+    tx: (h) => `https://explorer.testnet.arc.io/tx/${h}`,
+    address: (a) => `https://explorer.testnet.arc.io/address/${a}`,
   },
 };
 

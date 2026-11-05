@@ -9,6 +9,8 @@ import { store } from "./store.js";
 const log = (...a) => console.log(new Date().toISOString(), "[keeper]", ...a);
 const BY_ID = new Map([...SYMBOLS.values()].map((s) => [symbolId(s.symbol), s]));
 export function rememberSymbol(sym) { BY_ID.set(symbolId(sym.symbol), sym); }
+// Hedera's JSON-RPC relay under-estimates gas for multi-contract calls: send an explicit limit there.
+const gas = (c) => (c.chainId === 296 ? { gasLimit: 1_500_000 } : {});
 
 async function settleDue(c) {
   const n = Number(await c.market.policyCount());
@@ -26,11 +28,11 @@ async function settleDue(c) {
     if (px === 0n) {
       const close = await closeAt(sym.yahoo, Number(p.expiry));
       px = BigInt(Math.round(close.price * 1e8));
-      const tx = await c.oracle.post(p.symbol, p.expiry, px);
+      const tx = await c.oracle.post(p.symbol, p.expiry, px, gas(c));
       await tx.wait();
       log(c.cfg.name, `posted ${sym.symbol} ${close.price} (${close.source}) for policy ${id}`, tx.hash);
     }
-    const tx = await c.market.settle(id);
+    const tx = await c.market.settle(id, gas(c));
     const r = await tx.wait();
     log(c.cfg.name, `settled policy ${id}`, r.hash);
     done.add(id);
@@ -45,14 +47,16 @@ async function couponsAndMaturity(c) {
     const [matured, maturity, last, interval] = await Promise.all([note.matured(), note.maturity(), note.lastCoupon(), note.couponInterval()]);
     if (!matured && now >= Number(maturity)) {
       // keep the T-bill vault liquid for redemptions (custodian proceeds), then mature
-      const r = await (await note.mature()).wait();
+      const r = await (await note.mature(gas(c))).wait();
       log(c.cfg.name, `matured ${n.key}`, r.hash);
       continue;
     }
-    if (!matured && now >= Number(last) + Number(interval) && (await note.totalSupply()) > 0n) {
+    // On Hedera coupons are run by the native Schedule Service (scripts/hedera-schedule-coupon.js), not by this keeper.
+    const scheduledNatively = (process.env.NATIVE_COUPON_CHAINS || "296").split(",").map(Number).includes(c.chainId);
+    if (!scheduledNatively && !matured && now >= Number(last) + Number(interval) && (await note.totalSupply()) > 0n) {
       const avail = await note.couponAvailable();
       if (avail > 0n) {
-        const r = await (await note.distributeCoupon()).wait();
+        const r = await (await note.distributeCoupon(gas(c))).wait();
         log(c.cfg.name, `coupon ${n.key} ${ethers.formatUnits(avail, 6)}`, r.hash);
       }
     }
@@ -65,7 +69,7 @@ async function rollNav(c) {
   if (Date.now() - last < 24 * 3600 * 1000) return;
   const apy = Number(process.env.TBILL_APY_BPS || (await c.tbill.apyBps()));
   const reserve = await c.tbill.totalAssets(); // custodian statement mirrors fund assets on testnet
-  const r = await (await c.tbill.updateNav(apy, reserve)).wait();
+  const r = await (await c.tbill.updateNav(apy, reserve, gas(c))).wait();
   log(c.cfg.name, `NAV rolled, reserve ${ethers.formatUnits(reserve, 6)}`, r.hash);
   store.set(key, Date.now());
 }

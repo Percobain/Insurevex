@@ -54,17 +54,58 @@ Plain-English numbers for the pitch: [`docs/PITCH_NUMBERS.md`](docs/PITCH_NUMBER
 
 The keeper then settles each policy against the official close at expiry, pays coupons hourly (monthly in production) and matures the 3-hour note. Each settlement, coupon and redemption is another USDT transfer; see `/activity` in the app. The v1 deployment (before the Pro tranche and the per-market cap) is kept in `contracts/deployments/whitechainSepolia.v1.*.json`.
 
-### Hedera testnet (chain 296): Asset Tokenization Studio
+### Hedera testnet (chain 296): live, verified (Sourcify, shown on HashScan), with Asset Tokenization Studio
 
-Script ready: [`contracts/scripts/hedera-ats.js`](contracts/scripts/hedera-ats.js). It issues, through the live ATS Factory (v8.0.0):
-- **a tokenised equity** (ERC-1400, with KYC, freeze, controller and pause). `CoverMarket` reads the holder's balance of it on-chain as proof they own what they insure.
-- **the Protected Note as an ATS bond** (ISIN, maturity, KYC through an SSI issuer, coupons via `setCoupon`).
+**Asset Tokenization Studio (ATS)**, issued through the live ATS Factory v8.0.0 (`0xd1F118A40f3b02883D35909eF2517e7EDd78379d`):
 
-Encoding is validated against the live factory with free gas estimates (equity 8.09M gas, bond 8.30M gas). Deployment is waiting on testnet HBAR; see "Status".
+| ATS security | Address | What it does in InsureVEX |
+|---|---|---|
+| Tokenised NVIDIA equity (ERC-1400, ISIN US67066G1040, KYC, freeze, controller, pause) | [`0xe77F4a19C336841643b7a671557fdBa2eFd0465E`](https://hashscan.io/testnet/contract/0xe77F4a19C336841643b7a671557fdBa2eFd0465E) | `CoverMarket` reads the holder's ATS balance on-chain as proof they own what they insure |
+| InsureVEX 3Y Protected Note as an ATS bond (ISIN, 3-year maturity, KYC via SSI issuer, coupons) | [`0x2bCfC2Bb864f651d78a0838ae2068141B2F57703`](https://hashscan.io/testnet/contract/0x2bCfC2Bb864f651d78a0838ae2068141B2F57703) | The note issued as a regulated bond with an on-chain coupon schedule |
 
-### Arc testnet (chain 5042002): USDC settlement
+| InsureVEX contract | Address |
+|---|---|
+| Settlement token (InsureVEX test USD) | [`0xB5297E51C700EcE40912C0857F866eCd09348484`](https://hashscan.io/testnet/contract/0xB5297E51C700EcE40912C0857F866eCd09348484) |
+| IdentityRegistry | [`0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4`](https://hashscan.io/testnet/contract/0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4) |
+| PriceOracle | [`0x6ea034B50D2053A83c0d8193F907F91691a03601`](https://hashscan.io/testnet/contract/0x6ea034B50D2053A83c0d8193F907F91691a03601) |
+| TBillVault | [`0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8`](https://hashscan.io/testnet/contract/0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8) |
+| UnderwritingPool | [`0x167a116213EfE0Be71A3CB1d31802559b65db71b`](https://hashscan.io/testnet/contract/0x167a116213EfE0Be71A3CB1d31802559b65db71b) |
+| CoverMarket | [`0x1019DE31d6710DfE1B33A87c31a4b65f4B803306`](https://hashscan.io/testnet/contract/0x1019DE31d6710DfE1B33A87c31a4b65f4B803306) |
+| ProtectedNote 3Y / 3-hour demo | [`0xA64f…9cE2`](https://hashscan.io/testnet/contract/0xA64f0E730399de66fA6278c64BBb4A708d6d17f3) · [`0xa0Da…8651`](https://hashscan.io/testnet/contract/0xa0DaaFe98808145f717a764C940e4F3c26248651) |
 
-The same suite, settling in Arc's USDC (`0x3600…0000`). Deployment is waiting on faucet USDC; see "Status".
+**Lifecycle on Hedera** (full list in [`contracts/deployments/hederaTestnet.lifecycle.json`](contracts/deployments/hederaTestnet.lifecycle.json)):
+
+| Step | Explorer |
+|---|---|
+| ATS issuance: equity via `deployEquity` | [tx](https://hashscan.io/testnet/transaction/0x1ad148f2f7b736a34777294c02d6b16b2c4512f9a0b19e14d73e2d0e6e31365c) |
+| ATS configuration: SSI issuer, `grantKyc`, issue 100 tokenised NVDA to the holder | [issuer](https://hashscan.io/testnet/transaction/0x82418986f4877ae33763db6469eab6785521f12d2742c1068e6d2f87abba8b23) · [KYC](https://hashscan.io/testnet/transaction/0x228eac96c26683c50a43e45ddc13d461c3fc71499e1db99346aebe3270cb0a03) · [issue](https://hashscan.io/testnet/transaction/0x4f2b2a9486856f02b0deb317daa80f7062daf28e53e55b0bcdf7d06244360806) |
+| ATS bond: issue the note bond, KYC, issue 1,000 units, `setCoupon` | [bond](https://hashscan.io/testnet/transaction/0xff29c0bf6dda7f39c99d6e1d1676c1884fe87d2f13f18130cc2a37663aa57600) · [issue](https://hashscan.io/testnet/transaction/0x6b2ee636a8837de2b0792bce393dde69a796bc8291d6468dae0038424b03dab1) · [coupon](https://hashscan.io/testnet/transaction/0x7d19657c49d5749c2b36d71f5af853a1bfbb1f86b6fbd1f157a99887593f08f2) |
+| Holder buys NVDA cover; insurable interest proven by the **ATS balance on-chain** | [tx](https://hashscan.io/testnet/transaction/0xf9679e281bce8fa20bedcd00e194696d69b096444807bdcae3805a2cc7f1db99) |
+| Cover on 150 NVDA with only 100 held: **reverted on-chain** (`cover exceeds holdings`) | `scripts/hedera-demo-checks.js` |
+| ATS compliance: freeze 10 of the holder's tokenised shares | [tx](https://hashscan.io/testnet/transaction/0xd97f70ae0eb6f61fa73faa3ae66d4e328d25c59cdc49f8655a34efa1a29ad5a7) |
+| **Hedera Schedule Service** (HIP-1215): the note's next coupon scheduled natively, no keeper | [tx](https://hashscan.io/testnet/transaction/0xb9f4678ae47afcc84b4103d76e6339b43edde85c40593b4f5cf696c90c4fd3f3) |
+| Saver subscribes 5,000 to the 3Y note · Pro LP deposits 2,000 · tradfi covers on Reliance (NSE), SAP (Xetra), SPY | [sub](https://hashscan.io/testnet/transaction/0x3de32ebfa4094403cdf6767af5cde4cc1c8e30a2b862087c912d26eeaef71819) · [Pro](https://hashscan.io/testnet/transaction/0xd16023a95197f3c8cffddf03a3d849f92beaffd17c9162625de4cf0c54d0e32f) · [RELIANCE](https://hashscan.io/testnet/transaction/0xba439ab5a198b29f3371f88811b1761977f360e65166aab07f604606cdcd0966) · [SAP](https://hashscan.io/testnet/transaction/0x01a66b7e57f3708bc8878561bd9022c7a97349a49da8eaecdd374a7d9a04cbcf) |
+| T-bill NAV + reserve attestation | [tx](https://hashscan.io/testnet/transaction/0x1287b18ca4a13a17726ee31268db87ce4f96f13359a205559e46c4a692ee6dc3) |
+
+### Arc testnet (chain 5042002): live, verified, settling in USDC
+
+USDC is both the settlement token (`0x3600…0000`) and the gas token, so a Saver needs nothing but USDC.
+
+| Contract | Address |
+|---|---|
+| IdentityRegistry | [`0xB5297E51C700EcE40912C0857F866eCd09348484`](https://explorer.testnet.arc.io/address/0xB5297E51C700EcE40912C0857F866eCd09348484) |
+| PriceOracle | [`0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4`](https://explorer.testnet.arc.io/address/0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4) |
+| TBillVault | [`0x6ea034B50D2053A83c0d8193F907F91691a03601`](https://explorer.testnet.arc.io/address/0x6ea034B50D2053A83c0d8193F907F91691a03601) |
+| UnderwritingPool | [`0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8`](https://explorer.testnet.arc.io/address/0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8) |
+| CoverMarket | [`0x167a116213EfE0Be71A3CB1d31802559b65db71b`](https://explorer.testnet.arc.io/address/0x167a116213EfE0Be71A3CB1d31802559b65db71b) |
+| ProtectedNote 3Y / 3-hour demo | [`0x1019…3306`](https://explorer.testnet.arc.io/address/0x1019DE31d6710DfE1B33A87c31a4b65f4B803306) · [`0xA64f…9cE2`](https://explorer.testnet.arc.io/address/0xA64f0E730399de66fA6278c64BBb4A708d6d17f3) |
+
+| Step (USDC) | Explorer |
+|---|---|
+| Saver subscribes 6 USDC to the 3Y note | [tx](https://explorer.testnet.arc.io/tx/0x327c5789c69639c5caf98037f25c979edce6fc2515ccd9f2dd26d150d2946043) |
+| Pro LP deposits 3 USDC first-loss capital | [tx](https://explorer.testnet.arc.io/tx/0x1a90dc898e25f7a938a64bc21e7285346d2a14243a5ddf8505c7fd12dab18495) |
+| Holder covers MSFT (weekly) and Tencent (HKEX, 2 weeks) | [MSFT](https://explorer.testnet.arc.io/tx/0x8ecd92dc0fc0780efd81bf4771a570d5a386e96d66f683f48819b8eddd89230f) · [Tencent](https://explorer.testnet.arc.io/tx/0x187277a97abfe6956d0bd312aed741b9a354e403a0a7bb2836b1737b22c3c0d9) |
+| T-bill NAV + reserve attestation | [tx](https://explorer.testnet.arc.io/tx/0x4b70ccaa878a96d640060060dac8d227649a14ae61afd146dbeaa957fbb4d736) |
 
 ## How it works
 
@@ -114,8 +155,8 @@ cd backtest && python fetch_world.py && python run_world.py && python export_eng
 ## Status and current limitations
 
 - **Whitechain:** live end to end with real test USDT (notes, Pro LP, tradfi covers on three exchanges, oracle settlement, NAV attestation, coupons, demo-note maturity).
-- **Hedera:** the ATS script is validated against the live factory. It needs about 45 testnet HBAR; the faucet's second drip asks for a captcha.
-- **Arc:** waiting for Circle faucet USDC and an Arc Studio project.
+- **Hedera:** live end to end, with ATS equity and bond issuance, KYC, freeze, coupons, on-chain holdings checks and a native Schedule Service coupon.
+- **Arc:** live end to end in USDC. The Arc Studio project needs a signed-in Studio account.
 - **Single quoter and reporter on testnet.** Production would use several and take the median; the contracts already support many through `QUOTER_ROLE` and `REPORTER_ROLE`.
 - **Brokerage holdings are attested by the server** (statement upload or broker API such as Zerodha Kite or IBKR). For tokenised stocks the contract reads the balance on-chain instead.
 - **T-bill custody is simulated on testnet.** The NAV agent's attested reserve stands in for the custodian statement.

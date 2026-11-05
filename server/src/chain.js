@@ -13,7 +13,7 @@ export const ERC20_ABI = ["function balanceOf(address) view returns (uint256)", 
 export const CHAINS = {
   1874: { key: "whitechainSepolia", name: "Whitechain Sepolia", rpc: process.env.WHITECHAIN_RPC || "https://rpc.testnet.whitechain.io", explorer: "https://explorer.testnet.whitechain.io", stableSymbol: "USDT", logChunk: 5000 },
   296: { key: "hederaTestnet", name: "Hedera Testnet", rpc: process.env.HEDERA_RPC || "https://testnet.hashio.io/api", explorer: "https://hashscan.io/testnet", stableSymbol: "tUSD", logChunk: 1000 },
-  5042002: { key: "arcTestnet", name: "Arc Testnet", rpc: process.env.ARC_RPC || "https://rpc.testnet.arc.network", explorer: "https://testnet.arcscan.app", stableSymbol: "USDC", logChunk: 5000 },
+  5042002: { key: "arcTestnet", name: "Arc Testnet", rpc: process.env.ARC_RPC || "https://rpc.testnet.arc.network", explorer: "https://explorer.testnet.arc.io", stableSymbol: "USDC", logChunk: 5000 },
 };
 
 const DEPLOY_DIRS = [path.join(here, "..", "deployments"), path.join(here, "..", "..", "contracts", "deployments")];
@@ -35,7 +35,8 @@ export function chain(chainId) {
   const cfg = CHAINS[chainId];
   if (!cfg) return null;
   const dep = loadDeployment(cfg.key);
-  if (!dep) return null;
+  const need = ["stable", "IdentityRegistry", "PriceOracle", "TBillVault", "UnderwritingPool", "CoverMarket"];
+  if (!dep || need.some((k) => !dep.contracts?.[k])) return null; // missing or still being written
   const provider = new ethers.JsonRpcProvider(cfg.rpc, chainId, { staticNetwork: true, batchMaxCount: 20 });
   const signer = quoterKey ? new ethers.Wallet(quoterKey, provider) : null; // fresh pending nonce per tx (keeper txs are sequential)
   const runner = signer || provider;
