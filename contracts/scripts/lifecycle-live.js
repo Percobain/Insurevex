@@ -74,6 +74,22 @@ async function main() {
     await rec("T-bill vault: custodian funds yield", tbill.fundYield(U(1)));
     await rec("T-bill NAV update + reserve attestation", tbill.updateNav(420, await tbill.totalAssets()));
   }
+  if (STEPS.includes("claim")) {
+    for (const [label, n] of [["3Y note", note3], ["demo note", noteD]]) {
+      if ((await n.pendingCoupon(me.address)) > 0n) await rec(`Saver claims USDT coupon (${label})`, n.claimCoupon());
+      else console.log("no coupon pending on", label);
+    }
+  }
+  if (STEPS.includes("redeem")) {
+    const now = (await ethers.provider.getBlock("latest")).timestamp;
+    if (now < Number(await noteD.maturity())) console.log("demo note not matured yet; maturity", new Date(Number(await noteD.maturity()) * 1000).toISOString());
+    else {
+      if (!(await noteD.matured())) await rec("Demo note matures (T-bill floor + sleeve pulled back)", noteD.mature());
+      const before = await usd.balanceOf(me.address);
+      await rec("Saver redeems demo note: face + sleeve in USDT", noteD.redeem());
+      console.log("redeemed", ethers.formatUnits((await usd.balanceOf(me.address)) - before, 6), "USDT");
+    }
+  }
   console.log("pool", { totalAssets: ethers.formatUnits(await pool.totalAssets(), 6), locked: ethers.formatUnits(await pool.locked(), 6), capacity: ethers.formatUnits(await pool.capacity(), 6) });
 }
 main().catch((e) => { console.error(e); process.exit(1); });
