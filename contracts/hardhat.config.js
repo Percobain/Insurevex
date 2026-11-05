@@ -15,7 +15,7 @@ module.exports = {
     // Whitechain Sepolia (OP Stack L2, gas in WBT). Payments use the official test USDT.
     whitechainSepolia: { url: process.env.WHITECHAIN_RPC || "https://rpc.testnet.whitechain.io", chainId: 1874, accounts },
     // Hedera testnet JSON-RPC relay (Hashio). Gas in HBAR.
-    hederaTestnet: { url: process.env.HEDERA_RPC || "https://testnet.hashio.io/api", chainId: 296, accounts, timeout: 120000 },
+    hederaTestnet: { url: process.env.HEDERA_RPC || "https://testnet.hashio.io/api", chainId: 296, accounts, timeout: 180000, gasMultiplier: 1.1 },
     // Arc testnet (Circle). Gas is USDC.
     arcTestnet: { url: process.env.ARC_RPC || "https://rpc.testnet.arc.network", chainId: 5042002, accounts },
   },
