@@ -80,7 +80,7 @@ async function main() {
   const reg = { regulationType: 1, regulationSubType: 0, additionalSecurityData: { countriesControlListType: true, listOfCountries: "", info: "InsureVEX testnet (no real securities)" } };
 
   const equityData = {
-    security: security(me.address, "InsureVEX Tokenised NVIDIA (testnet)", "vxNVDA", "US67066G1040", CONFIG.equity, 6, 1_000_000n * 10n ** 6n),
+    security: security(me.address, "InsureVEX Tokenised NVIDIA (testnet)", "vxNVDA", "US67066G1040", CONFIG.equity, 18, 1_000_000n * 10n ** 18n),
     equityDetails: { votingRight: true, informationRight: true, liquidationRight: true, subscriptionRight: false, conversionRight: false,
       redemptionRight: false, putRight: false, dividendRight: 2, currency: "0x555344", nominalValue: 1n, nominalValueDecimals: 2 },
   };
@@ -114,7 +114,8 @@ async function main() {
     const eq = new ethers.Contract(await deployVia("equity", equityData, "equityNVDA"), ATS_ABI, me);
     await rec("ATS equity: addIssuer (SSI)", eq.addIssuer(me.address));
     await rec("ATS equity: grantKyc to holder", eq.grantKyc(me.address, "vc-insurevex-demo-1", now, now + 365 * 86400, me.address));
-    await rec("ATS equity: issue 100 vxNVDA to holder", eq.issue(me.address, 100n * 10n ** 6n, "0x"));
+    // 18 decimals so the ATS balance is directly comparable with CoverMarket's 1e18-scaled share counts
+    await rec("ATS equity: issue 100 vxNVDA to holder", eq.issue(me.address, 100n * 10n ** 18n, "0x"));
     if (dep.contracts?.CoverMarket) {
       const market = await ethers.getContractAt("CoverMarket", dep.contracts.CoverMarket);
       await rec("CoverMarket.setSymbolToken(NASDAQ:NVDA -> ATS equity)", market.setSymbolToken(ethers.id("NASDAQ:NVDA"), await eq.getAddress()));
