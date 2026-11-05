@@ -29,7 +29,7 @@ describe("InsureVEX lifecycle", function () {
     pool = await (await ethers.getContractFactory("UnderwritingPool")).deploy(usd, idr, admin.address);
     market = await (await ethers.getContractFactory("CoverMarket")).deploy(usd, idr, oracle, pool, admin.address, admin.address);
     note = await (await ethers.getContractFactory("ProtectedNote")).deploy(
-      "InsureVEX 3Y Protected Note", "vx3Y", usd, idr, tbill, pool, 30, 3 * 365 * DAY, 400, 30 * DAY, admin.address);
+      "InsureVEX 3Y Protected Note", "vx3Y", usd, idr, tbill, pool, 30 * DAY, 3 * 365 * DAY, 400, 30 * DAY, admin.address);
     for (const c of [tbill, pool, market, note]) await idr.setSystem(await c.getAddress(), true);
     await pool.grantRole(await pool.MARKET_ROLE(), await market.getAddress());
     await pool.setTBill(tbill);

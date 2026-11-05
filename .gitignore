@@ -14,3 +14,4 @@ __pycache__/
 backtest/data/
 .DS_Store
 .vercel
+server/data/store.json

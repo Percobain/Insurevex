@@ -75,7 +75,7 @@ contract ProtectedNote is ERC20, AccessControl, Pausable, ReentrancyGuard {
         IdentityRegistry identity_,
         TBillVault tbill_,
         UnderwritingPool pool_,
-        uint64 subscriptionDays,
+        uint64 subscriptionWindow,
         uint64 termSeconds,
         uint32 floorRateBps_,
         uint64 couponInterval_,
@@ -88,7 +88,7 @@ contract ProtectedNote is ERC20, AccessControl, Pausable, ReentrancyGuard {
         pool = pool_;
         _dec = ERC20(address(stable_)).decimals();
         issueDate = uint64(block.timestamp);
-        subscriptionEnd = uint64(block.timestamp + subscriptionDays * 1 days);
+        subscriptionEnd = uint64(block.timestamp + subscriptionWindow);
         maturity = uint64(block.timestamp + termSeconds);
         require(maturity > subscriptionEnd, "term");
         floorRateBps = floorRateBps_;

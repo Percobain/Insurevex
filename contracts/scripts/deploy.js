@@ -49,15 +49,18 @@ async function main() {
   const pool = await deploy("UnderwritingPool", [stableAddr, await idr.getAddress(), deployer.address]);
   const market = await deploy("CoverMarket", [stableAddr, await idr.getAddress(), await oracle.getAddress(), await pool.getAddress(), deployer.address, deployer.address]);
 
+  // Coupons: monthly in production; hourly on testnets so the lifecycle is visible in a demo.
+  const couponInterval = Number(process.env.COUPON_INTERVAL_SECONDS || 3600);
   // Saver notes: the flagship 3-year series and a short demo series that matures during the demo.
   const note3y = await deploy("ProtectedNote", ["InsureVEX 3Y Protected Note", "vx3Y", stableAddr, await idr.getAddress(),
-    await tbill.getAddress(), await pool.getAddress(), 90, 3 * 365 * DAY, 400, 30 * DAY, deployer.address], "Note3Y");
-  const demoTerm = Number(process.env.DEMO_TERM_SECONDS || 2 * 3600);
-  const noteDemo = await deploy("ProtectedNote", ["InsureVEX Demo Note (2h)", "vxDEMO", stableAddr, await idr.getAddress(),
-    await tbill.getAddress(), await pool.getAddress(), 0, demoTerm, 400, 600, deployer.address], "NoteDemo");
+    await tbill.getAddress(), await pool.getAddress(), 90 * DAY, 3 * 365 * DAY, 400, couponInterval, deployer.address], "Note3Y");
+  const demoWindow = Number(process.env.DEMO_WINDOW_SECONDS || 2 * 3600);
+  const demoTerm = Number(process.env.DEMO_TERM_SECONDS || 3 * 3600);
+  const noteDemo = await deploy("ProtectedNote", ["InsureVEX Demo Note (3h)", "vxDEMO", stableAddr, await idr.getAddress(),
+    await tbill.getAddress(), await pool.getAddress(), demoWindow, demoTerm, 400, 600, deployer.address], "NoteDemo");
   out.notes = [
-    { key: "Note3Y", address: out.contracts.Note3Y, name: "InsureVEX 3Y Protected Note", termDays: 1095, floorRateBps: 400 },
-    { key: "NoteDemo", address: out.contracts.NoteDemo, name: "InsureVEX Demo Note (2h)", termSeconds: demoTerm, floorRateBps: 400 },
+    { key: "Note3Y", address: out.contracts.Note3Y, name: "InsureVEX 3Y Protected Note", termDays: 1095, floorRateBps: 400, subscriptionWindow: 90 * DAY, couponInterval },
+    { key: "NoteDemo", address: out.contracts.NoteDemo, name: "InsureVEX Demo Note (3h)", termSeconds: demoTerm, floorRateBps: 400, subscriptionWindow: demoWindow, couponInterval: 600 },
   ];
   save();
 

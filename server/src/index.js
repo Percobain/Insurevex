@@ -75,8 +75,9 @@ app.get("/api/quote", wrap(async (req, res) => {
     lastCloseDate: new Date(h.closeTs * 1000).toISOString().slice(0, 10) };
   if (p.refused) return res.json({ ok: false, pricing });
 
-  const shares = req.query.shares ? ethers.parseEther(String(req.query.shares)) : ethers.parseEther(String(notionalUsd / h.close));
-  const heldShares = req.query.heldShares ? ethers.parseEther(String(req.query.heldShares)) : shares;
+  const toWad = (x) => ethers.parseEther(Number(x).toFixed(18));
+  const shares = req.query.shares ? toWad(req.query.shares) : toWad(notionalUsd / h.close);
+  const heldShares = req.query.heldShares ? toWad(req.query.heldShares) : shares;
   const now = Math.floor(Date.now() / 1000);
   const notional = ethers.parseUnits(notionalUsd.toFixed(6), 6);
   const premium = (notional * BigInt(Math.ceil(p.charged * 1e6))) / 1_000_000n;
@@ -100,7 +101,7 @@ app.post("/api/holdings/attest", wrap(async (req, res) => {
   // Demo connectors: "kite" (Zerodha holdings API), "statement" (broker PDF/CSV upload), "ats" (on-chain balance on Hedera).
   const ref = ethers.id(JSON.stringify({ address: address.toLowerCase(), symbol, source, shares, at: Date.now() }));
   store.push("attestations", { address, symbol, source, shares: Number(shares), ref, at: new Date().toISOString() });
-  res.json({ heldShares: ethers.parseEther(String(shares)).toString(), ref, source });
+  res.json({ heldShares: ethers.parseEther(Number(shares).toFixed(18)).toString(), ref, source });
 }));
 
 // ------------------------------------------------------------------ on-chain state
