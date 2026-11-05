@@ -33,10 +33,10 @@ Savers buy principal-protected notes. The notes' spare yield insures stock holde
 | Requirement | Status |
 |---|---|
 | Use ATS or Stablecoin Studio | `contracts/scripts/hedera-ats.js` calls the live **ATS Factory** (v8.0.0): a tokenised equity (ERC-1400, KYC, freeze, controller, pause) and the Protected Note as an **ATS bond** (ISIN, maturity, KYC via SSI issuer, coupons via `setCoupon`). Encoding is validated against the live factory |
-| Deploy and demo on Hedera testnet | **Waiting on HBAR** (about 45 needed; the wallet has about 8). See "To do" below |
-| Contracts verified on HashScan | `scripts/verify.js` (Sourcify, which HashScan reads) runs after deploy |
+| Deploy and demo on Hedera testnet | **Live.** Full suite plus ATS equity and bond, all verified (Sourcify/HashScan). Lifecycle links in README |
+| Contracts verified on HashScan | All 8 suite contracts are an exact match on Sourcify, which HashScan reads (`scripts/sourcify-verify.js`) |
 | Video ≤ 5 min: issuance, configuration, one lifecycle operation | Script below |
-| Extra points | Compliance controls (KYC, freeze, pause, transfer restrictions), oracle/NAV feeds (`PriceOracle`, `TBillVault.updateNav`), custom distributions (coupons, Pro fee) |
+| Extra points | Compliance controls (ATS KYC + `freezePartialTokens`, our KYC registry, pause, transfer restrictions); oracle/NAV feeds (`PriceOracle`, `TBillVault.updateNav`); custom distributions (coupons, Pro fee); **Scheduled Transactions: the note coupon is scheduled with the Hedera Schedule Service (HIP-1215)** |
 
 **Video script (≤ 5 min)**
 1. Issuance: run `hedera-ats.js`, then show the ATS equity and the ATS bond on HashScan.
@@ -49,22 +49,13 @@ Savers buy principal-protected notes. The notes' spare yield insures stock holde
 |---|---|
 | Built in Arc Studio with a shareable project URL | **You** (Chrome is not permitted on studio.arc.io): open Arc Studio, prompt it with the InsureVEX spec (below), import the contracts, share the project URL |
 | Functional MVP + architecture diagram | App + API live on Vercel; diagram in `docs/ARCHITECTURE.md` |
-| Settlement in USDC | `deploy.js` uses Arc's USDC `0x3600…0000`; `bash scripts/finish-deploy.sh arc` once funded |
+| Settlement in USDC | **Live** on Arc testnet, verified on explorer.testnet.arc.io; subscriptions, Pro LP, covers (MSFT, Tencent) and keeper settlement all in USDC |
 | Video + docs | Same flow as Whitechain, on Arc (USDC is also the gas token, so a Saver needs nothing else) |
 
 Arc Studio prompt to paste: *"Build InsureVEX: a principal-protected note (floor in a tokenised T-bill, sleeve in an underwriting pool) whose sleeve sells crash floors on stocks, settled in USDC. Contracts: IdentityRegistry, PriceOracle, TBillVault, UnderwritingPool (ERC-4626 senior + Pro first-loss), CoverMarket (EIP-712 quotes), ProtectedNote. Use the Solidity in github.com/Percobain/ethgmum/contracts."*
 
-## To do when you wake up (in order)
+## Still to do
 
-1. **Hedera HBAR**: portal.hedera.com → faucet → `0x1d83F122EF31885B83139ABCb4f8fB4eF319DDF9`. The anonymous faucet gives 10 HBAR/day but asks for a captcha; signing in gives up to 100/day. Need about 45.
-2. **Arc USDC**: allow Claude in Chrome on faucet.circle.com (or do it yourself): "Arc Testnet", USDC, same address. Need about 20.
-3. Then, with the server running (`cd server && npm start`):
-   ```bash
-   cd contracts
-   bash scripts/finish-deploy.sh hedera
-   bash scripts/finish-deploy.sh arc
-   cd ../app && npm run build && vercel deploy --prod   # app picks up the new chains
-   cp ../contracts/deployments/*.json ../server/deployments/ && cd ../server && vercel deploy --prod
-   ```
-4. **Arc Studio** project (prompt above) and its URL in the README.
-5. Record the three videos with the scripts above.
+1. **Arc Studio**: sign in at studio.arc.io (accept the terms, Google or email). Claude can then drive Studio from Chrome to build the project and copy the shareable URL into the README.
+2. **Push to GitHub**: the last commits are local because GitHub rejects every push to this repo with `fatal error in commit_refs_rules` (even an empty commit). Run `git push` once GitHub accepts it again.
+3. Record the three videos with the scripts above. For a payout on camera, post a crash price from `/issuer` on testnet and label it as simulated.
