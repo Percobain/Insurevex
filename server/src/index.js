@@ -3,7 +3,8 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { ethers } from "ethers";
-import { MARKETS, resolveSymbol } from "./catalog.js";
+import { MARKETS, SYMBOLS, resolveSymbol } from "./catalog.js";
+const SYMBOL_BY_ID = new Map([...SYMBOLS.values()].map((x) => [ethers.id(x.symbol), x]));
 import { history } from "./prices.js";
 import { priceFloor, PARAMS, ENGINE_INFO, RECOMMENDED } from "./pricing.js";
 import { chain, activeChains, CHAINS, symbolId, signQuote, quoterKey } from "./chain.js";
@@ -146,7 +147,7 @@ app.get("/api/policies", wrap(async (req, res) => {
   const ids = req.query.holder ? (await c.market.policiesOf(req.query.holder)).map(Number) : [...Array(Number(await c.market.policyCount())).keys()];
   const policies = await Promise.all(ids.slice(-200).map(async (id) => {
     const p = await c.market.getPolicy(id);
-    const sym = store.get(`sym:${p.symbol}`);
+    const sym = SYMBOL_BY_ID.get(p.symbol) || store.get(`sym:${p.symbol}`);
     return { id, holder: p.holder, symbol: sym?.symbol || p.symbol, name: sym?.name, notional: fmt6(p.notional), deductibleBps: Number(p.deductibleBps),
       capBps: Number(p.capBps), premium: fmt6(p.premium), startPrice: Number(p.startPrice) / 1e8, start: Number(p.start), expiry: Number(p.expiry),
       status: ["None", "Open", "Settled"][Number(p.status)], payout: fmt6(p.payout), settlePrice: Number(p.settlePrice) / 1e8 };
