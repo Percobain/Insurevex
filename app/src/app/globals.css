@@ -367,3 +367,8 @@ body {
 .iso-pool-stack .iso-face { fill: #fff; }
 .iso-pool-stack .iso-side { fill: #ece9e1; }
 .iso-pool-badge { fill: #fff; stroke: var(--iso-ink); stroke-width: 0.9; }
+
+@keyframes demoIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}

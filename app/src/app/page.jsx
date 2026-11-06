@@ -10,6 +10,7 @@ import { Section } from "@/components/ui";
 import ExchangeGlobe from "@/components/ExchangeGlobe";
 import { LayerArt, SaverArt, HolderArt, PoolArt } from "@/components/IsoArt";
 import BrandLogo from "@/components/BrandLogo";
+import { DEMOS, DemoButton } from "@/components/DemoVideo";
 
 const CHOICES = [
   {
@@ -163,7 +164,10 @@ function InvestorTabs() {
             <Facts items={t.facts} />
           </div>
           {t.example && <div className="mt-6">{t.example}</div>}
-          <Link href={t.href} className="btn-primary h-11 px-5 mt-6">{t.cta} →</Link>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <Link href={t.href} className="btn-primary h-11 px-5">{t.cta} →</Link>
+            <DemoButton key={t.key} demo={DEMOS[t.key]} label={`Watch the ${t.kicker} demo`} />
+          </div>
         </div>
       </div>
     </div>

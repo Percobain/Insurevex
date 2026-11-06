@@ -3,6 +3,7 @@ import { Inter_Tight, JetBrains_Mono } from "next/font/google";
 import Providers from "./providers";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { PageDemoPopup } from "@/components/DemoVideo";
 
 const sans = Inter_Tight({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const display = Inter_Tight({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display", display: "swap" });
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <PageDemoPopup />
         </Providers>
       </body>
     </html>
