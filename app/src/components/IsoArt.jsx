@@ -883,3 +883,151 @@ export function PoolArt() {
     </Stage>
   );
 }
+
+/* ───────────────────────── Agent: autonomous, bounded payments on Hedera ───────────────────────── */
+
+const AGENT_STAGES = ["preflight", "underwriting", "insurance", "audit", "complete"];
+const AGENT_HOLD = [0.15, 0.4, 0.62, 0.8, 0.9];
+
+/**
+ * The agent's run as a toll road. The agent drives one lane and stops at four stations in order: the guardrail gate
+ * (KYC, shares, budget, then the barrier lifts), the x402 toll booth (402 -> 0.01 HBAR -> signed quote), the cover
+ * market (premium in, policy shield out) and the HCS ledger (audit record stamped). Then it drives off, protected.
+ * Pass `stage` (one of AGENT_STAGES) to hold the scene on a live run's stage.
+ */
+export function AgentArt({ stage }) {
+  const [ref, loop] = usePhase(17000, 0.4);
+  const ids = useIds();
+  const held = AGENT_STAGES.indexOf(stage);
+  const ph = held >= 0 ? AGENT_HOLD[held] : loop;
+  const k = ph < 0.21 ? 0 : ph < 0.46 ? 1 : ph < 0.68 ? 2 : ph < 0.86 ? 3 : 4;
+
+  const GX = -175; // gate
+  const BX = -35; // toll booth
+  const CX2 = 105; // cover market
+  const LX = 235; // ledger
+  const SY = -105; // stations sit behind the lane
+  const stop = (x) => x - 34;
+
+  // where the agent is along the lane
+  const legs = [
+    [0.0, 0.08, -280, GX - 96],
+    [0.21, 0.28, GX - 96, stop(BX)],
+    [0.46, 0.52, stop(BX), stop(CX2)],
+    [0.68, 0.73, stop(CX2), stop(LX)],
+    [0.86, 0.95, stop(LX), 300],
+  ];
+  let ax = -280;
+  for (const [a, b, x0, x1] of legs) {
+    if (ph >= a) ax = lerp(x0, x1, smooth(span(ph, a, b)));
+  }
+  const bob = ph % 0.25 < 0.2 && legs.some(([a, b]) => ph > a && ph < b) ? Math.sin(ph * 260) * 1.2 : 0;
+  const fadeIn = clamp(span(ph, 0, 0.04)) * (1 - span(ph, 0.92, 0.96));
+  const AZ = 34; // agent height
+
+  // 1 · gate
+  const checks = Math.floor(clamp(span(ph, 0.08, 0.17)) * 3.999);
+  const lift = smooth(span(ph, 0.17, 0.21)) * (1 - smooth(span(ph, 0.93, 0.99)));
+  const a = (lift * Math.PI) / 2.2;
+  const post = [GX, -48, 38];
+  const armEnd = [GX, post[1] + 96 * Math.cos(a), post[2] + 96 * Math.sin(a)];
+  // 2 · toll
+  const paid = ph > 0.38 && ph < 0.97;
+  const coin = span(ph, 0.32, 0.38);
+  const ticket = span(ph, 0.4, 0.45);
+  // 3 · cover
+  const prem = span(ph, 0.54, 0.59);
+  const drop = span(ph, 0.6, 0.66);
+  const shielded = ph >= 0.66;
+  // 4 · ledger
+  const packet = span(ph, 0.75, 0.8);
+  const blocks = 3 + (ph >= 0.81 && ph < 0.97 ? 1 : 0);
+  // budget left on the agent's meter
+  const budget = 1 - (ph > 0.36 ? 0.18 : 0) - (ph > 0.58 ? 0.42 : 0) - (ph > 0.78 ? 0.06 : 0);
+
+  const top = [ax, 0, AZ + bob];
+  const [sx, sy] = P(ax, 0, AZ + 26 + bob);
+  const shieldDrop = drop > 0 && drop < 1 ? P(lerp(CX2, ax, smooth(drop)), lerp(SY + 25, 0, smooth(drop)), lerp(72, AZ + 26, smooth(drop))) : null;
+
+  return (
+    <Stage className="grid gap-5">
+      <IsoSvg svgRef={ref} vb={[-288, -262, 642, 430]} role="img" aria-label="The agent drives a toll road: a guardrail gate checks KYC, shares and budget; an x402 toll booth charges 0.01 HBAR and returns a signed quote; the cover market takes the premium and issues a policy shield; the HCS ledger records the payment. Then it drives off protected.">
+        <Defs ids={ids} />
+
+        {/* stations behind the lane */}
+        <Box x={GX - 26} y={SY - 26} w={52} d={52} h={8} className="iso-sage" top={<path d="M14 26 L22 34 L38 18" className="iso-tick" />} />
+
+        <Box x={BX - 40} y={SY - 30} w={80} d={60} h={10} className="iso-sage" />
+        <Box x={BX - 30} y={SY - 22} z={10} w={60} d={44} h={66} shadow={false} front={
+          <>
+            <rect x="8" y="8" width="44" height="26" rx="3" className={paid ? "iso-screen-paid" : "iso-screen-due"} />
+            <text x="30" y="26" textAnchor="middle" className="iso-screen-text">{paid ? "PAID" : "402"}</text>
+            <rect x="20" y="44" width="20" height="4" rx="2" className="iso-ink-fill" />
+          </>
+        } />
+
+        <Box x={CX2 - 40} y={SY - 30} w={80} d={60} h={10} className="iso-sage" />
+        <Box x={CX2 - 30} y={SY - 22} z={10} w={60} d={44} h={50} shadow={false} className="iso-black" front={
+          <path d="M30 8 L44 13 V24 C44 32 38 37 30 40 C22 37 16 32 16 24 V13 Z" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+        } />
+
+        <Box x={LX - 36} y={SY - 36} w={72} d={72} h={8} className="iso-sage" />
+        {Array.from({ length: blocks }, (_, i) => (
+          <Box key={i} x={LX - 24} y={SY - 24} z={8 + i * 15} w={48} d={48} h={12} shadow={false} className={i === 3 ? "iso-unit" : ""} />
+        ))}
+
+        {/* the lane */}
+        <polygon points={pts([-290, -32, 0], [300, -32, 0], [300, 32, 0], [-290, 32, 0])} className="iso-road" />
+        <polyline points={pts([-285, 0, 0], [295, 0, 0])} className="iso-road-mid" />
+        {[GX, BX, CX2, LX].map((x) => (
+          <polyline key={x} points={pts([stop(x) + 22, -30, 0], [stop(x) + 22, 30, 0])} className="iso-road-stop" />
+        ))}
+
+        {/* gate post */}
+        <Box x={GX - 6} y={-56} w={12} d={12} h={40} />
+
+        {/* the agent */}
+        <g style={{ opacity: fadeIn }}>
+          <Box x={ax - 22} y={-22} z={2 + bob} w={44} d={44} h={AZ - 2} className="iso-teal" front={
+            <>
+              <circle cx="14" cy="11" r="3.4" fill="#fff" />
+              <circle cx="30" cy="11" r="3.4" fill="#fff" />
+              <rect x="7" y="20" width="30" height="5" rx="2.5" fill="#fff" opacity="0.22" />
+              <rect x="7" y="20" width={30 * budget} height="5" rx="2.5" className="iso-meter-fill" />
+            </>
+          } />
+          {[-14, 14].map((dy) => (
+            <Cyl key={dy} x={ax + 16} y={dy} r={6} h={4} shadow={false} className="iso-wheel" />
+          ))}
+          {shielded && <Shield x={sx} y={sy} s={1.25} />}
+        </g>
+
+        {/* what moves */}
+        {coin > 0 && coin < 1 && <Coin at={fly(top, [BX, SY + 22, 58], smooth(coin), 50)} tone="accent" />}
+        {ticket > 0 && ticket < 1 && <Box x={lerp(BX, ax, smooth(ticket)) - 10} y={lerp(SY + 22, 0, smooth(ticket)) - 7} z={lerp(46, AZ + 4, smooth(ticket)) + Math.sin(Math.PI * ticket) * 40} w={20} d={14} h={2} shadow={false} />}
+        {prem > 0 && prem < 1 && <Coin at={fly(top, [CX2, SY + 26, 40], smooth(prem), 50)} tone="accent" />}
+        {shieldDrop && <Shield x={shieldDrop[0]} y={shieldDrop[1]} s={1.25} />}
+        {packet > 0 && packet < 1 && <Box x={lerp(ax, LX, smooth(packet)) - 6} y={lerp(0, SY, smooth(packet)) - 6} z={lerp(AZ, 8 + 3 * 15, smooth(packet)) + Math.sin(Math.PI * packet) * 60} w={12} d={12} h={8} shadow={false} className="iso-packet" />}
+        <Ripple at={P(LX, SY, 8 + 4 * 15)} age={span(ph, 0.8, 0.88)} />
+
+        {/* gate arm, in front of the agent */}
+        <line x1={P(...post)[0]} y1={P(...post)[1]} x2={P(...armEnd)[0]} y2={P(...armEnd)[1]} className="iso-arm" />
+        <line x1={P(...post)[0]} y1={P(...post)[1]} x2={P(...armEnd)[0]} y2={P(...armEnd)[1]} className="iso-arm-stripe" />
+
+        {/* station names */}
+        <Tag at={P(GX, SY, 8)} text="Guardrails" dy={-46} tone={k === 0 ? "ink" : ""} />
+        <Tag at={P(BX, SY, 76)} text="x402 toll" dy={-30} tone={k === 1 ? "ink" : ""} />
+        <Tag at={P(CX2, SY, 60)} text="Cover market" dy={-30} tone={k === 2 ? "ink" : ""} />
+        <Tag at={P(LX, SY, 8 + blocks * 15)} text="HCS ledger" dy={-30} tone={k === 3 ? "ink" : ""} />
+
+        {/* what is happening */}
+        {k === 0 && ph > 0.06 && <Tag at={P(ax, 0, AZ + 6)} text={["checking…", "✓ KYC", "✓ KYC  ✓ shares", "✓ KYC  ✓ shares  ✓ budget"][checks]} tone="good" dy={70} />}
+        {k === 1 && ph > 0.29 && <Tag at={P(ax, 0, AZ + 6)} text={ph < 0.39 ? "pays 0.01 HBAR" : "signed quote received"} tone={ph < 0.39 ? "accent" : "good"} dy={70} />}
+        {k === 2 && ph > 0.53 && <Tag at={P(ax, 0, AZ + 6)} text={ph < 0.6 ? "pays the premium" : "policy issued · payout locked"} tone={ph < 0.6 ? "accent" : "good"} dy={70} />}
+        {k === 3 && ph > 0.74 && <Tag at={P(ax, 0, AZ + 6)} text="spending record anchored" tone="good" dy={70} />}
+        {k === 4 && <Tag at={P(ax, 0, AZ + 6)} text="protected · within budget" tone="good" dy={70} opacity={1 - span(ph, 0.92, 0.96)} />}
+      </IsoSvg>
+      <Steps items={["Check guardrails", "Pay for underwriting", "Buy protection", "Record the audit", "Protection active"]} active={k} />
+    </Stage>
+  );
+}
