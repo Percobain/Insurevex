@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "selftest": "node scripts/selftest.js",
+    "selftest": "node --test test/*.test.js",
+    "test": "node --test test/*.test.js",
     "agent:setup": "node scripts/setup-agent-testnet.js",
     "agent:plan": "node scripts/agent.js",
     "agent:run": "node scripts/agent.js --execute"
