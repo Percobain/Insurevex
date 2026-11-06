@@ -1,0 +1,36 @@
+InsureVEX — approved identity
+
+Primary ink: #152321
+Paper / reversed artwork: #f4f4f0
+The brand spelling in prose remains InsureVEX; the custom wordmark is lowercase.
+
+ASSETS
+logo.svg / logo.png                  Transparent horizontal symbol + wordmark
+logo-light.svg / logo-light.png      Reversed lockup for dark backgrounds
+wordmark.svg / wordmark.png          Lettering without the standalone symbol
+wordmark-light.svg / .png            Reversed lettering
+icon.svg / icon.png                  Transparent standalone symbol
+icon-light.svg / icon-light.png      Reversed standalone symbol
+navbar-logo.png                     Compact 760px PNG export; app uses logo.svg
+avatar.png                          1024px square, ivory symbol on dark ink
+apple-touch-icon.png                180px home-screen icon
+app-icon-192.png / app-icon-512.png  Square app icons with paper backgrounds
+app-icon-maskable-512.png            Safe-area version for masked app icons
+social-card.png / social-card.svg    1200 x 630 sharing card
+brand-sheet.png                     Overview of the approved asset family
+/favicon.svg                        Browser icon that adapts to light/dark mode
+/favicon.ico                        Compatibility icon: 16, 32, 48 and 64px
+
+Use SVG for web, slides and print at any size; use PNG where SVG is unsupported.
+All SVG artwork is traced vector paths, with no embedded bitmap or font dependency.
+Use the dark artwork on light backgrounds and the light artwork on dark backgrounds.
+Preserve aspect ratio. Do not retype the lettering, add effects or fill its cutouts.
+Allow at least one symbol-height of clear space around large standalone placements.
+
+SOURCE AND REGENERATION
+source/approved-logo.png is the original approved design.
+source/transparent-master.png is the built-in image tool's background-removal edit.
+source/original-prompt.txt and source/derivative-prompt.txt record the generation prompts.
+app/scripts/export-brand.mjs traces that master's contours and exports the asset family.
+See the script header for the isolated tooling installation and regeneration command.
+The rejected first iteration has been removed.

@@ -10,11 +10,17 @@ import { ToastProvider } from "@/components/Toasts";
 import { ThemeProvider } from "@/components/Theme";
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "";
+const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://insurevex-app.vercel.app";
 
 // Without a WalletConnect project id only injected (browser extension) wallets are offered.
 const connectors = connectorsForWallets(
   [{ groupName: "Wallets", wallets: projectId ? [injectedWallet, metaMaskWallet, rainbowWallet, coinbaseWallet, walletConnectWallet] : [injectedWallet] }],
-  { appName: "InsureVEX", projectId: projectId || "insurevex-injected-only" },
+  {
+    appName: "InsureVEX",
+    appUrl,
+    appIcon: new URL("/brand/app-icon-512.png", appUrl).href,
+    projectId: projectId || "insurevex-injected-only",
+  },
 );
 
 const ordered = [...CHAINS].sort((a, b) => (a.id === DEFAULT_CHAIN_ID ? -1 : b.id === DEFAULT_CHAIN_ID ? 1 : 0));

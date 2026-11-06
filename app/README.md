@@ -21,6 +21,7 @@ requests) say so, and everything on-chain (notes, pool, policies, issuer control
 | `NEXT_PUBLIC_API_URL` | `http://localhost:8080` | InsureVEX server (see `../shared/INTERFACE.md`) |
 | `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | empty | Enables WalletConnect wallets. Without it, injected (extension) wallets only |
 | `NEXT_PUBLIC_DEFAULT_CHAIN_ID` | `1874` | Default chain: 1874 Whitechain Sepolia, 296 Hedera testnet, 5042002 Arc testnet |
+| `NEXT_PUBLIC_SITE_URL` | `https://insurevex-app.vercel.app` | Public site origin for social previews and wallet branding |
 
 ## Data the app reads
 
@@ -41,3 +42,14 @@ requests) say so, and everything on-chain (notes, pool, policies, issuer control
 | `/docs` | Research: equity curve, loss ratio by year, per-market table, correlation heatmap, pricing models, walk-forward configs, saver distributions, holder event cards, stress, formulas |
 | `/issuer` | Role-gated controls: KYC approve/revoke, freeze, block country, pause, forced transfer, post official close, settle, T-bill NAV and reserve, coupons, risk limits |
 | `/activity` | On-chain events from the server, or straight from chain logs when it is offline |
+
+## Brand assets
+
+The approved logo and its derivatives live in `public/brand/`. Use `logo.svg` for the horizontal lockup,
+`wordmark.svg` for the lettering, and `icon.svg` for the standalone mark. Each has a transparent PNG and a
+`-light` version for dark backgrounds. The shared `BrandLogo` component supplies the header and footer.
+
+Favicons, home-screen icons, app icons, the web manifest, sharing metadata and wallet metadata use this
+identity. `public/brand/USAGE.txt` lists the exports. The original approved image and generation prompts are
+preserved in `public/brand/source/`; `scripts/export-brand.mjs` reproducibly exports the vector and raster set
+without adding image-processing libraries to the app's runtime dependencies.

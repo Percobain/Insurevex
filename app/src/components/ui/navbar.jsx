@@ -80,12 +80,13 @@ function MoreMenu({ label, items }) {
 
 /**
  * Ticket-style navbar (shadcn-style component, ported from TSX).
- * Props: brand, items [{ label, href, active }], more [{ label, href, active }] (secondary links behind a
+ * Props: brand, brandLogo, items [{ label, href, active }], more [{ label, href, active }] (secondary links behind a
  * "More" dropdown on desktop, listed inline after a divider on small screens), moreLabel, action (right slot),
  * plus any <header> attributes. Links use next/link; below `lg` the links move to a scrollable second row.
  */
 export function Navbar({
   brand = "BIGBULL",
+  brandLogo,
   items = [
     { label: "EVENTS", href: "#", active: true },
     { label: "STUBS", href: "#" },
@@ -108,9 +109,8 @@ export function Navbar({
     <header className={cn("relative w-full border-b-2 border-dashed border-border bg-card font-mono shadow-xs select-none", className)} {...props}>
       <div className="mx-auto flex w-full max-w-page items-center justify-between gap-4 px-4 py-3">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2" aria-label={`${brand} home`}>
-          <span className="flex size-6 items-center justify-center rounded-xs bg-foreground text-[11px] font-bold text-background">{brand.charAt(0)}</span>
-          <span className="text-sm font-bold uppercase tracking-[0.2em] text-foreground">{brand}</span>
+        <Link href="/" className="flex shrink-0 items-center gap-2 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary" aria-label={`${brand} home`}>
+          {brandLogo || <span className="text-sm font-bold uppercase tracking-[0.2em] text-foreground">{brand}</span>}
         </Link>
 
         {/* Nav links */}
