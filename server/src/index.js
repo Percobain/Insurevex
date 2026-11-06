@@ -51,15 +51,21 @@ function buildMarkets() {
   return marketsBuild;
 }
 const countErrors = (ms) => ms.reduce((n, m) => n + m.symbols.filter((x) => x.error).length, 0);
+let marketsRetryMs = 30_000; // grows 30 s -> 1 m -> 2 m ... up to 10 m while symbols keep failing
+let marketsRetry = null;
 function refreshMarkets() {
   return buildMarkets().then((ms) => {
     const bad = countErrors(ms);
-    if (bad) console.warn(`[markets] ${bad} symbol(s) without prices; retrying in 30s`);
-    if (bad) setTimeout(refreshMarkets, 30_000).unref();
+    if (!bad) { marketsRetryMs = 30_000; return; }
+    console.warn(`[markets] ${bad} symbol(s) without prices; retrying in ${Math.round(marketsRetryMs / 1000)}s`);
+    if (!marketsRetry) marketsRetry = setTimeout(() => { marketsRetry = null; refreshMarkets(); }, marketsRetryMs).unref();
+    marketsRetryMs = Math.min(marketsRetryMs * 2, 10 * 60 * 1000);
   }).catch((e) => console.error("[markets] refresh failed:", e.message));
 }
-refreshMarkets();
-setInterval(refreshMarkets, 5 * 60 * 1000).unref();
+function startMarketRefresh() {
+  refreshMarkets();
+  setInterval(refreshMarkets, 5 * 60 * 1000).unref();
+}
 
 app.get("/api/markets", wrap(async (req, res) => {
   const withPrices = req.query.prices !== "0";
@@ -71,6 +77,17 @@ app.get("/api/markets", wrap(async (req, res) => {
   res.json({ markets: await buildMarkets() });
 }));
 
+// At most PRICE_CONCURRENCY price downloads at a time: 100+ at once starves a small (0.1 CPU) server and gets
+// throttled by the price source.
+const PRICE_CONCURRENCY = Number(process.env.PRICE_CONCURRENCY || 6);
+let priceSlots = PRICE_CONCURRENCY;
+const priceQueue = [];
+async function limitedHistory(yahoo) {
+  if (priceSlots <= 0) await new Promise((r) => priceQueue.push(r));
+  priceSlots--;
+  try { return await history(yahoo); } finally { priceSlots++; priceQueue.shift()?.(); }
+}
+
 async function marketsPayload(withPrices) {
   return Promise.all(MARKETS.map(async (m) => ({
     id: m.id, name: m.name, country: m.country, flag: m.flag, currency: m.currency, exchange: m.exchange,
@@ -78,7 +95,7 @@ async function marketsPayload(withPrices) {
       const base = { symbol, ticker: symbol.split(":")[1], name, yahoo, currency: m.currency };
       if (!withPrices) return base;
       try {
-        const h = await history(yahoo);
+        const h = await limitedHistory(yahoo);
         const q = priceFloor({ sigmaDaily: h.sigmaBlend, sessions: 21, deductible: 0.1, cap: 0.2, market: m.id });
         const w = priceFloor({ sigmaDaily: h.sigmaBlend, sessions: 5, deductible: 0.03, cap: 0.1, market: m.id });
         const fx = await usdPer(h.currency || m.currency);
@@ -325,9 +342,18 @@ export default app;
 // Long-running mode (local / VM): listen and run the keeper loop. On Vercel the platform imports the app instead.
 if (!process.env.VERCEL) {
   const port = Number(process.env.PORT || 8080);
-  app.listen(port, () => {
+  app.listen(port, "0.0.0.0", () => {
     console.log(`InsureVEX server on :${port}; chains: ${activeChains().map((i) => CHAINS[i].name).join(", ") || "none"}`);
-    if (process.env.KEEPER !== "0" && quoterKey) startKeeper();
-    warmActivity();
+    // Answer requests (and the host's health check) first; start the heavy background work a little later, one job
+    // at a time, so a small instance is never too busy to respond.
+    const delay = Number(process.env.WARMUP_DELAY_MS ?? 20_000);
+    setTimeout(async () => {
+      startMarketRefresh();
+      await marketsBuild?.catch(() => {});
+      await warmActivity().catch(() => {});
+      if (process.env.KEEPER !== "0" && quoterKey) startKeeper();
+    }, delay).unref();
   });
+} else {
+  startMarketRefresh(); // serverless: no listen callback, so warm on import as before
 }
