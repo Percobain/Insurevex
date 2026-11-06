@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useId, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
 
 /**
  * Isometric line-art scenes that explain InsureVEX, one idea each:
@@ -36,12 +36,9 @@ function usePhase(period, still = 0.62) {
     if (pinned !== null) return setPhase(clamp(Number(pinned) || 0, 0, 0.999));
     if (typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let raf = 0;
-    let last = 0;
     let t0 = 0;
     const tick = (now) => {
       raf = requestAnimationFrame(tick);
-      if (now - last < 32) return;
-      last = now;
       setPhase(((now - t0) % period) / period);
     };
     const io = new IntersectionObserver(
@@ -138,16 +135,38 @@ function Coin({ at, tone = "", opacity = 1 }) {
   return <Cyl x={at[0]} y={at[1]} z={at[2]} r={11} h={4} className={`iso-coin ${tone ? `is-${tone}` : ""}`} style={{ opacity }} />;
 }
 
+/** The scene's viewBox, so labels can keep themselves inside it. */
+const ViewBox = createContext(null);
+
+/** A scene's <svg>. Stage scenes clip to their frame; labels are clamped inside it (see Tag). */
+function IsoSvg({ svgRef, vb, fit, children, ...rest }) {
+  return (
+    <ViewBox.Provider value={fit ? null : vb}>
+      <svg ref={svgRef} className={`iso ${fit ? "" : "iso-clip"}`} viewBox={vb.join(" ")} preserveAspectRatio={fit ? "xMidYMid slice" : undefined} {...rest}>
+        {children}
+      </svg>
+    </ViewBox.Provider>
+  );
+}
+
 /** A pill label with a leader line, in screen space. */
 function Tag({ at, text, tone = "", dx = 0, dy = -34, opacity = 1 }) {
   if (opacity <= 0.01) return null;
+  const vb = useContext(ViewBox);
   const w = text.length * 6.3 + 20;
   const [x, y] = at;
+  // Keep the pill inside the scene: slide it sideways / vertically rather than letting it hang off the edge.
+  let px = x + dx - w / 2;
+  let py = y + dy - 11;
+  if (vb) {
+    px = clamp(px, vb[0] + 6, vb[0] + vb[2] - w - 6);
+    py = clamp(py, vb[1] + 6, vb[1] + vb[3] - 28);
+  }
   return (
     <g className={`iso-tagpill ${tone ? `is-${tone}` : ""}`} style={{ opacity }}>
-      <line x1={x} y1={y} x2={x + dx} y2={y + dy + 11} className="iso-leader" />
+      <line x1={x} y1={y} x2={clamp(x, px + 11, px + w - 11)} y2={py + (y > py ? 22 : 0)} className="iso-leader" />
       <circle cx={x} cy={y} r="2.2" className="iso-pin" />
-      <g transform={`translate(${x + dx - w / 2} ${y + dy - 11})`}>
+      <g transform={`translate(${px} ${py})`}>
         <rect width={w} height="22" rx="11" className="iso-pill" />
         <text x={w / 2} y="14.8" textAnchor="middle" className="iso-pill-text">
           {text}
@@ -229,8 +248,12 @@ export function HeroArt() {
   const sleeves = [0, 0.5].map((o) => span((phase * 7 + o) % 1, 0, 0.5)).filter((t) => t > 0 && t < 1);
   const fade = (x) => clamp((570 - Math.abs(x)) / 50);
   const poolFill = 0.6 + Math.sin(phase * Math.PI * 8) * 0.05;
-  const before = items.filter((it) => it.x < -96);
-  const after = items.filter((it) => it.x > 96);
+  // Tiles going in are drawn under the plinth, so the plinth hides them as they slide beneath it. Tiles coming out are
+  // drawn over it but clipped to the world half-space in front of the plinth's right face (x > 96).
+  const before = items.filter((it) => it.x < 0);
+  const after = items.filter((it) => it.x >= 0 && it.x > 64);
+  const exitClip = `${ids.hatch}x`;
+  const edge = [P(96, -900, 0), P(96, 900, 0)];
 
   const Tile = ({ it, covered }) => (
     <g style={{ opacity: fade(it.x) }}>
@@ -260,7 +283,7 @@ export function HeroArt() {
 
   return (
     <Stage className="iso-bare hero-art" corners={false}>
-      <svg ref={ref} className="iso" viewBox="-640 -250 1120 640" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Shares from any exchange ride a conveyor into InsureVEX and come out with a crash floor. Each premium, and the savers' sleeve, flows into the underwriting pool.">
+      <IsoSvg svgRef={ref} vb={[-640,-250,1120,640]} fit="slice" role="img" aria-label="Shares from any exchange ride a conveyor into InsureVEX and come out with a crash floor. Each premium, and the savers' sleeve, flows into the underwriting pool.">
         <Defs ids={ids} />
 
         {/* Back: savers' sleeve and the pool */}
@@ -269,10 +292,10 @@ export function HeroArt() {
         <Cyl x={POOL[0]} y={POOL[1]} r={46} h={56} />
         <Cyl x={POOL[0]} y={POOL[1]} z={56} r={38} h={2} className="iso-liquid" style={{ opacity: poolFill }} />
         {premiums.map((t, i) => (
-          <Coin key={`p${i}`} at={fly([0, -24, 96], [POOL[0], POOL[1], 58], smooth(t), 70)} tone="accent" />
+          <Coin key={`p${i}`} at={fly([0, -24, 96], [POOL[0], POOL[1], 58], smooth(t), 70)} tone="accent" opacity={clamp(t / 0.12) * clamp((1 - t) / 0.1)} />
         ))}
         {sleeves.map((t, i) => (
-          <Coin key={`s${i}`} at={fly([SAVERS[0], SAVERS[1], 28], [POOL[0], POOL[1], 58], smooth(t), 80)} tone="accent" />
+          <Coin key={`s${i}`} at={fly([SAVERS[0], SAVERS[1], 28], [POOL[0], POOL[1], 58], smooth(t), 80)} tone="accent" opacity={clamp(t / 0.12) * clamp((1 - t) / 0.1)} />
         ))}
 
         {/* The lane */}
@@ -297,8 +320,6 @@ export function HeroArt() {
               <text x="12" y="33" className="iso-mini">price · lock · cover</text>
               <rect x="12" y="44" width="80" height="5" rx="2.5" className="iso-meter" />
               <rect x="12" y="44" width={18 + press * 62} height="5" rx="2.5" className="iso-meter-fill" />
-              <circle cx="112" cy="40" r="10" className="iso-line" />
-              <path d={`M112 40 L${112 + Math.cos(phase * 40) * 7} ${40 + Math.sin(phase * 40) * 7}`} className="iso-line" />
             </>
           }
           top={
@@ -319,18 +340,21 @@ export function HeroArt() {
           <rect key={i} x={x} y={y} width="9" height="9" className={`iso-pixel ${c}`} />
         ))}
 
+        <clipPath id={exitClip}>
+          <polygon points={`${edge[0][0]},${edge[0][1] - 16} ${edge[1][0]},${edge[1][1] - 16} 2000,2000 2000,-2000`} />
+        </clipPath>
         {after.map((it) => (
-          <g key={it.t}>
+          <g key={it.t} clipPath={`url(#${exitClip})`}>
             <Tile it={it} covered />
-            <Shield x={P(it.x, 0, 54)[0]} y={P(it.x, 0, 54)[1]} s={0.9} opacity={fade(it.x)} label="−10% floor" />
+            <Shield x={P(it.x, 0, 54)[0]} y={P(it.x, 0, 54)[1]} s={0.9} opacity={fade(it.x) * clamp((it.x - 120) / 50)} label="−10% floor" />
           </g>
         ))}
 
         <Tag at={P(-330, 0, 22)} text="shares, any exchange" dx={70} dy={-56} tone="ink" />
-        <Tag at={P(300, 0, 22)} text="crash floor on" dx={60} dy={-50} tone="accent" />
+        <Tag at={P(440, 0, 20)} text="crash floor on" dx={-110} dy={70} tone="accent" />
         <Tag at={P(POOL[0], POOL[1], 64)} text="underwriting pool" dx={-150} dy={0} />
         <Tag at={P(SAVERS[0], SAVERS[1], 28)} text="savers' sleeve" dx={-30} dy={-30} />
-      </svg>
+      </IsoSvg>
     </Stage>
   );
 }
@@ -363,15 +387,16 @@ export function SaveArt() {
     const home = stack(9 - i);
     const dest = i === 9 ? [POOL[0], POOL[1], 42] : pile(i);
     let at = null;
+    let fadeIO = 1;
     if (phase < sDep) at = home;
-    else if (dep < 1) at = fly(home, SPLIT, smooth(dep), 50);
+    else if (dep < 1) (at = fly(home, SPLIT, smooth(dep), 50)), (fadeIO = 1 - span(dep, 0.8, 1));
     else if (split <= 0) at = null;
-    else if (split < 1) at = fly(SPLIT, dest, smooth(split), 60);
+    else if (split < 1) (at = fly(SPLIT, dest, smooth(split), 60)), (fadeIO = span(split, 0, 0.2) * (i === 9 ? 1 - span(split, 0.8, 1) : 1));
     else if (i === 9) at = null;
     else if (ret <= 0) at = dest;
     else if (ret < 1) at = fly(dest, stack(i), smooth(ret), 70);
     else at = stack(i);
-    coins.push({ at, tone: i === 9 && split > 0 ? "accent" : "", o: 1 - out });
+    coins.push({ at, tone: i === 9 && split > 0 ? "accent" : "", o: (1 - out) * fadeIO });
   }
   // The T-bill grows back the tenth coin by itself.
   const gRet = span(phase, 0.89, 0.95);
@@ -389,7 +414,7 @@ export function SaveArt() {
 
   return (
     <Stage className="grid gap-4">
-      <svg ref={ref} className="iso" viewBox="-250 -210 470 330" role="img" aria-label="A saver deposits $1,000. $893 buys T-bills that grow back to $1,000; $107 joins the pool and pays coupons. At maturity the saver gets $1,000 back.">
+      <IsoSvg svgRef={ref} vb={[-250,-215,505,335]} role="img" aria-label="A saver deposits $1,000. $893 buys T-bills that grow back to $1,000; $107 joins the pool and pays coupons. At maturity the saver gets $1,000 back.">
         <Defs ids={ids} />
         <Box x={SAVER[0] - 35} y={SAVER[1] - 35} w={70} d={70} h={8} front={<text x="6" y="7" className="iso-mini">SAVER</text>} />
         <Box x={VAULT.x} y={VAULT.y} w={VAULT.w} d={VAULT.d} h={VAULT.h} topFill={`url(#${ids.dots})`} front={
@@ -415,7 +440,7 @@ export function SaveArt() {
         <Tag at={P(-128, 26, 18)} text="+ coupons" dx={-30} dy={40} tone="good" opacity={span(phase, 0.55, 0.58) * (1 - out)} />
         <Tag at={P(SAVER[0], SAVER[1], 52)} text="$1,000 back" dx={0} dy={-36} tone="ink" opacity={span(phase, 0.9, 0.93) * (1 - out)} />
         <Tag at={P(SAVER[0], SAVER[1], 52)} text="deposit $1,000" dx={0} dy={-36} tone="ink" opacity={1 - span(phase, 0.12, 0.16)} />
-      </svg>
+      </IsoSvg>
       <Steps items={["deposit", "split: T-bill floor + sleeve", "sleeve earns coupons", "$1,000 back at maturity"]} active={active} />
     </Stage>
   );
@@ -447,7 +472,7 @@ export function ProtectArt() {
 
   return (
     <Stage className="grid gap-4">
-      <svg ref={ref} className="iso" viewBox="-270 -230 480 350" role="img" aria-label="A holder proves they own NVDA, pays a premium into the pool, the pool locks the maximum payout, and a crash floor covers the stock.">
+      <IsoSvg svgRef={ref} vb={[-275,-235,515,345]} role="img" aria-label="A holder proves they own NVDA, pays a premium into the pool, the pool locks the maximum payout, and a crash floor covers the stock.">
         <Defs ids={ids} />
         <Box x={-225} y={-55} w={140} d={110} h={8} front={<text x="6" y="7" className="iso-mini">HOLDER</text>} />
         <Box x={STOCK[0] - 30} y={STOCK[1] - 30} z={8} w={60} d={60} h={26} top={<text x="30" y="34" textAnchor="middle" className="iso-text iso-bold">NVDA</text>} front={<text x="6" y="16" className="iso-mini">$10,000</text>} />
@@ -488,7 +513,7 @@ export function ProtectArt() {
         <Tag at={P(POOL[0], POOL[1], 60)} text="premium $90 → pool" dx={-50} dy={-44} tone="accent" opacity={span(phase, 0.38, 0.42) * (1 - out)} />
         <Tag at={P(CAGE.x + CAGE.w / 2, CAGE.y + CAGE.d / 2, 30)} text="max payout $2,000 locked" dx={-120} dy={6} opacity={span(phase, 0.58, 0.62) * (1 - out)} />
         <Tag at={[dx, dy - dh]} text="pays the fall beyond 10%, up to 20%" dx={0} dy={-26} tone="accent" opacity={span(phase, 0.72, 0.76) * (1 - out)} />
-      </svg>
+      </IsoSvg>
       <Steps items={["prove you own it", "pay a premium", "pool locks the max payout", "floor is on"]} active={active} />
     </Stage>
   );
@@ -542,7 +567,7 @@ export function SettleArt() {
 
   return (
     <Stage className="grid gap-4">
-      <svg ref={ref} className="iso" viewBox="-260 -270 480 400" role="img" aria-label="The official close is posted on-chain. In a crash the pool pays the holder the fall beyond the deductible; in a calm month the premium becomes the saver's coupon.">
+      <IsoSvg svgRef={ref} vb={[-262,-272,500,400]} role="img" aria-label="The official close is posted on-chain. In a crash the pool pays the holder the fall beyond the deductible; in a calm month the premium becomes the saver's coupon.">
         <Defs ids={ids} />
         <Box x={SAVER[0] - 30} y={SAVER[1] - 30} w={60} d={60} h={8} front={<text x="6" y="7" className="iso-mini">SAVER</text>} />
         <Box x={ORACLE.x - 10} y={ORACLE.y - 10} w={ORACLE.w + 20} d={30} h={6} />
@@ -575,7 +600,7 @@ export function SettleArt() {
             <Tag at={P(SAVER[0], SAVER[1], 14)} text="premium → saver's coupon" dx={-10} dy={60} tone="good" opacity={span(h, 0.7, 0.74) * (1 - out)} />
           </>
         )}
-      </svg>
+      </IsoSvg>
       <Steps items={["official close posted", "crash: pool pays the extra fall", "calm: premium becomes a coupon"]} active={active} />
     </Stage>
   );
@@ -608,7 +633,7 @@ export function MoneyMapArt() {
   const ids = useIds();
   return (
     <Stage>
-      <svg ref={ref} className="iso" viewBox="-360 -260 700 450" role="img" aria-label="Money map: the saver's deposit splits into T-bills and the pool sleeve; holders pay premiums into the pool and receive crash payouts; at maturity T-bills are redeemed and the sleeve's coupons paid.">
+      <IsoSvg svgRef={ref} vb={[-372,-285,782,545]} role="img" aria-label="Money map: the saver's deposit splits into T-bills and the pool sleeve; holders pay premiums into the pool and receive crash payouts; at maturity T-bills are redeemed and the sleeve's coupons paid.">
         <Defs ids={ids} />
         {/* Lanes on the ground */}
         {ROUTES.map((r) => (
@@ -644,7 +669,7 @@ export function MoneyMapArt() {
         <Tag at={P(-250, 0, 32)} text="deposits $1,000" dy={-40} tone="ink" />
         <Tag at={P(-40, 150, 50)} text="underwriting pool" dx={-30} dy={-50} tone="ink" />
         <Tag at={P(245, -130, 40)} text="$1,000 + sleeve value" dx={-50} dy={-40} tone="ink" />
-      </svg>
+      </IsoSvg>
     </Stage>
   );
 }
@@ -667,12 +692,15 @@ export function PoolArt() {
   const active = phase < 0.28 ? 0 : phase < 0.54 ? 1 : phase < 0.78 ? 2 : phase < 0.95 ? 3 : -1;
 
   const blockA = payA > 0 ? null : fly([0, 0, TOP], cageC(CAGES[0]), lockA, 60);
-  const blockB = backB > 0 ? fly(cageC(CAGES[1]), [0, 0, TOP], backB, 60) : fly([0, 0, TOP], cageC(CAGES[1]), lockB, 60);
+  // Unused collateral rises well clear of the tower before dropping back onto its top, then melts into it.
+  const blockB = backB > 0 ? fly(cageC(CAGES[1]), [0, 0, TOP], backB, 150) : fly([0, 0, TOP], cageC(CAGES[1]), lockB, 60);
+  const blockBo = 1 - span(phase, 0.88, 0.92);
+  const blockAo = 1 - span(phase, 0.54, 0.58);
   const showB = lockB > 0 && backB < 1;
 
   return (
     <Stage className="grid gap-4">
-      <svg ref={ref} className="iso" viewBox="-300 -250 520 370" role="img" aria-label="The pool is a stack: reserve at the bottom, savers' sleeves in the middle, Pro first-loss on top. Premiums come in, each policy's max payout is locked, a claim is paid from the first-loss layer first, and unused collateral comes back.">
+      <IsoSvg svgRef={ref} vb={[-305,-262,580,395]} role="img" aria-label="The pool is a stack: reserve at the bottom, savers' sleeves in the middle, Pro first-loss on top. Premiums come in, each policy's max payout is locked, a claim is paid from the first-loss layer first, and unused collateral comes back.">
         <Defs ids={ids} />
         {HOLDERS.map(([x, y], i) => (
           <g key={i}>
@@ -693,21 +721,22 @@ export function PoolArt() {
         {CAGES.map((c, i) => (
           <g key={i}>
             <Box x={c.x} y={c.y} w={64} d={64} h={4} />
-            {i === 0 && blockA && lockA > 0 && <Box x={blockA[0] - 15} y={blockA[1] - 15} z={blockA[2]} w={30} d={30} h={20} shadow={false} className="iso-collateral" />}
-            {i === 1 && showB && <Box x={blockB[0] - 15} y={blockB[1] - 15} z={blockB[2]} w={30} d={30} h={20} shadow={false} className="iso-collateral" />}
+            {i === 0 && blockA && lockA > 0 && <Box x={blockA[0] - 15} y={blockA[1] - 15} z={blockA[2]} w={30} d={30} h={20} shadow={false} className="iso-collateral" style={{ opacity: blockAo }} />}
+            {i === 1 && showB && backB === 0 && <Box x={blockB[0] - 15} y={blockB[1] - 15} z={blockB[2]} w={30} d={30} h={20} shadow={false} className="iso-collateral" />}
             <polygon points={pts([c.x, c.y, 40], [c.x + 64, c.y, 40], [c.x + 64, c.y + 64, 40], [c.x, c.y + 64, 40])} className="iso-cage" />
             {[[c.x + 64, c.y], [c.x + 64, c.y + 64], [c.x, c.y + 64]].map(([x, y]) => (
               <polyline key={`${x}${y}`} points={pts([x, y, 4], [x, y, 40])} className="iso-cage" />
             ))}
           </g>
         ))}
+        {backB > 0 && backB < 1 && <Box x={blockB[0] - 15} y={blockB[1] - 15} z={blockB[2]} w={30} d={30} h={20} shadow={false} className="iso-collateral" style={{ opacity: blockBo }} />}
         {payA > 0 && payA < 1 && <Coin at={fly(cageC(CAGES[0]), [HOLDERS[0][0], HOLDERS[0][1], 22], smooth(payA), 110)} tone="good" />}
 
         <Tag at={P(-20, -20, TOP)} text="premiums in" dy={-36} tone="accent" opacity={span(phase, 0.08, 0.12) * (1 - span(phase, 0.28, 0.32))} />
         <Tag at={P(137, -93, 40)} text="max payout locked per policy" dx={-20} dy={-40} tone="ink" opacity={span(phase, 0.42, 0.46) * (1 - span(phase, 0.56, 0.6))} />
         <Tag at={P(-20, -20, TOP)} text="claim paid: Pro first-loss shrinks first" dx={60} dy={-44} tone="accent" opacity={span(phase, 0.62, 0.66) * (1 - span(phase, 0.8, 0.82))} />
-        <Tag at={P(137, 47, 40)} text="no claim: collateral back" dx={20} dy={-50} opacity={span(phase, 0.82, 0.86) * (1 - out)} />
-      </svg>
+        <Tag at={P(137, 47, 40)} text="no claim: collateral back" dx={70} dy={40} opacity={span(phase, 0.82, 0.86) * (1 - out)} />
+      </IsoSvg>
       <Steps items={["premiums in", "max payout locked", "claims hit first-loss first", "unused collateral back"]} active={active} />
     </Stage>
   );

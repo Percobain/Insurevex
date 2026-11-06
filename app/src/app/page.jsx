@@ -80,10 +80,6 @@ export default function Landing() {
           <div className="absolute inset-x-0 top-0 h-[300px] lg:h-full">
             <HeroArt />
           </div>
-          <div className="hidden lg:flex absolute top-10 right-10 max-w-[270px] gap-3 text-[13px] leading-relaxed text-ink2">
-            <span className="text-muted">|</span>
-            <span>InsureVEX turns a saver&apos;s spare yield into crash floors for shareholders, settled on the official close.</span>
-          </div>
           <div className="relative h-full flex flex-col justify-end px-5 sm:px-10 lg:px-14 pt-[300px] lg:pt-0 pb-12 lg:pb-16 pointer-events-none">
             <div className="max-w-[560px] pointer-events-auto">
               <div className="eyebrow">

@@ -232,3 +232,5 @@ body {
 .iso-lane-dash.is-accent { stroke: var(--iso-accent); }
 .iso-lane-dash.is-good { stroke: var(--iso-good); }
 .iso-on-dark { fill: #fff; }
+/* Stage scenes never spill past their frame. */
+.iso.iso-clip { overflow: hidden; }
