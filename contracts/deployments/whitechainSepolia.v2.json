@@ -1,0 +1,37 @@
+{
+  "chainId": 1874,
+  "network": "whitechainSepolia",
+  "deployer": "0x1d83F122EF31885B83139ABCb4f8fB4eF319DDF9",
+  "deployedAt": "2026-11-05T21:55:57.228Z",
+  "contracts": {
+    "stable": "0xcedfB56113143d55b2358b8CFbB0dEB5Ad2f55a7",
+    "IdentityRegistry": "0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4",
+    "PriceOracle": "0x6ea034B50D2053A83c0d8193F907F91691a03601",
+    "TBillVault": "0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8",
+    "UnderwritingPool": "0x3eD15ce2936909016D6767d9D109D839E4E40B52",
+    "CoverMarket": "0x8f80d31BaF2AbFC91fF4837107871Ed0930B091C",
+    "Note3Y": "0x6a1D6a53D8886c4F94ddc5BBC975ef1B1850B4Ba",
+    "NoteDemo": "0x4597b0f5Ae9fd15f374726C5F916f2F841a38F20"
+  },
+  "notes": [
+    {
+      "key": "Note3Y",
+      "address": "0x6a1D6a53D8886c4F94ddc5BBC975ef1B1850B4Ba",
+      "name": "InsureVEX 3Y Protected Note",
+      "termDays": 1095,
+      "floorRateBps": 400,
+      "subscriptionWindow": 7776000,
+      "couponInterval": 3600
+    },
+    {
+      "key": "NoteDemo",
+      "address": "0x4597b0f5Ae9fd15f374726C5F916f2F841a38F20",
+      "name": "InsureVEX Demo Note (3h)",
+      "termSeconds": 10800,
+      "floorRateBps": 400,
+      "subscriptionWindow": 7200,
+      "couponInterval": 600
+    }
+  ],
+  "startBlock": 12319388
+}
