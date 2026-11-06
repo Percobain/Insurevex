@@ -71,12 +71,15 @@ function square(color = INK, background = PAPER, markWidth = 352, adaptive = fal
   const scale = markWidth / box.width;
   const y = (512 - box.height * scale) / 2;
   const style = adaptive ? `<style>.paper{fill:${PAPER}}.mark{fill:${INK}}@media(prefers-color-scheme:dark){.paper{fill:${INK}}.mark{fill:${PAPER}}}</style>` : "";
+  // background null: no square behind the mark (a transparent favicon)
+  const rect = background === null ? "" : `<rect ${adaptive ? 'class="paper"' : `fill="${background}"`} width="512" height="512"/>`;
   const shape = paths.icon.replaceAll(`fill="${INK}"`, adaptive ? 'class="mark"' : `fill="${color}"`);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">${style}<rect ${adaptive ? 'class="paper"' : `fill="${background}"`} width="512" height="512"/><g transform="translate(${(512 - markWidth) / 2} ${y}) scale(${scale})">${shape}</g></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">${style}${rect}<g transform="translate(${(512 - markWidth) / 2} ${y}) scale(${scale})">${shape}</g></svg>`;
 }
 const appIcon = square();
 const maskable = square(INK, PAPER, 320);
-await writeFile(join(publicDir, "favicon.svg"), square(INK, PAPER, 416, true));
+// Favicons are transparent: just the mark, in white.
+await writeFile(join(publicDir, "favicon.svg"), square("#ffffff", null, 496));
 for (const [filename, size, svg] of [
   ["app-icon-192.png", 192, appIcon], ["app-icon-512.png", 512, appIcon],
   ["app-icon-maskable-512.png", 512, maskable],
@@ -85,7 +88,7 @@ for (const [filename, size, svg] of [
 ]) {
   await sharp(Buffer.from(svg)).resize(size, size).png().toFile(join(brandDir, filename));
 }
-const faviconPngs = await Promise.all([16, 32, 48, 64].map(size => sharp(Buffer.from(square(INK, PAPER, 416))).resize(size, size).png().toBuffer()));
+const faviconPngs = await Promise.all([16, 32, 48, 64].map(size => sharp(Buffer.from(square("#ffffff", null, 496))).resize(size, size).png().toBuffer()));
 await writeFile(join(publicDir, "favicon.ico"), await pngToIco(faviconPngs));
 
 // Social cards use the same vector paths, rather than asking an image model to redraw the lettering.
