@@ -18,3 +18,9 @@ backtest/data/
 server/data/store.json
 server/.keeper-secret.local
 .agent-state/
+hidden.txt
+contracts/stress/wallets.local.json
+app/public/data/stress_run_local.json
+contracts/deployments/local.stress.json
+contracts/stress/hedera-run.log
+server/data/price-cache.json

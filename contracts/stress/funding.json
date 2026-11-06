@@ -1,0 +1,37 @@
+{
+  "W1": {
+    "address": "0x4bCAa3596599790a135EA88D432D2Ad6a9ABcD24",
+    "hbar": 10,
+    "tx": "0x998c385e504e376c6dcffbe0c673d1f1a60bfc36b3dd05424ce84ee2980b694f"
+  },
+  "W3": {
+    "address": "0x090C9d20dE67c4691046b73DF30E7079534AECc7",
+    "hbar": 45,
+    "tx": "0xbd93ba1eacd05ac4d3aa870406a5bbd65a2e886337449c8da95b5a011abcd050"
+  },
+  "G1": {
+    "address": "0x9F5b04fcaFAF8B3f6ed139E2242A5e149c8daCa2",
+    "hbar": 10,
+    "tx": "0x8c97ea926db5967db0518e4a8f634b53d406776c25f2dcbbf4e4831419ff559d"
+  },
+  "G2": {
+    "address": "0xD32172D06984C19575eA50bBCc7309eC4fd7EC6a",
+    "hbar": 10,
+    "tx": "0x92953b00428126c7afedafdcb26f3650904b68f4704a22bd88625a0e2cdb7b77"
+  },
+  "G3": {
+    "address": "0x680Ac84d0aCf4442703d25140d154Ad3Efe818B8",
+    "hbar": 30,
+    "tx": "0x0cb1aae26c4562cf3db34b3e2f6e0694bd21873ee5bcf338256ba1401ae9d2a3"
+  },
+  "G4": {
+    "address": "0x8bc0D9b1Fcc0f818dF7ebaaFf02cF0c2165D925c",
+    "hbar": 30,
+    "tx": "0x7562c9f64c1de82fc1187b1c51c5815c1f998908727e091bcb49dd3b0b5c10c0"
+  },
+  "G5": {
+    "address": "0xed53B09DbdD93957E4A4C3a3Eb08Ccd107f91311",
+    "hbar": 35,
+    "tx": "0x45467bf413be145203adb1cdb3dcec252940d8355f94f263856372f2e5b919f6"
+  }
+}

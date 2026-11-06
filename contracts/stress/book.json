@@ -1,0 +1,28 @@
+{
+  "note": "Stress-test book for the Hedera testnet stress suite. Amounts in USD (test dollars minted for the stress suite). Personas are labels for test wallets.",
+  "product": { "tenorSessions": 5, "deductibleBps": 300, "capBps": 1000, "markup": 1.5 },
+  "risk": { "reserveBps": 5000, "symbolCapBps": 500, "marketCapBps": 2500, "proFeeBps": 6000 },
+  "tbill": { "apyBps": 420, "floorRateBps": 400, "termYears": 3 },
+  "savers": [
+    { "wallet": "W1", "persona": "Pension fund", "usd": 9000000000 },
+    { "wallet": "G1", "persona": "Family office", "usd": 4500000000 },
+    { "wallet": "G2", "persona": "Retail savings app", "usd": 1500000000 }
+  ],
+  "pro": [ { "wallet": "W2", "persona": "Reinsurer (Pro LP, first loss)", "usd": 650000000 } ],
+  "holders": [
+    { "wallet": "W3", "persona": "Global macro fund", "covers": [
+      ["NASDAQ:NVDA", "NVDA", "US", 300000000], ["NASDAQ:AAPL", "AAPL", "US", 250000000], ["NASDAQ:MSFT", "MSFT", "US", 250000000],
+      ["NASDAQ:AMZN", "AMZN", "US", 200000000], ["NYSE:JPM", "JPM", "US", 150000000], ["NYSEARCA:SPY", "SPY", "US", 400000000],
+      ["LSE:HSBA", "HSBA.L", "UK", 150000000], ["LSE:SHEL", "SHEL.L", "UK", 120000000], ["LSE:BP", "BP.L", "UK", 100000000] ] },
+    { "wallet": "G3", "persona": "Mumbai portfolio manager", "covers": [
+      ["NSE:RELIANCE", "RELIANCE.NS", "IN", 200000000], ["NSE:HDFCBANK", "HDFCBANK.NS", "IN", 150000000], ["NSE:INFY", "INFY.NS", "IN", 120000000],
+      ["NSE:ICICIBANK", "ICICIBANK.NS", "IN", 100000000], ["NSE:NIFTY", "^NSEI", "IN", 250000000] ] },
+    { "wallet": "G4", "persona": "Tokyo / Hong Kong asset manager", "covers": [
+      ["TSE:7203", "7203.T", "JP", 200000000], ["TSE:6758", "6758.T", "JP", 150000000], ["TSE:8306", "8306.T", "JP", 120000000],
+      ["HKEX:0700", "0700.HK", "HK", 180000000], ["HKEX:0005", "0005.HK", "HK", 100000000], ["SSE:600519", "600519.SS", "CN", 100000000] ] },
+    { "wallet": "G5", "persona": "European family office", "covers": [
+      ["XETRA:SAP", "SAP.DE", "DE", 150000000], ["XETRA:SIE", "SIE.DE", "DE", 120000000], ["XETRA:ALV", "ALV.DE", "DE", 100000000],
+      ["EPA:MC", "MC.PA", "FR", 150000000], ["EPA:BNP", "BNP.PA", "FR", 100000000],
+      ["SIX:NESN", "NESN.SW", "CH", 100000000], ["SIX:UBSG", "UBSG.SW", "CH", 80000000] ] }
+  ]
+}
