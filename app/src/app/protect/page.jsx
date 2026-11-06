@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useReadContract } from "wagmi";
 import { parseEther, formatEther } from "viem";
 import { ABI, ERC20_ABI, addr, stableSymbol } from "@/lib/contracts";
@@ -7,11 +7,12 @@ import { apiGet, apiPost, useApi } from "@/lib/api";
 import { EXCHANGES, flag } from "@/lib/exchanges";
 import { fmtMoney, fmtNum, fmtPct, fromUnits, shortHash, symbolId } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
-import { PageHead, Section, SectionHead, Seg, Notice, Row, useActiveChain, DeployGate } from "@/components/ui";
+import { PageHead, Section, SectionHead, Seg, Notice, Row, useActiveChain, DeployGate, HeroCtas, HowItWorks, Faq, More } from "@/components/ui";
 import { HolderArt } from "@/components/IsoArt";
 import { useKyc } from "@/components/KycBadge";
 import PriceChart from "@/components/PriceChart";
 import MyPolicies from "@/components/MyPolicies";
+import StockPicker from "@/components/StockPicker";
 
 function Step({ n, title, children, done }) {
   return (
@@ -21,6 +22,38 @@ function Step({ n, title, children, done }) {
         <h3 className="font-semibold">{title}</h3>
       </div>
       <div className="mt-4">{children}</div>
+    </div>
+  );
+}
+
+const STEPS = [
+  ["Pick your stock", "Any of 23 exchanges. Shares at your broker or tokenised on-chain both work."],
+  ["Pay a small fee", "For example about $90 to protect $10,000 of NVIDIA for a month. The most you can be paid is fixed before you buy."],
+  ["Paid if it crashes", "If the official closing price at expiry has fallen past your threshold, the vault pays you the difference. Automatically."],
+];
+
+const FAQ = [
+  ["What exactly is covered?", "A band of the fall. With the default settings you absorb the first 10%, and the vault pays the next 20%. So a 25% fall pays 15% of your protected value, and anything past 30% pays the full 20%."],
+  ["Do I have to sell my shares?", "No. You keep your shares where they are. You only prove you hold them, so cover never exceeds what you own."],
+  ["How is the price set?", "From the stock's recent volatility, compared with the history of past falls across every market, plus a risk margin. Stocks already in free fall are refused."],
+  ["Is the payout guaranteed to be there?", "Yes. The maximum payout of every policy is locked in the vault the moment you buy, before the policy exists."],
+  ["Which price decides the payout?", "The exchange's official closing price at your expiry time, posted on-chain. Anyone can trigger settlement after expiry."],
+];
+
+function PayoutExample() {
+  const rows = [["Falls 5%", "$0", "Inside the first 10% you absorb"], ["Falls 25%", "$1,500", "Vault pays 25% − 10%"], ["Falls 40%", "$2,000", "Capped at 20% of $10,000"]];
+  return (
+    <div className="card p-5 sm:p-6">
+      <div className="text-sm text-ink2">You protect <b className="text-ink">$10,000</b> of NVIDIA for 1 month and pay <b className="text-ink">$90</b>.</div>
+      <div className="mt-4 divide-y divide-line">
+        {rows.map(([k, v, sub]) => (
+          <div key={k} className="py-3 flex items-center justify-between gap-4">
+            <div><div className="font-medium">{k}</div><div className="text-xs text-muted">{sub}</div></div>
+            <div className={`text-xl font-semibold tabular ${v === "$0" ? "text-muted" : "text-good"}`}>{v}</div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-2 pt-3 border-t border-line text-xs text-muted">The stock stays calm? Your $90 goes to the savers who backed it.</div>
     </div>
   );
 }
@@ -55,6 +88,7 @@ export default function ProtectPage() {
   const exchange = EXCHANGES.find((e) => e.id === marketId);
   const serverId = (e) => (e?.code === "GB" ? "UK" : e?.code);
   const market = serverMarkets.find((m) => m.id === serverId(exchange) || m.id === marketId) || null;
+  const symbolsFor = useCallback((e) => serverMarkets.find((m) => m.id === serverId(e) || m.id === e.id)?.symbols || [], [serverMarkets]);
   const symbols = useMemo(() => {
     const list = market?.symbols || [];
     const q = search.trim().toLowerCase();
@@ -152,80 +186,69 @@ export default function ProtectPage() {
   return (
     <>
       <PageHead
-        eyebrow="For holders · type 2"
-        title="Put a floor under any stock you own."
+        eyebrow="For stock holders"
+        title="Protect your stocks from a crash."
         art={<HolderArt />}
-        facts={[["23", "exchanges, at your broker or tokenised"], ["10 → 30%", "default band of a fall that is covered"], [stable, "payout on the official close"]]}
+        right={<HeroCtas items={[["Get a quote", "#quote"], ["How payouts work", "#how"]]} />}
       >
-        If the official close falls more than your deductible by expiry, the vault pays the extra fall, up to the cap. You pay the
-        premium upfront and the maximum payout is locked before you buy.
+        Pay a small fee upfront. If your stock falls more than a set amount, you get paid the difference in {stable}. Keep your shares.
       </PageHead>
-      <Section>
-        <SectionHead eyebrow="Get a quote" title="Three steps to cover">Choose the stock, size the cover, prove you hold it. The quote updates as you go.</SectionHead>
+
+      <HowItWorks title="Insurance for one stock, in three steps" steps={STEPS} aside={<PayoutExample />} />
+
+      <Section className="mt-20">
+        <SectionHead id="quote" eyebrow="Get a quote" title="Build your cover">Pick a stock, choose how much to protect, and see the price.</SectionHead>
         <div className="space-y-4 mb-6">
           <DeployGate chainId={chainId}>{null}</DeployGate>
-          {offline && <Notice tone="warn">The pricing server is offline, so live symbols and quotes are unavailable. Policies and settlement below still read straight from the chain.</Notice>}
+          {offline && <Notice tone="warn">Live prices are offline right now, so new quotes are paused. Your existing policies below still work.</Notice>}
           {isConnected && deployed && !kyc.verified && <Notice>Your wallet is not KYC-verified on this chain yet. Use “Verify identity” in the header; the issuer approves it on-chain.</Notice>}
         </div>
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-4 items-start">
           <div className="space-y-4 min-w-0">
             <Step n="1" title="Choose the stock" done={Boolean(symbol)}>
-              <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
-                {EXCHANGES.map((e) => (
-                  <button key={e.id} onClick={() => { setMarketId(e.id); setSymbol(null); setSearch(""); }}
-                    className={`chip shrink-0 ${marketId === e.id ? "bg-ink text-paper border-ink" : "hover:bg-sunk"}`}>
-                    <span aria-hidden="true">{flag(e.code)}</span>{e.exchange}
-                  </button>
-                ))}
-              </div>
-              <input className="input mt-3" placeholder={`Search ${exchange?.country || ""} stocks`} value={search} onChange={(e) => setSearch(e.target.value)} />
-              <div className="mt-3 max-h-64 overflow-y-auto rounded-xl border border-line divide-y divide-line">
-                {markets.isLoading && <div className="p-4 text-sm text-muted">Loading symbols…</div>}
-                {!markets.isLoading && symbols.length === 0 && (
-                  <div className="p-4 text-sm text-muted">{offline ? "Symbols load from the pricing server." : "No match."}</div>
-                )}
-                {symbols.slice(0, 60).map((s) => (
-                  <button key={s.symbol} onClick={() => { setSymbol(s); if (s.lastClose) setNotional(String(Math.round(Number(sharesHeld || 0) * s.lastClose))); }}
-                    className={`w-full text-left px-4 py-3 flex items-center justify-between gap-3 hover:bg-sunk ${symbol?.symbol === s.symbol ? "bg-accentSoft" : ""}`}>
-                    <span className="min-w-0">
-                      <span className="font-medium block truncate">{s.name || s.ticker}</span>
-                      <span className="text-xs text-muted font-mono">{s.symbol}</span>
-                    </span>
-                    <span className="text-right shrink-0 tabular text-sm">
-                      {s.lastClose ? `${fmtNum(s.lastClose, 2)} ${s.currency || ""}` : "—"}
-                      {s.monthlyPremiumBps ? <span className="block text-[11px] text-muted">≈{fmtPct(s.monthlyPremiumBps / 1e4, 2)}/mo at 10%</span> : null}
-                      {!s.quotable && <span className="block text-[11px] text-warn">not quotable</span>}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              {symbol && <div className="mt-4"><PriceChart symbol={symbol.symbol} currency={symbol.currency} /></div>}
+              <StockPicker
+                marketId={marketId}
+                symbol={symbol}
+                symbolsFor={symbolsFor}
+                loading={markets.isLoading}
+                offline={offline}
+                onChoose={(id, sym) => {
+                  setMarketId(id);
+                  setSearch("");
+                  setSymbol(sym);
+                  if (sym.lastClose) setNotional(String(Math.round(Number(sharesHeld || 0) * sym.lastClose)));
+                }}
+              />
+              {symbol && <div className="mt-4"><PriceChart symbol={symbol.symbol} currency={symbol.currency} deductible={b / 10000} /></div>}
             </Step>
 
-            <Step n="2" title="Size and terms" done={Boolean(quote?.ok)}>
+            <Step n="2" title="How much and for how long" done={Boolean(quote?.ok)}>
               <div className="grid sm:grid-cols-3 gap-3">
-                <label className="space-y-1.5"><span className="label">Shares held</span><input className="input" inputMode="decimal" value={sharesHeld} onChange={(e) => setSharesHeld(e.target.value)} /></label>
-                <label className="space-y-1.5"><span className="label">Shares to cover</span><input className="input" inputMode="decimal" value={sharesCover} onChange={(e) => setSharesCover(e.target.value)} /></label>
-                <label className="space-y-1.5"><span className="label">Protected value ({stable})</span><input className="input" inputMode="decimal" value={notional} onChange={(e) => setNotional(e.target.value)} /></label>
+                <label className="space-y-1.5"><span className="label">Shares you own</span><input className="input" inputMode="decimal" value={sharesHeld} onChange={(e) => setSharesHeld(e.target.value)} /></label>
+                <label className="space-y-1.5"><span className="label">Shares to protect</span><input className="input" inputMode="decimal" value={sharesCover} onChange={(e) => setSharesCover(e.target.value)} /></label>
+                <label className="space-y-1.5"><span className="label">Value ({stable})</span><input className="input" inputMode="decimal" value={notional} onChange={(e) => setNotional(e.target.value)} /></label>
               </div>
               {Number(sharesCover) > Number(sharesHeld) && <p className="text-xs text-bad mt-2">You cannot cover more shares than you hold. The contract enforces this.</p>}
               <div className="grid gap-4 mt-5">
-                <div className="space-y-1.5"><div className="label">Tenor</div><Seg value={tenor} onChange={setTenor} options={[{ value: 7, label: "1 wk" }, { value: 14, label: "2 wk" }, { value: 28, label: "1 mo" }, { value: "10m", label: "10 min demo" }]} /></div>
-                <div className="space-y-1.5"><div className="label">Deductible</div><div className="flex flex-wrap gap-2"><Seg value={b} onChange={setB} options={[300, 500, 750, 1000, 1500, 2000, 2500].map((v) => ({ value: v, label: `${v / 100}%` }))} /></div></div>
-                <div className="space-y-1.5"><div className="label">Cap</div><Seg value={c} onChange={setC} options={[{ value: 1000, label: "10%" }, { value: 2000, label: "20%" }, { value: 3000, label: "30%" }]} /></div>
+                <div className="space-y-1.5"><div className="label">Length</div><Seg value={tenor} onChange={setTenor} options={[{ value: 7, label: "1 wk" }, { value: 14, label: "2 wk" }, { value: 28, label: "1 mo" }, { value: "10m", label: "10 min demo" }]} /></div>
+                <div className="space-y-1.5"><div className="label">You absorb the first</div><div className="flex flex-wrap gap-2"><Seg value={b} onChange={setB} options={[300, 500, 750, 1000, 1500, 2000, 2500].map((v) => ({ value: v, label: `${v / 100}%` }))} /></div></div>
+                <div className="space-y-1.5"><div className="label">Vault covers the next</div><Seg value={c} onChange={setC} options={[{ value: 1000, label: "10%" }, { value: 2000, label: "20%" }, { value: 3000, label: "30%" }]} /></div>
               </div>
+              <p className="mt-4 rounded-xl bg-sunk px-4 py-3 text-sm text-ink2">
+                Pays if the stock falls between <b className="text-ink">{fmtPct(b / 10000, 0)}</b> and <b className="text-ink">{fmtPct((b + c) / 10000, 0)}</b>. Bigger falls still pay the maximum.
+              </p>
             </Step>
 
             <Step n="3" title="Prove you hold it" done={Boolean(attest?.heldShares) || atsHeld > 0}>
-              <p className="text-sm text-ink2">Cover can never exceed what you own. Either path works; the cover always pays in {stable} against the exchange's official close.</p>
+              <p className="text-sm text-ink2">You can only protect shares you actually own. Pick where they are.</p>
               <div className="grid sm:grid-cols-2 gap-3 mt-3">
                 <button onClick={() => setPath("broker")} className={`text-left rounded-xl border p-4 ${path === "broker" ? "border-accent bg-accentSoft" : "border-line hover:bg-sunk"}`}>
                   <div className="text-sm font-semibold">Broker holdings</div>
-                  <div className="text-xs text-muted mt-1">Shares at Zerodha, IBKR, Robinhood or any broker. Attested from a statement or the broker API, signed into your quote.</div>
+                  <div className="text-xs text-muted mt-1">Zerodha, IBKR, Robinhood or any broker. Upload a statement or connect.</div>
                 </button>
                 <button onClick={() => setPath("token")} className={`text-left rounded-xl border p-4 ${path === "token" ? "border-accent bg-accentSoft" : "border-line hover:bg-sunk"}`}>
                   <div className="text-sm font-semibold">Tokenised stock</div>
-                  <div className="text-xs text-muted mt-1">An ATS equity on Hedera or another RWA token. The contract reads your token balance on-chain.</div>
+                  <div className="text-xs text-muted mt-1">A tokenised share in your wallet. Checked on-chain.</div>
                 </button>
               </div>
               {path === "broker" ? (
@@ -261,17 +284,23 @@ export default function ProtectPage() {
                 <h3 className="font-semibold">Your quote</h3>
                 {symbol && <span className="chip font-mono">{symbol.symbol}</span>}
               </div>
-              <div className="mt-4">
-                <Row k="Protected value" v={fmtMoney(N, { sym: "" }) + ` ${stable}`} />
+              <div className="mt-4 rounded-xl bg-sunk p-4">
+                <div className="label">You pay</div>
+                <div className="mt-1 text-3xl font-semibold tracking-tight tabular">{prem !== null ? `${fmtMoney(prem, { sym: "" })} ${stable}` : "—"}</div>
+                <div className="text-xs text-muted mt-1">{prem !== null ? `${fmtPct(prem / (N || 1), 2)} of the value, once` : "Get a quote to see the price"}</div>
+              </div>
+              <div className="mt-3">
+                <Row k="Value protected" v={fmtMoney(N, { sym: "" }) + ` ${stable}`} />
+                <Row k="Most you can be paid" v={`${fmtMoney(maxPayout, { sym: "" })} ${stable}`} strong />
+                <Row k="Length" v={tenor === "10m" ? "10 minutes (testnet demo)" : `${tenor} days`} />
+              </div>
+              <More label="More numbers" className="mt-3">
                 <Row k="Pays the fall beyond" v={fmtPct(b / 10000, 0)} />
-                <Row k="Maximum payout" v={`${fmtMoney(maxPayout, { sym: "" })} ${stable}`} />
-                <Row k="Tenor" v={tenor === "10m" ? "10 minutes (testnet demo)" : `${tenor} days`} />
                 <Row k="Chance of any payout" v={pPayout !== undefined ? fmtPct(pPayout, 1) : "—"} />
                 <Row k="Fair value" v={quote?.pricing ? fmtPct(quote.pricing.fairBps / 10000, 2) : "—"} />
-                <Row k="Premium" v={prem !== null ? `${fmtMoney(prem, { sym: "" })} ${stable}` : "—"} strong />
                 <Row k="Break-even fall" v={breakeven !== null ? fmtPct(breakeven, 1) : "—"} />
-              </div>
-              <div className="rounded-xl bg-sunk p-4 mt-4 text-sm">
+              </More>
+              <div className="rounded-xl border border-line p-4 mt-4 text-sm">
                 If {symbol?.ticker || "the stock"} closes <span className="font-semibold">25% lower</span> at expiry, you receive{" "}
                 <span className="font-semibold text-good">{fmtMoney(pay25, { sym: "" })} {stable}</span>.
               </div>
@@ -301,17 +330,13 @@ export default function ProtectPage() {
                 <p className="text-xs text-muted mt-3">Wallet: {fmtMoney(fromUnits(balance.data), { sym: "" })} {stable}. Quote valid until {quote?.quote ? new Date(Number(quote.quote.validUntil) * 1000).toLocaleTimeString() : "—"}.</p>
               )}
             </div>
-            <div className="card p-5 text-sm text-ink2 leading-relaxed">
-              <div className="font-medium text-ink mb-1">How the price is set</div>
-              The engine scales every stock's recent volatility against the pooled history of past falls across all markets
-              (walk-forward, no hindsight), then adds a risk margin. Stocks that are already in free fall are refused.
-            </div>
           </div>
         </div>
       </Section>
-      <Section className="mt-10">
+      <Section className="mt-16">
         <MyPolicies />
       </Section>
+      <Faq items={FAQ} />
     </>
   );
 }

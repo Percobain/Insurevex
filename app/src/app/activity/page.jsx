@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
 import { parseEventLogs } from "viem";
@@ -6,7 +7,7 @@ import { ABI, addr, getDeployment, notesOf, stableSymbol } from "@/lib/contracts
 import { useApi } from "@/lib/api";
 import { useSymbolNames } from "@/lib/useSymbolNames";
 import { fmtMoney, fromUnits, shortAddr, fmtNum } from "@/lib/format";
-import { PageHead, Section, SectionHead, useActiveChain, DeployGate, TxLink, Placeholder } from "@/components/ui";
+import { PageHead, Section, SectionHead, Seg, useActiveChain, DeployGate, TxLink, Placeholder, HeroCtas, HowItWorks, Faq } from "@/components/ui";
 import { SettleArt } from "@/components/IsoArt";
 
 const ALL_ABI = [...ABI.CoverMarket, ...ABI.ProtectedNote, ...ABI.UnderwritingPool, ...ABI.IdentityRegistry, ...ABI.PriceOracle, ...ABI.TBillVault];
@@ -56,6 +57,28 @@ function describe(e, nameOf, stable) {
   }
 }
 
+// Friendly name + category for each contract event.
+const KIND = {
+  CoverBought: ["Cover bought", "cover"], CoverSettled: ["Cover settled", "cover"], ClaimPaid: ["Claim paid", "cover"], PricePosted: ["Closing price", "cover"],
+  Subscribed: ["Note bought", "notes"], CouponDistributed: ["Coupon paid", "notes"], CouponClaimed: ["Coupon claimed", "notes"], Matured: ["Note matured", "notes"],
+  MaturityClaimed: ["Redeemed", "notes"], NavUpdated: ["T-bill update", "notes"],
+  IdentitySet: ["KYC", "compliance"], Frozen: ["Freeze", "compliance"], CountryBlocked: ["Country rule", "compliance"], ForcedTransfer: ["Forced transfer", "compliance"],
+  RiskParams: ["Risk limits", "compliance"], Paused: ["Paused", "compliance"], Unpaused: ["Unpaused", "compliance"],
+};
+const TONE = { cover: "text-accent border-accent/40", notes: "text-good border-good/40", compliance: "" };
+
+const STEPS = [
+  ["Official close is posted", "At expiry, the exchange's official closing price is written on-chain."],
+  ["Anyone can settle", "Settlement is open to everyone, so no one can hold a payout back."],
+  ["Vault pays, or keeps the premium", "A crash pays the holder from locked money. A calm month leaves the premium with savers."],
+];
+
+const FAQ = [
+  ["Why is everything public?", "Every action is a contract call, so the chain is the record. This page just reads it and puts it in plain words."],
+  ["What are the KYC rows?", "Only verified wallets can hold notes or buy cover. Each verification or revocation by the issuer shows up here."],
+  ["Can I check a row myself?", "Yes. Every row links to the transaction on the block explorer."],
+];
+
 export default function ActivityPage() {
   const { chainId, deployed } = useActiveChain();
   const api = useApi(`/api/activity?chainId=${chainId}`, { enabled: deployed, refetchInterval: 20_000 });
@@ -64,29 +87,35 @@ export default function ActivityPage() {
   const events = apiEvents || chain.data || [];
   const nameOf = useSymbolNames();
   const stable = stableSymbol(chainId);
+  const [filter, setFilter] = useState("all");
+  const kind = (e) => KIND[e.event || e.type] || [e.event || e.type, "other"];
+  const shown = events.filter((e) => filter === "all" || kind(e)[1] === filter);
   return (
     <>
       <PageHead
         eyebrow="Activity"
-        title="Everything that happened, on-chain."
+        title="Every payment, in plain sight."
         art={<SettleArt />}
-        facts={[["Official", "close settles every policy"], ["Anyone", "can call settle after expiry"], ["Every", "row links to the explorer"]]}
+        right={<HeroCtas items={[["See the live feed", "#feed"], ["How settlement works", "#how"]]} />}
       >
-        Subscriptions, cover, settlements, coupons and every compliance action, newest first.
+        Every policy, note, payout and compliance action is recorded on-chain. Here it is in plain words, newest first.
       </PageHead>
-      <Section>
+
+      <HowItWorks title="How a policy settles" steps={STEPS} />
+
+      <Section className="mt-20">
         <DeployGate chainId={chainId}>
-          <SectionHead eyebrow="Live feed" title="Latest events" />
+          <SectionHead id="feed" eyebrow="Live feed" title="Latest events" right={<Seg value={filter} onChange={setFilter} options={[{ value: "all", label: "All" }, { value: "cover", label: "Cover" }, { value: "notes", label: "Notes" }, { value: "compliance", label: "Compliance" }]} />} />
           {api.isError && <p className="text-xs text-muted mb-3">Server offline: reading the last ~9,000 blocks directly from the chain.</p>}
           {(api.isLoading || chain.isLoading) && events.length === 0 ? (
             <div className="card h-64 animate-pulse" />
-          ) : events.length === 0 ? (
+          ) : shown.length === 0 ? (
             <Placeholder title="No events yet">Activity appears as soon as someone subscribes, buys cover or the issuer acts.</Placeholder>
           ) : (
             <div className="card divide-y divide-line">
-              {events.slice(0, 80).map((e, i) => (
+              {shown.slice(0, 80).map((e, i) => (
                 <div key={(e.txHash || e.tx || "") + i} className="px-4 sm:px-5 py-3 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
-                  <span className="chip w-fit shrink-0">{e.event || e.type}</span>
+                  <span className={`chip w-fit shrink-0 sm:w-32 justify-center ${TONE[kind(e)[1]] || ""}`}>{kind(e)[0]}</span>
                   <span className="text-sm flex-1 min-w-0">{describe(e, nameOf, stable)}</span>
                   <span className="shrink-0 flex items-center gap-3 text-xs text-muted">
                     {(e.blockNumber || e.block) && <span>#{e.blockNumber || e.block}</span>}
@@ -98,6 +127,7 @@ export default function ActivityPage() {
           )}
         </DeployGate>
       </Section>
+      <Faq items={FAQ} />
     </>
   );
 }

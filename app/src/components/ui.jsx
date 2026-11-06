@@ -161,3 +161,67 @@ export function DeployGate({ chainId, children }) {
     </Notice>
   );
 }
+
+/** Hero buttons: [label, href] pairs. The first is primary. */
+export function HeroCtas({ items }) {
+  return (
+    <div className="flex flex-wrap gap-3">
+      {items.map(([label, href], i) => (
+        <a key={href} href={href} className={i === 0 ? "btn-primary" : "btn-ghost"}>{label}</a>
+      ))}
+    </div>
+  );
+}
+
+/** Landing-style "how it works": numbered step cards, with an optional visual beside them. */
+export function HowItWorks({ id = "how", eyebrow = "How it works", title, steps, aside }) {
+  const cols = steps.length === 4 ? "sm:grid-cols-2 xl:grid-cols-4" : "sm:grid-cols-3";
+  return (
+    <Section className="mt-10">
+      <SectionHead id={id} eyebrow={eyebrow} title={title} />
+      <div className={aside ? "grid lg:grid-cols-[1.3fr_1fr] gap-6 items-start" : ""}>
+        <ol className={`grid ${aside ? "sm:grid-cols-3" : cols} gap-3`}>
+          {steps.map(([t, body], i) => (
+            <li key={t} className="card p-5">
+              <span className="h-8 w-8 rounded-full bg-primary text-white grid place-items-center text-sm font-semibold">{i + 1}</span>
+              <h3 className="mt-4 font-semibold leading-snug">{t}</h3>
+              <p className="mt-2 text-sm text-ink2 leading-relaxed">{body}</p>
+            </li>
+          ))}
+        </ol>
+        {aside}
+      </div>
+    </Section>
+  );
+}
+
+/** Short Q&A list, collapsed by default. */
+export function Faq({ items, title = "Good to know" }) {
+  return (
+    <Section className="mt-20 mb-8">
+      <SectionHead eyebrow="Questions" title={title} />
+      <div className="card divide-y divide-line">
+        {items.map(([q, a]) => (
+          <details key={q} className="group px-5 py-4">
+            <summary className="cursor-pointer list-none flex items-center justify-between gap-4 font-medium">
+              {q}<span className="text-muted transition group-open:rotate-45 text-xl leading-none">+</span>
+            </summary>
+            <p className="mt-2 text-[15px] text-ink2 leading-relaxed max-w-3xl">{a}</p>
+          </details>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/** A collapsible block for secondary detail ("Show details"). */
+export function More({ label, children, className = "" }) {
+  return (
+    <details className={`group ${className}`}>
+      <summary className="cursor-pointer list-none inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline underline-offset-4">
+        {label}<span className="transition group-open:rotate-180">⌄</span>
+      </summary>
+      <div className="mt-4">{children}</div>
+    </details>
+  );
+}

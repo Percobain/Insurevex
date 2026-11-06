@@ -42,27 +42,20 @@ export default function ProPanel({ chainId, account, pro }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="eyebrow">Pro LP · junior tranche</div>
-          <h3 className="font-display text-3xl tracking-tight mt-2">Take the first loss, earn more of the premium.</h3>
+          <h3 className="font-display text-3xl tracking-tight mt-2">Take the first loss, earn more.</h3>
         </div>
       </div>
       <div className="grid lg:grid-cols-[1.1fr_1fr] gap-6 mt-5">
-        <div className="text-sm text-ink2 leading-relaxed space-y-3">
-          <p>
-            Pro capital sits in front of the Savers' sleeves. When a crash payout comes in, Pro pays first; Savers' sleeves are only
-            touched once Pro is used up. In return Pro earns its share of premiums plus{" "}
-            <span className="text-ink font-medium">{pro?.proFeeBps !== undefined ? fmtPct(Number(pro.proFeeBps) / 1e4, 0) : "40%"} of the Savers' premium share</span>.
+        <div className="space-y-4">
+          <p className="text-[15px] text-ink2 leading-relaxed">
+            Pro capital pays claims before savers do. In return it earns its share of premiums plus{" "}
+            <b className="text-ink">{pro?.proFeeBps !== undefined ? fmtPct(Number(pro.proFeeBps) / 1e4, 0) : "40%"} of the savers&apos; share</b>.
           </p>
-          <p>
-            In the 2005–2026 backtest, with Pro capital of at least half the sleeves, Savers' sleeves never had a losing period. Pro's
-            own drawdowns were deep in 2008 and March 2020: this is risk capital, not a savings product.
-          </p>
-          <div className="rounded-xl bg-sunk p-4">
-            <div className="label mb-2">Loss order</div>
-            <ol className="text-ink space-y-1 list-decimal list-inside">
-              <li>Premiums collected</li><li>Pro first-loss capital</li><li>Savers' sleeves</li>
-              <li className="text-muted">Savers' T-bill floor: never</li>
-            </ol>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="rounded-xl bg-sage/60 p-4"><div className="text-sm font-semibold">Upside</div><p className="text-sm text-ink2 mt-1">The biggest cut of premiums in calm markets.</p></div>
+            <div className="rounded-xl bg-accentSoft p-4"><div className="text-sm font-semibold">Risk</div><p className="text-sm text-ink2 mt-1">First to lose in a crash. Deep drawdowns in 2008 and March 2020.</p></div>
           </div>
+          <p className="text-xs text-muted">Risk capital, not a savings product. In the 2005–2026 backtest, with Pro at least half the size of savers&apos; units, savers never had a losing period.</p>
         </div>
         <div>
           {!pro?.available ? (
