@@ -22,6 +22,8 @@ const monthName = (ym) => { const [y, m] = String(ym).split("-"); return `${MONT
 const tip = { background: "var(--card)", border: "1px solid var(--line)", borderRadius: 10, fontSize: 12, color: "var(--ink)" };
 const axis = { stroke: "var(--muted)", fontSize: 11, tickLine: false, axisLine: false };
 const BAD = "rgb(var(--bad-rgb))", GOOD = "rgb(var(--good-rgb))", MUTED = "rgb(var(--muted-rgb))";
+// gains that are not InsureVEX's own (stocks, Pro) use a neutral tan, so red always and only means a loss
+const OTHER = "var(--chart-4)";
 
 /** What a stock owner with $100k ends with in one crash. */
 function outcome(c) {
@@ -179,7 +181,7 @@ function Depositors({ m }) {
         <Kpi value={usd((a.worstStocksPer1000 / 1000) * P)} tone="bad" label={`the worst result for the same money put straight into stocks; that lost money ${a.stocksBelow100} times`} />
       </div>
       <div className="card p-5">
-        <div className="font-semibold">$100,000 deposited just before each crash, 3 years later</div>
+        <div className="flex flex-wrap items-baseline justify-between gap-2"><div className="font-semibold">$100,000 deposited just before each crash, 3 years later</div><div className="text-xs text-muted">Dashed line: the $100,000 you put in. Red: you lost money.</div></div>
         <div className="h-80 mt-3">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 8, right: 8, left: 4, bottom: 0 }} barGap={2}>
@@ -189,11 +191,11 @@ function Depositors({ m }) {
               <Tooltip contentStyle={tip} cursor={{ fill: "var(--sunk)" }} labelFormatter={(l, p) => p?.[0]?.payload?.story || l}
                 formatter={(v, k) => [usd(v), k === "deposit" ? "InsureVEX deposit" : k === "tbills" ? "Treasury bills only" : "S&P 500 instead"]} />
               <Legend formatter={(k) => <span style={{ color: "var(--ink2)", fontSize: 12 }}>{k === "deposit" ? "InsureVEX deposit" : k === "tbills" ? "Treasury bills only" : "S&P 500 instead"}</span>} />
-              <ReferenceLine y={P} stroke="var(--ink)" strokeDasharray="4 4" label={{ value: "$100,000 you put in", position: "insideTopLeft", fill: "var(--ink2)", fontSize: 11 }} />
+              <ReferenceLine y={P} stroke="var(--ink)" strokeDasharray="4 4" />
               <Bar dataKey="deposit" fill={GOOD} radius={[4, 4, 0, 0]} maxBarSize={28} />
               <Bar dataKey="tbills" fill={MUTED} radius={[4, 4, 0, 0]} maxBarSize={28} />
-              <Bar dataKey="stocks" radius={[4, 4, 0, 0]} maxBarSize={28}>
-                {data.map((d) => <Cell key={d.name} fill={d.stocks < P ? BAD : "var(--chart-2)"} />)}
+              <Bar dataKey="stocks" fill={OTHER} radius={[4, 4, 0, 0]} maxBarSize={28}>
+                {data.map((d) => <Cell key={d.name} fill={d.stocks < P ? BAD : OTHER} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -306,8 +308,8 @@ function Pro({ m }) {
               <Tooltip contentStyle={tip} cursor={{ fill: "var(--sunk)" }} formatter={(v, k) => [pct(v, 1, true), k === "pro" ? "Pro investors" : "Depositors' side"]} />
               <Legend formatter={(k) => <span style={{ color: "var(--ink2)", fontSize: 12 }}>{k === "pro" ? "Pro investors (first loss)" : "Depositors' side"}</span>} />
               <ReferenceLine y={0} stroke="var(--muted)" />
-              <Bar dataKey="pro" radius={[3, 3, 0, 0]} maxBarSize={16}>
-                {data.map((d) => <Cell key={d.year} fill={d.pro < 0 ? BAD : "var(--chart-2)"} />)}
+              <Bar dataKey="pro" fill={OTHER} radius={[3, 3, 0, 0]} maxBarSize={16}>
+                {data.map((d) => <Cell key={d.year} fill={d.pro < 0 ? BAD : OTHER} />)}
               </Bar>
               <Bar dataKey="dep" fill={GOOD} radius={[3, 3, 0, 0]} maxBarSize={16} />
             </BarChart>
@@ -350,9 +352,9 @@ function WorstAndProof({ m }) {
           <p className="mt-3 text-paper/80 max-w-2xl">Same rules as the numbers above: protection on stocks in 23 countries, a deposit that cannot lose, and a pool where every payout is set aside before the protection is sold. Whitechain (USDT), Hedera (tokenised stocks) and Arc (USDC).</p>
           <div className="flex flex-wrap gap-3 mt-6">
             <Link href="/protect" className="btn-primary !bg-paper !text-ink">Protect a stock</Link>
-            <Link href="/save" className="btn-ghost !border-paper/30 !text-paper">Make a deposit</Link>
-            <Link href="/pool" className="btn-ghost !border-paper/30 !text-paper">See the pool</Link>
-            <Link href="/activity" className="btn-ghost !border-paper/30 !text-paper">Every transaction</Link>
+            {[["/save", "Make a deposit"], ["/pool", "See the pool"], ["/activity", "Every transaction on-chain"]].map(([href, t]) => (
+              <Link key={href} href={href} className="inline-flex items-center rounded-xl border border-paper/30 bg-transparent px-4 py-2.5 text-sm font-medium text-paper hover:bg-paper/10">{t}</Link>
+            ))}
           </div>
         </div>
         <p className="text-xs text-muted mt-6 leading-relaxed max-w-3xl">
@@ -376,7 +378,7 @@ export default function MetricsPage() {
       <div className="mx-auto max-w-page px-4 pt-10 sm:pt-16">
         <div className="eyebrow mb-3">Metrics · 25 years of crashes</div>
         <h1 className="font-display text-4xl sm:text-6xl leading-[1.02] tracking-tight max-w-5xl">
-          We replayed every big stock crash since 2001. With InsureVEX, people lost {cut ? <span className="text-good">{Math.round(cut * 100)}% less</span> : "far less"}.
+          We replayed every big stock crash since 2001. With InsureVEX, stock owners lost {cut ? <span className="text-good">{Math.round(cut * 100)}% less</span> : "far less"}.
         </h1>
         <p className="text-ink2 mt-5 text-lg leading-relaxed max-w-2xl">
           And the people who paid for that protection never lost a dollar of their deposit. Real prices, 23 countries, the same $100,000 every time.
