@@ -482,6 +482,12 @@ function CoinPool({ x, y, r, h, level = 0.7 }) {
           <circle cx={r} cy={r} r={r - 3} className="iso-pool-lip" />
         </>
       } />
+      {r >= 44 && (
+        <g>
+          <rect x={wx - 46} y={wTop + wH / 2 - 11} width="32" height="22" rx="5" className="iso-pool-badge" />
+          <image href="/brand/icon.svg" x={wx - 41} y={wTop + wH / 2 - 7.5} width="22" height="15" />
+        </g>
+      )}
       <rect x={wx - 6} y={wTop} width="12" height={wH} rx="6" className="iso-pool-window" />
       {[0.25, 0.5, 0.75].map((f) => (
         <line key={f} x1={wx + 8} x2={wx + 12} y1={wTop + wH * f} y2={wTop + wH * f} className="iso-line" />

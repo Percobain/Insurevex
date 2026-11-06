@@ -365,3 +365,4 @@ body {
 .iso-pool-level { fill: var(--iso-good); }
 .iso-pool-stack .iso-face { fill: #fff; }
 .iso-pool-stack .iso-side { fill: #ece9e1; }
+.iso-pool-badge { fill: #fff; stroke: var(--iso-ink); stroke-width: 0.9; }
