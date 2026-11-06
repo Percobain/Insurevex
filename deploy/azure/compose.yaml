@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: ../../server
+    image: insurevex-api:local
+    restart: unless-stopped
+    init: true
+    env_file: /etc/insurevex/backend.env
+    volumes:
+      - /srv/insurevex/data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+  proxy:
+    image: caddy:2
+    restart: unless-stopped
+    environment:
+      INSUREVEX_HOSTNAME: ${INSUREVEX_HOSTNAME:?Set the Azure public DNS hostname}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - /srv/insurevex/caddy-data:/data
+      - /srv/insurevex/caddy-config:/config
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
