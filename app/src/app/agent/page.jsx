@@ -6,7 +6,7 @@ import { useApi } from "@/lib/api";
 import { authoriseAgentAction, LIMIT_FIELDS, displayUnits, inputUnits } from "@/lib/agent";
 import { shortAddr } from "@/lib/format";
 import { useToasts } from "@/components/Toasts";
-import { PageHead, Section, SectionHead, Panel, Row, Notice, Placeholder } from "@/components/ui";
+import { PageHead, Section, SectionHead, Panel, Row, Notice, Placeholder, HeroCtas, HowItWorks, Faq } from "@/components/ui";
 import { AgentArt } from "@/components/IsoArt";
 
 const STAGES = [
@@ -21,6 +21,33 @@ const hbar = (v) => v == null ? "—" : `${(Number(v) / 1e8).toLocaleString(unde
 const sharesText = (v) => v == null ? "—" : (Number(v) / 1e18).toLocaleString(undefined, { maximumFractionDigits: 8 });
 const when = (v) => v ? new Date(v).toLocaleString() : "—";
 const txUrl = (tx) => `https://hashscan.io/testnet/transaction/${encodeURIComponent(tx)}`;
+
+const STEPS = [
+  { icon: "sliders", title: "You set the rules", body: "Which stock, how many shares and a daily budget. One signature approves one run.", stat: "You stay in control" },
+  { icon: "bolt", title: "It checks, then pays", body: "Identity, holdings and price are checked for free. Then it pays the fee and the premium.", stat: "0.01 HBAR fee via x402" },
+  { icon: "receipt", title: "Every step has a receipt", body: "Payments, the policy and an audit log all settle on Hedera.", stat: "Open any of it on HashScan" },
+];
+
+function Rules() {
+  return (
+    <div className="card p-5 sm:p-6">
+      <div className="text-sm font-medium">The agent can never</div>
+      <ul className="mt-4 space-y-2.5">
+        {["Spend past its daily budget", "Buy cover you did not approve", "Protect shares you do not own", "Move funds anywhere else"].map((t) => (
+          <li key={t} className="flex items-center gap-3 text-[15px]"><span className="h-5 w-5 rounded-full bg-accentSoft text-accent grid place-items-center text-xs font-bold">✕</span>{t}</li>
+        ))}
+      </ul>
+      <div className="mt-5 pt-4 border-t border-line text-xs text-muted">Plus an emergency stop you control.</div>
+    </div>
+  );
+}
+
+const FAQ = [
+  ["What is x402?", "A way for software to pay for an API over plain HTTP. The underwriting service answers “402 Payment Required”; the agent pays a small HBAR fee and gets the quote."],
+  ["Does the agent hold my private key?", "No. It has its own wallet on the server. You approve each run by signing a message with your wallet; nothing is sent to the browser."],
+  ["What if something goes wrong mid-run?", "The agent stops and never retries a payment on its own. Reserved amounts stay counted against the budget until an operator reconciles them."],
+  ["Can I stop it?", "Yes. The emergency stop blocks every new payment step immediately. Already-submitted transactions may still settle."],
+];
 
 function Budget({ title, used, limit, format }) {
   const percent = limit ? Math.min(100, Math.max(0, Number(used || 0) / Number(limit) * 100)) : 0;
@@ -128,15 +155,16 @@ export default function AgentPage() {
   return <>
     <PageHead
       eyebrow="Hedera · agents that pay"
-      title="Your agent buys the cover. Within your limits."
+      title="Let an agent buy your protection."
       art={<AgentArt stage={running ? selected?.stage : undefined} />}
-      facts={[[d?.amount ? hbar(d.amount) : "0.01 HBAR", "underwriting fee, paid with x402"], ["1 run", "one signature covers one purchase"], ["Capped", "daily budgets it cannot exceed"]]}
-      right={<span className="chip"><span className={`w-1.5 h-1.5 rounded-full ${running ? "bg-accent animate-pulse" : s?.stopped ? "bg-warn" : d?.enabled ? "bg-good" : "bg-muted"}`} />{running ? "Agent running" : s?.stopped ? "Emergency stop active" : d?.enabled ? "Testnet ready" : "Service offline"}</span>}
+      right={<div className="flex flex-wrap items-center gap-4"><HeroCtas items={[["Set it up", "#mandate"], ["See the guardrails", "#guardrails"]]} /><span className="chip"><span className={`w-1.5 h-1.5 rounded-full ${running ? "bg-accent animate-pulse" : s?.stopped ? "bg-warn" : d?.enabled ? "bg-good" : "bg-muted"}`} />{running ? "Agent running" : s?.stopped ? "Emergency stop active" : d?.enabled ? "Testnet ready" : "Service offline"}</span></div>}
     >
-      A dedicated wallet pays for underwriting over HTTP 402, buys collateralised cover on CoverMarket and logs every payment on
-      Hedera Consensus Service. You set the mandate and the budget; the key never leaves the server.
+      You set the rules and a daily budget. The agent checks everything, pays, and records each step on Hedera.
     </PageHead>
-    <Section className="space-y-6 pb-16">
+
+    <HowItWorks title="Hands-off, but on a short leash" steps={STEPS} aside={<Rules />} />
+
+    <Section className="space-y-6 pb-4 mt-20">
       {(discovery.isError || status.isError) && <Notice tone="warn">The agent service is unavailable. Controls are disabled until its status can be verified.</Notice>}
       {!status.isLoading && !status.isError && !s?.controlsEnabled && <Notice tone="warn">{s?.reason || "The operator needs to enable wallet-signed controls before this agent can run from the dashboard."} Protection settings and payment evidence remain available to view.</Notice>}
       {s?.controlsEnabled && !authorised && <div className="card p-4 flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-ink2">{!isConnected ? "Connect the controller wallet to manage this agent." : !controller ? `Only controller ${shortAddr(s.controller)} can authorise this agent.` : "Switch to Hedera testnet to use agent controls."}</p>{!isConnected ? <button className="btn-primary btn-sm" onClick={openConnectModal}>Connect wallet</button> : controller && chainId !== 296 ? <button className="btn-primary btn-sm" onClick={async () => { try { await switchChainAsync({ chainId: 296 }); } catch (e) { setError(e.shortMessage || "Could not switch network."); } }}>Switch to Hedera</button> : <span className="chip">View only</span>}</div>}
@@ -148,7 +176,7 @@ export default function AgentPage() {
         ))}
       </div>
 
-      <SectionHead eyebrow="Step 1 · 2" title="Set the mandate, then check it">Choose what to protect. The preflight checks identity, holdings, collateral and price without paying anything.</SectionHead>
+      <SectionHead id="mandate" eyebrow="Step 1" title="Tell the agent what to protect">Then run a free check. Nothing is paid until you start the run.</SectionHead>
 
       <div className="grid lg:grid-cols-[1.15fr_1fr] gap-6 items-start">
         <Panel title="Protection mandate" desc="What the agent is allowed to protect.">
@@ -159,7 +187,7 @@ export default function AgentPage() {
             <label className="block space-y-2" htmlFor="agent-deductible"><span className="label">Deductible</span><select id="agent-deductible" className="input" value={deductibleBps} disabled={Boolean(busy || running)} onChange={(e) => { setDeductible(Number(e.target.value)); setPlan(null); }}>{[300, 500, 750, 1000, 1500, 2000, 2500].map((v) => <option key={v} value={v}>{v / 100}%</option>)}</select><span className="text-xs text-muted">The first part of the fall you absorb.</span></label>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm"><div className="rounded-xl border border-line p-3"><div className="text-muted text-xs">Protection period</div><div className="font-medium mt-1">7 days</div></div><div className="rounded-xl border border-line p-3"><div className="text-muted text-xs">Maximum payout</div><div className="font-medium mt-1">10% of protected value</div></div></div>
-          <p className="text-xs text-ink2 leading-relaxed">The underwriting fee is paid in test HBAR and the premium in test USD. One signed run authorisation covers one purchase; the agent handles the individual payments within its limits.</p>
+          <p className="text-xs text-ink2 leading-relaxed">Fee in test HBAR, premium in test USD. One signature covers one purchase.</p>
           <div className="flex flex-wrap gap-3"><button className="btn-ghost flex-1" disabled={!canOperate || !shares || Number(shares) <= 0 || Number(shares) > 0.1} onClick={() => { setPlan(null); act("plan", { shares, deductibleBps }); }}>{busy === "plan" ? "Checking guardrails…" : "Check protection"}</button><button className="btn-primary flex-1" disabled={!canOperate || !livePlan} onClick={() => act("run", { planId: plan.id })}>{busy === "run" ? "Authorising…" : "Run agent once"}</button></div>
           <p className="text-xs text-muted">Preflight is free of payment. Prices and collateral are checked again during execution.</p>
           </div>
@@ -173,7 +201,7 @@ export default function AgentPage() {
         </Panel>
       </div>
 
-      <SectionHead eyebrow="Guardrails" title="A budget the agent cannot exceed">Daily caps per payment type, an emergency stop, and a signature from you for every run.</SectionHead>
+      <SectionHead id="guardrails" eyebrow="Guardrails" title="A budget it cannot exceed">Daily caps for each kind of payment, and an emergency stop.</SectionHead>
       <div className="card p-5 sm:p-6 space-y-5">
         <div className="flex flex-wrap gap-4 justify-between items-center"><h3 className="text-[15px] font-semibold">Spent today</h3><button className="btn-ghost btn-sm" onClick={() => setSettingsOpen((v) => !v)} aria-expanded={settingsOpen} aria-controls="agent-budget-settings">{settingsOpen ? "Close limits" : "Manage limits"}</button></div>
         <div className="grid md:grid-cols-3 gap-3"><Budget title="Underwriting fees today" used={s?.budget?.used.api} limit={limits?.apiDaily} format={hbar} /><Budget title="Insurance premiums today" used={s?.budget?.used.premium} limit={limits?.premiumDaily} format={money} /><Budget title="Gas reserved today" used={s?.budget?.used.gas} limit={limits?.gasDaily} format={hbar} /></div>
@@ -182,11 +210,11 @@ export default function AgentPage() {
         <div className="pt-5 border-t border-line flex flex-wrap items-center justify-between gap-4"><div className="max-w-xl"><div className="text-sm font-medium">Emergency stop</div><p className="text-xs text-muted mt-1">Stops new payment steps. Submitted transactions may still settle. Blocked runs require operator reconciliation.</p></div><button className={`btn-ghost ${s?.stopped ? "" : "text-bad border-bad/30"}`} disabled={!authorised || Boolean(busy) || (s?.stopped && (s?.locked || s?.environmentStopped))} onClick={() => act(s?.stopped ? "resume" : "stop")}>{busy === "stop" || busy === "resume" ? "Authorising…" : s?.stopped ? "Resume agent" : "Stop agent"}</button></div>
       </div>
 
-      <SectionHead eyebrow="Step 3" title="Follow the run">Each stage settles on Hedera and leaves a receipt you can open on HashScan.</SectionHead>
+      <SectionHead eyebrow="Step 2" title="Watch it work">Each stage leaves a receipt you can open on HashScan.</SectionHead>
       <div className="grid lg:grid-cols-[1.15fr_1fr] gap-6 items-start">
         <Panel title="Execution" desc="The selected run, stage by stage."><Execution run={selected} /></Panel>
         <div className="card p-5 sm:p-6"><h3 className="text-[15px] font-semibold mb-4">Recent runs</h3>{!s?.runs?.length ? <p className="text-sm text-muted">Run history appears after the first dashboard execution.</p> : <div className="space-y-2">{s.runs.map((r) => <button key={r.id} onClick={() => setRunId(r.id)} className={`w-full text-left rounded-xl border p-4 transition ${selected?.id === r.id ? "border-accent/40 bg-accentSoft" : "border-line hover:bg-sunk"}`} aria-pressed={selected?.id === r.id}><div className="flex justify-between gap-3 text-sm"><span className="font-medium">{r.data.parameters?.shares} NVDA shares</span><span className={r.status === "complete" ? "text-good" : r.status === "blocked" ? "text-warn" : "text-accent"}>{r.status === "complete" ? "Complete" : r.status === "blocked" ? "Review" : "Running"}</span></div><div className="text-xs text-muted mt-2">{when(r.created_at)} · {(r.data.parameters?.deductibleBps || 0) / 100}% deductible</div></button>)}</div>}
-          <div className="mt-6 pt-5 border-t border-line"><h3 className="font-medium text-sm">Restricted to this mandate</h3><div className="mt-3 space-y-2 text-xs text-ink2">{["Hedera testnet and approved contracts", "Share ownership proven on-chain", "Exact approvals and reserved collateral", "Single-use controller authorisations", "Persistent budgets and replay protection", "Private key never sent to the browser"].map((text) => <p key={text}>✓ {text}</p>)}</div>{s?.hcsTopic && <a className="text-xs text-accent underline mt-4 inline-block" href={`https://hashscan.io/testnet/topic/${s.hcsTopic}`} target="_blank" rel="noreferrer">Audit topic {s.hcsTopic} ↗</a>}</div>
+          {s?.hcsTopic && <div className="mt-6 pt-5 border-t border-line"><a className="text-xs text-accent underline inline-block" href={`https://hashscan.io/testnet/topic/${s.hcsTopic}`} target="_blank" rel="noreferrer">Audit topic {s.hcsTopic} ↗</a></div>}
         </div>
       </div>
 
@@ -195,5 +223,6 @@ export default function AgentPage() {
       </div>
       {events.length > 0 && <details className="card p-5"><summary className="text-sm font-medium cursor-pointer">Merchant settlement evidence · {events.length} records</summary><div className="mt-4 divide-y divide-line">{events.map((e) => <div key={e.seq} className="py-3 flex flex-wrap justify-between items-center gap-3"><div className="text-sm">{e.event === "x402.settled" ? "Underwriting payment settled" : e.event}<div className="text-xs text-muted mt-1">{when(e.at)}</div></div>{e.hashscan && <a href={e.hashscan} target="_blank" rel="noreferrer" className="text-xs text-accent underline">HashScan ↗</a>}</div>)}</div></details>}
     </Section>
+    <Faq items={FAQ} />
   </>;
 }

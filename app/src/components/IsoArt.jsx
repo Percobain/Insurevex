@@ -27,10 +27,14 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const fly = (a, b, t, arc = 60) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t) + Math.sin(Math.PI * t) * arc];
 const money = (v) => "$" + Math.round(v).toLocaleString("en-US");
 
-/** Scene progress 0..1 at ~30 fps, restarting each time the scene scrolls into view. */
+/**
+ * Scene progress 0..1 at ~30 fps, restarting each time the scene scrolls into view.
+ * Returns [ref, phase, seek]; seek(p) jumps the loop to phase p and keeps playing from there.
+ */
 function usePhase(period, still = 0.62) {
   const ref = useRef(null);
   const [phase, setPhase] = useState(still);
+  const t0Ref = useRef(0);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -38,16 +42,15 @@ function usePhase(period, still = 0.62) {
     if (pinned !== null) return setPhase(clamp(Number(pinned) || 0, 0, 0.999));
     if (typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let raf = 0;
-    let t0 = 0;
     const tick = (now) => {
       raf = requestAnimationFrame(tick);
-      setPhase(((now - t0) % period) / period);
+      setPhase((((now - t0Ref.current) % period) + period) % period / period);
     };
     const io = new IntersectionObserver(
       ([e]) => {
         cancelAnimationFrame(raf);
         if (e.isIntersecting) {
-          t0 = performance.now();
+          t0Ref.current = performance.now();
           setPhase(0);
           raf = requestAnimationFrame(tick);
         }
@@ -60,7 +63,12 @@ function usePhase(period, still = 0.62) {
       cancelAnimationFrame(raf);
     };
   }, [period]);
-  return [ref, phase];
+  const seek = (p) => {
+    const at = clamp(p, 0, 0.999);
+    t0Ref.current = performance.now() - at * period;
+    setPhase(at);
+  };
+  return [ref, phase, seek];
 }
 
 function useIds() {
@@ -195,14 +203,27 @@ function Ripple({ at, age }) {
   return <ellipse cx={at[0]} cy={at[1]} rx={r} ry={r * 0.5} className="iso-ripple" style={{ opacity: 1 - age }} />;
 }
 
-/** The steps a scene acts out; the current one lights up. */
-export function Steps({ items, active }) {
+/**
+ * The steps a scene acts out; the current one lights up.
+ * Pass `starts` (the phase each step begins at) and `onSeek` to make every step a button that jumps the scene there.
+ */
+export function Steps({ items, active, starts, onSeek }) {
+  const go = starts && onSeek ? (i) => onSeek(starts[i] + 0.004) : null;
   return (
     <ol className="iso-steps">
       {items.map((t, i) => (
         <li key={t} className={i === active ? "is-active" : i < active ? "is-done" : undefined}>
-          <span className="n">{i + 1}</span>
-          {t}
+          {go ? (
+            <button type="button" onClick={() => go(i)} aria-current={i === active ? "step" : undefined} title={`Jump to step ${i + 1}`}>
+              <span className="n">{i + 1}</span>
+              {t}
+            </button>
+          ) : (
+            <>
+              <span className="n">{i + 1}</span>
+              {t}
+            </>
+          )}
         </li>
       ))}
     </ol>
@@ -237,7 +258,7 @@ function Shield({ x, y, s = 1, opacity = 1, label }) {
  * Centre: the vault, whose unit price rises when the premium lands. Numbers follow ProtectedNote.floorFor (5%, 1 year).
  */
 export function LayerArt() {
-  const [ref, phase] = usePhase(14000, 0.78);
+  const [ref, phase, seek] = usePhase(14000, 0.78);
   const ids = useIds();
   const S = [-235, 95];
   const T = [-265, -95];
@@ -297,7 +318,7 @@ export function LayerArt() {
         <Tag at={P(E[0], E[1], 34)} text="engine quotes $90 / month" dx={70} dy={40} opacity={span(phase, 0.38, 0.42) * (1 - span(phase, 0.6, 0.64))} />
         <Tag at={[sx, sy - 18]} text="covered: 10% → 30% fall" tone="good" dx={50} dy={-30} opacity={shield} />
       </IsoSvg>
-      <Steps items={["Saver deposits $1,000", "Holder pays $90 for cover", "The premium raises every vault unit"]} active={active} />
+      <Steps items={["Saver deposits $1,000", "Holder pays $90 for cover", "The premium raises every vault unit"]} active={active} starts={[0, 0.37, 0.58]} onSeek={seek} />
     </Stage>
   );
 }
@@ -308,7 +329,7 @@ const FLOOR = 1000 / 1.05; // ProtectedNote.floorFor at a 5% T-bill rate for 1 y
 const SLEEVE = 1000 - FLOOR;
 
 export function SaverArt() {
-  const [ref, phase] = usePhase(14000);
+  const [ref, phase, seek] = usePhase(14000);
   const ids = useIds();
   const S = [-170, 20];
   const SPLIT = [-50, 0, 36];
@@ -391,7 +412,7 @@ export function SaverArt() {
         <Tag at={P(PR[0], PR[1], PR[2])} text="holders' premiums" tone="accent" dx={10} dy={-80} opacity={span(phase, 0.52, 0.56) * (1 - span(phase, 0.8, 0.84))} />
         <Tag at={P(S[0], S[1], 52)} text={`$1,000 + units worth $${units.toFixed(2)}`} tone="ink" dy={-30} opacity={span(phase, 0.9, 0.93) * (1 - out)} />
       </IsoSvg>
-      <Steps items={["Deposit $1,000", "$952 to T-bills, $48 to vault units", "Premiums raise the unit price", "$1,000 back, plus the units"]} active={active} />
+      <Steps items={["Deposit $1,000", "$952 to T-bills, $48 to vault units", "Premiums raise the unit price", "$1,000 back, plus the units"]} active={active} starts={[0, 0.18, 0.44, 0.8]} onSeek={seek} />
     </Stage>
   );
 }
@@ -408,7 +429,7 @@ function fallAt(p) {
 }
 
 export function HolderArt() {
-  const [ref, phase] = usePhase(15000, 0.5);
+  const [ref, phase, seek] = usePhase(15000, 0.5);
   const ids = useIds();
   const H = [-195, 0];
   const RULER = { x: -40, y: -80, w: 130, d: 12, h: 172 };
@@ -463,7 +484,7 @@ export function HolderArt() {
         {phase > 0.16 && phase < 0.86 && <Tag at={markerPt} text={state} tone={payout > 0 ? "good" : ""} dx={150} dy={-10} />}
         <Tag at={P(PAY[0], PAY[1], 6 + Math.max(1, nCoins) * 4)} text={`payout ${money(payout)}`} tone="good" dy={-40} size="lg" opacity={fade} />
       </IsoSvg>
-      <Steps items={["Pay $90 to cover a 10–30% fall", "Falls 5%: $0", "Falls 25%: $1,500", "Falls 40%: $2,000 max"]} active={active} />
+      <Steps items={["Pay $90 to cover a 10–30% fall", "Falls 5%: $0", "Falls 25%: $1,500", "Falls 40%: $2,000 max"]} active={active} starts={[0, 0.16, 0.34, 0.58]} onSeek={seek} />
     </Stage>
   );
 }
@@ -474,7 +495,7 @@ const CRASH = [0, 0.012, -0.008, 0.004, -0.02, -0.014, -0.04, -0.03, -0.062, -0.
 const CALM = [0, 0.01, -0.006, 0.014, 0.02, 0.008, 0.024, 0.014, 0.004, 0.018, 0.03, 0.024, 0.01, 0.02, 0.014, 0.03, 0.024, 0.018, 0.02];
 
 export function SettleArt() {
-  const [ref, phase] = usePhase(15000, 0.36);
+  const [ref, phase, seek] = usePhase(15000, 0.36);
   const ids = useIds();
   const crash = phase < 0.5;
   const h = (phase % 0.5) / 0.5;
@@ -553,7 +574,7 @@ export function SettleArt() {
         <Tag at={P(HOLDER[0], HOLDER[1], 8)} text="Holder" tone="ink" dx={60} dy={40} />
         <Tag at={P(POOL[0], POOL[1], 46)} text="Vault" tone="good" dx={-40} dy={-40} />
       </IsoSvg>
-      <Steps items={["Official close posted on-chain", "Crash: the vault pays $1,500", "Calm: the $90 goes to savers"]} active={active} />
+      <Steps items={["Official close posted on-chain", "Crash: the vault pays $1,500", "Calm: the $90 goes to savers"]} active={active} starts={[0, 0.24, 0.74]} onSeek={seek} />
     </Stage>
   );
 }
@@ -680,7 +701,7 @@ function CardArt({ kind }) {
 }
 
 export function SystemArt() {
-  const [ref, phase] = usePhase(18000, 0.1);
+  const [ref, phase, seek] = usePhase(18000, 0.1);
   const ids = useIds();
   const step = Math.min(3, Math.floor(phase * 4));
   const local = phase * 4 - step;
@@ -806,7 +827,7 @@ export function SystemArt() {
           })}
         </IsoSvg>
       </div>
-      <Steps items={STORY.map((s) => s[0])} active={step} />
+      <Steps items={STORY.map((s) => s[0])} active={step} starts={[0, 0.25, 0.5, 0.75]} onSeek={seek} />
     </Stage>
   );
 }
@@ -819,7 +840,7 @@ function cardForWire(i) {
 /* ───────────────────────── The pool: tranches and collateral ───────────────────────── */
 
 export function PoolArt() {
-  const [ref, phase] = usePhase(12000);
+  const [ref, phase, seek] = usePhase(12000);
   const ids = useIds();
   const HOLDERS = [[-235, -95], [-235, 45]];
   const CAGES = [{ x: 105, y: -125 }, { x: 105, y: 15 }];
@@ -879,7 +900,7 @@ export function PoolArt() {
         <Tag at={P(-20, -20, TOP)} text="crash: Pro LP pays first" dx={60} dy={-44} tone="accent" opacity={span(phase, 0.62, 0.66) * (1 - span(phase, 0.8, 0.82))} />
         <Tag at={P(137, 47, 40)} text="calm: collateral released" dx={70} dy={40} tone="good" opacity={span(phase, 0.82, 0.86) * (1 - out)} />
       </IsoSvg>
-      <Steps items={["Premiums in", "Max payout locked", "Crash: Pro LP loses first", "Calm: collateral released"]} active={active} />
+      <Steps items={["Premiums in", "Max payout locked", "Crash: Pro LP loses first", "Calm: collateral released"]} active={active} starts={[0, 0.28, 0.54, 0.78]} onSeek={seek} />
     </Stage>
   );
 }
@@ -896,7 +917,7 @@ const AGENT_HOLD = [0.15, 0.4, 0.62, 0.8, 0.9];
  * Pass `stage` (one of AGENT_STAGES) to hold the scene on a live run's stage.
  */
 export function AgentArt({ stage }) {
-  const [ref, loop] = usePhase(17000, 0.4);
+  const [ref, loop, seek] = usePhase(17000, 0.4);
   const ids = useIds();
   const held = AGENT_STAGES.indexOf(stage);
   const ph = held >= 0 ? AGENT_HOLD[held] : loop;
@@ -1027,7 +1048,7 @@ export function AgentArt({ stage }) {
         {k === 3 && ph > 0.74 && <Tag at={P(ax, 0, AZ + 6)} text="spending record anchored" tone="good" dy={70} />}
         {k === 4 && <Tag at={P(ax, 0, AZ + 6)} text="protected · within budget" tone="good" dy={70} opacity={1 - span(ph, 0.92, 0.96)} />}
       </IsoSvg>
-      <Steps items={["Check guardrails", "Pay for underwriting", "Buy protection", "Record the audit", "Protection active"]} active={k} />
+      <Steps items={["Check guardrails", "Pay for underwriting", "Buy protection", "Record the audit", "Protection active"]} active={k} starts={[0, 0.21, 0.46, 0.68, 0.86]} onSeek={held >= 0 ? undefined : seek} />
     </Stage>
   );
 }

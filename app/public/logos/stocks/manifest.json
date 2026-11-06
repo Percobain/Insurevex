@@ -1,0 +1,632 @@
+{
+  "AMS:AD": {
+    "src": "/logos/stocks/ams-ad.png",
+    "name": "Ahold Delhaize",
+    "market": "NL",
+    "domain": "aholddelhaize.com",
+    "source": "https://www.google.com/s2/favicons?domain=aholddelhaize.com&sz=128"
+  },
+  "AMS:ASML": {
+    "src": "/logos/stocks/ams-asml.png",
+    "name": "ASML",
+    "market": "NL",
+    "domain": "asml.com",
+    "source": "https://www.google.com/s2/favicons?domain=asml.com&sz=128"
+  },
+  "AMS:INGA": {
+    "src": "/logos/stocks/ams-inga.png",
+    "name": "ING",
+    "market": "NL",
+    "domain": "ing.com",
+    "source": "https://www.google.com/s2/favicons?domain=ing.com&sz=128"
+  },
+  "ASX:BHP": {
+    "src": "/logos/stocks/asx-bhp.jpg",
+    "name": "BHP",
+    "market": "AU",
+    "domain": "bhp.com",
+    "source": "https://www.google.com/s2/favicons?domain=bhp.com&sz=128"
+  },
+  "ASX:CBA": {
+    "src": "/logos/stocks/asx-cba.png",
+    "name": "Commonwealth Bank",
+    "market": "AU",
+    "domain": "commbank.com.au",
+    "source": "https://www.google.com/s2/favicons?domain=commbank.com.au&sz=128"
+  },
+  "ASX:CSL": {
+    "src": "/logos/stocks/asx-csl.png",
+    "name": "CSL",
+    "market": "AU",
+    "domain": "csl.com",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/CSL_Limited_logo.svg/250px-CSL_Limited_logo.svg.png"
+  },
+  "B3:ITUB4": {
+    "src": "/logos/stocks/b3-itub4.png",
+    "name": "Itau Unibanco",
+    "market": "BR",
+    "domain": "itau.com.br",
+    "source": "https://www.google.com/s2/favicons?domain=itau.com.br&sz=128"
+  },
+  "B3:PETR4": {
+    "src": "/logos/stocks/b3-petr4.png",
+    "name": "Petrobras",
+    "market": "BR",
+    "domain": "petrobras.com.br",
+    "source": "https://www.google.com/s2/favicons?domain=petrobras.com.br&sz=128"
+  },
+  "B3:VALE3": {
+    "src": "/logos/stocks/b3-vale3.png",
+    "name": "Vale",
+    "market": "BR",
+    "domain": "vale.com",
+    "source": "https://www.google.com/s2/favicons?domain=vale.com&sz=128"
+  },
+  "BIT:ENEL": {
+    "src": "/logos/stocks/bit-enel.jpg",
+    "name": "Enel",
+    "market": "IT",
+    "domain": "enel.com",
+    "source": "https://www.google.com/s2/favicons?domain=enel.com&sz=128"
+  },
+  "BIT:ISP": {
+    "src": "/logos/stocks/bit-isp.png",
+    "name": "Intesa Sanpaolo",
+    "market": "IT",
+    "domain": "intesasanpaolo.com",
+    "source": "https://www.google.com/s2/favicons?domain=intesasanpaolo.com&sz=128"
+  },
+  "BIT:RACE": {
+    "src": "/logos/stocks/bit-race.png",
+    "name": "Ferrari",
+    "market": "IT",
+    "domain": "ferrari.com",
+    "source": "https://www.google.com/s2/favicons?domain=ferrari.com&sz=128"
+  },
+  "BME:IBE": {
+    "src": "/logos/stocks/bme-ibe.png",
+    "name": "Iberdrola",
+    "market": "ES",
+    "domain": "iberdrola.com",
+    "source": "https://www.google.com/s2/favicons?domain=iberdrola.com&sz=128"
+  },
+  "BME:ITX": {
+    "src": "/logos/stocks/bme-itx.png",
+    "name": "Inditex",
+    "market": "ES",
+    "domain": "inditex.com",
+    "source": "https://www.google.com/s2/favicons?domain=inditex.com&sz=128"
+  },
+  "BME:SAN": {
+    "src": "/logos/stocks/bme-san.png",
+    "name": "Santander",
+    "market": "ES",
+    "domain": "santander.com",
+    "source": "https://www.google.com/s2/favicons?domain=santander.com&sz=128"
+  },
+  "BMV:AMXB": {
+    "src": "/logos/stocks/bmv-amxb.png",
+    "name": "America Movil",
+    "market": "MX",
+    "domain": "americamovil.com",
+    "source": "https://www.google.com/s2/favicons?domain=americamovil.com&sz=128"
+  },
+  "BMV:GFNORTEO": {
+    "src": "/logos/stocks/bmv-gfnorteo.png",
+    "name": "Banorte",
+    "market": "MX",
+    "domain": "banorte.com",
+    "source": "https://www.google.com/s2/favicons?domain=banorte.com&sz=128"
+  },
+  "BMV:WALMEX": {
+    "src": "/logos/stocks/bmv-walmex.png",
+    "name": "Walmart de Mexico",
+    "market": "MX",
+    "domain": "walmex.mx",
+    "source": "https://www.google.com/s2/favicons?domain=walmex.mx&sz=128"
+  },
+  "EPA:AIR": {
+    "src": "/logos/stocks/epa-air.png",
+    "name": "Airbus",
+    "market": "FR",
+    "domain": "airbus.com",
+    "source": "https://www.google.com/s2/favicons?domain=airbus.com&sz=128"
+  },
+  "EPA:BNP": {
+    "src": "/logos/stocks/epa-bnp.jpg",
+    "name": "BNP Paribas",
+    "market": "FR",
+    "domain": "group.bnpparibas",
+    "source": "https://www.google.com/s2/favicons?domain=group.bnpparibas&sz=128"
+  },
+  "EPA:MC": {
+    "src": "/logos/stocks/epa-mc.jpg",
+    "name": "LVMH",
+    "market": "FR",
+    "domain": "lvmh.com",
+    "source": "https://www.google.com/s2/favicons?domain=lvmh.com&sz=128"
+  },
+  "EPA:TTE": {
+    "src": "/logos/stocks/epa-tte.png",
+    "name": "TotalEnergies",
+    "market": "FR",
+    "domain": "totalenergies.com",
+    "source": "https://www.google.com/s2/favicons?domain=totalenergies.com&sz=128"
+  },
+  "HKEX:0005": {
+    "src": "/logos/stocks/hkex-0005.png",
+    "name": "HSBC Holdings",
+    "market": "HK",
+    "domain": "hsbc.com",
+    "source": "https://www.google.com/s2/favicons?domain=hsbc.com&sz=128"
+  },
+  "HKEX:0700": {
+    "src": "/logos/stocks/hkex-0700.png",
+    "name": "Tencent",
+    "market": "HK",
+    "domain": "tencent.com",
+    "source": "https://www.google.com/s2/favicons?domain=tencent.com&sz=128"
+  },
+  "HKEX:1299": {
+    "src": "/logos/stocks/hkex-1299.png",
+    "name": "AIA",
+    "market": "HK",
+    "domain": "aia.com",
+    "source": "https://www.google.com/s2/favicons?domain=www.aia.com&sz=128"
+  },
+  "HKEX:9988": {
+    "src": "/logos/stocks/hkex-9988.png",
+    "name": "Alibaba",
+    "market": "HK",
+    "domain": "alibaba.com",
+    "source": "https://www.google.com/s2/favicons?domain=alibaba.com&sz=128"
+  },
+  "IDX:BBCA": {
+    "src": "/logos/stocks/idx-bbca.png",
+    "name": "Bank Central Asia",
+    "market": "ID",
+    "domain": "bca.co.id",
+    "source": "https://www.google.com/s2/favicons?domain=bca.co.id&sz=128"
+  },
+  "JSE:FSR": {
+    "src": "/logos/stocks/jse-fsr.png",
+    "name": "FirstRand",
+    "market": "ZA",
+    "domain": "firstrand.co.za",
+    "source": "https://www.firstrand.co.za/images/logos/favicon.png"
+  },
+  "JSE:NPN": {
+    "src": "/logos/stocks/jse-npn.png",
+    "name": "Naspers",
+    "market": "ZA",
+    "domain": "naspers.com",
+    "source": "https://www.google.com/s2/favicons?domain=naspers.com&sz=128"
+  },
+  "JSE:SBK": {
+    "src": "/logos/stocks/jse-sbk.jpg",
+    "name": "Standard Bank",
+    "market": "ZA",
+    "domain": "standardbank.com",
+    "source": "https://www.google.com/s2/favicons?domain=standardbank.com&sz=128"
+  },
+  "KRX:000660": {
+    "src": "/logos/stocks/krx-000660.png",
+    "name": "SK Hynix",
+    "market": "KR",
+    "domain": "skhynix.com",
+    "source": "https://www.google.com/s2/favicons?domain=skhynix.com&sz=128"
+  },
+  "KRX:005380": {
+    "src": "/logos/stocks/krx-005380.png",
+    "name": "Hyundai Motor",
+    "market": "KR",
+    "domain": "hyundai.com",
+    "source": "https://www.google.com/s2/favicons?domain=hyundai.com&sz=128"
+  },
+  "KRX:005930": {
+    "src": "/logos/stocks/krx-005930.png",
+    "name": "Samsung Electronics",
+    "market": "KR",
+    "domain": "samsung.com",
+    "source": "https://www.google.com/s2/favicons?domain=samsung.com&sz=128"
+  },
+  "LSE:AZN": {
+    "src": "/logos/stocks/lse-azn.png",
+    "name": "AstraZeneca",
+    "market": "UK",
+    "domain": "astrazeneca.com",
+    "source": "https://www.google.com/s2/favicons?domain=astrazeneca.com&sz=128"
+  },
+  "LSE:BP": {
+    "src": "/logos/stocks/lse-bp.png",
+    "name": "BP",
+    "market": "UK",
+    "domain": "bp.com",
+    "source": "https://www.google.com/s2/favicons?domain=www.bp.com&sz=128"
+  },
+  "LSE:HSBA": {
+    "src": "/logos/stocks/lse-hsba.png",
+    "name": "HSBC",
+    "market": "UK",
+    "domain": "hsbc.com",
+    "source": "https://www.google.com/s2/favicons?domain=hsbc.com&sz=128"
+  },
+  "LSE:RIO": {
+    "src": "/logos/stocks/lse-rio.png",
+    "name": "Rio Tinto",
+    "market": "UK",
+    "domain": "riotinto.com",
+    "source": "https://www.google.com/s2/favicons?domain=riotinto.com&sz=128"
+  },
+  "LSE:SHEL": {
+    "src": "/logos/stocks/lse-shel.png",
+    "name": "Shell",
+    "market": "UK",
+    "domain": "shell.com",
+    "source": "https://www.google.com/s2/favicons?domain=shell.com&sz=128"
+  },
+  "LSE:ULVR": {
+    "src": "/logos/stocks/lse-ulvr.png",
+    "name": "Unilever",
+    "market": "UK",
+    "domain": "unilever.com",
+    "source": "https://www.google.com/s2/favicons?domain=unilever.com&sz=128"
+  },
+  "MIL:ENI": {
+    "src": "/logos/stocks/mil-eni.png",
+    "name": "Eni",
+    "market": "IT",
+    "domain": "eni.com",
+    "source": "https://www.google.com/s2/favicons?domain=eni.com&sz=128"
+  },
+  "MIL:ISP": {
+    "src": "/logos/stocks/mil-isp.png",
+    "name": "Intesa Sanpaolo",
+    "market": "IT",
+    "domain": "intesasanpaolo.com",
+    "source": "https://www.google.com/s2/favicons?domain=intesasanpaolo.com&sz=128"
+  },
+  "NASDAQ:AAPL": {
+    "src": "/logos/stocks/nasdaq-aapl.png",
+    "name": "Apple",
+    "market": "US",
+    "domain": "apple.com",
+    "source": "https://www.google.com/s2/favicons?domain=apple.com&sz=128"
+  },
+  "NASDAQ:AMZN": {
+    "src": "/logos/stocks/nasdaq-amzn.png",
+    "name": "Amazon",
+    "market": "US",
+    "domain": "amazon.com",
+    "source": "https://www.google.com/s2/favicons?domain=amazon.com&sz=128"
+  },
+  "NASDAQ:META": {
+    "src": "/logos/stocks/nasdaq-meta.jpg",
+    "name": "Meta",
+    "market": "US",
+    "domain": "meta.com",
+    "source": "https://www.google.com/s2/favicons?domain=meta.com&sz=128"
+  },
+  "NASDAQ:MSFT": {
+    "src": "/logos/stocks/nasdaq-msft.png",
+    "name": "Microsoft",
+    "market": "US",
+    "domain": "microsoft.com",
+    "source": "https://www.google.com/s2/favicons?domain=microsoft.com&sz=128"
+  },
+  "NASDAQ:NVDA": {
+    "src": "/logos/stocks/nasdaq-nvda.png",
+    "name": "NVIDIA",
+    "market": "US",
+    "domain": "nvidia.com",
+    "source": "https://www.google.com/s2/favicons?domain=nvidia.com&sz=128"
+  },
+  "NASDAQ:QQQ": {
+    "src": "/logos/stocks/nasdaq-qqq.png",
+    "name": "Nasdaq-100 ETF",
+    "market": "US",
+    "domain": "invesco.com",
+    "source": "https://www.google.com/s2/favicons?domain=invesco.com&sz=128"
+  },
+  "NASDAQ:TSLA": {
+    "src": "/logos/stocks/nasdaq-tsla.png",
+    "name": "Tesla",
+    "market": "US",
+    "domain": "tesla.com",
+    "source": "https://www.google.com/s2/favicons?domain=tesla.com&sz=128"
+  },
+  "NSE:ADANIENT": {
+    "src": "/logos/stocks/nse-adanient.png",
+    "name": "Adani Enterprises",
+    "market": "IN",
+    "domain": "adanienterprises.com",
+    "source": "https://www.google.com/s2/favicons?domain=adanienterprises.com&sz=128"
+  },
+  "NSE:HDFCBANK": {
+    "src": "/logos/stocks/nse-hdfcbank.png",
+    "name": "HDFC Bank",
+    "market": "IN",
+    "domain": "hdfcbank.com",
+    "source": "https://www.google.com/s2/favicons?domain=hdfcbank.com&sz=128"
+  },
+  "NSE:ICICIBANK": {
+    "src": "/logos/stocks/nse-icicibank.png",
+    "name": "ICICI Bank",
+    "market": "IN",
+    "domain": "icicibank.com",
+    "source": "https://www.google.com/s2/favicons?domain=icicibank.com&sz=128"
+  },
+  "NSE:INDUSINDBK": {
+    "src": "/logos/stocks/nse-indusindbk.png",
+    "name": "IndusInd Bank",
+    "market": "IN",
+    "domain": "indusind.com",
+    "source": "https://www.google.com/s2/favicons?domain=indusind.com&sz=128"
+  },
+  "NSE:INFY": {
+    "src": "/logos/stocks/nse-infy.png",
+    "name": "Infosys",
+    "market": "IN",
+    "domain": "infosys.com",
+    "source": "https://www.google.com/s2/favicons?domain=infosys.com&sz=128"
+  },
+  "NSE:RELIANCE": {
+    "src": "/logos/stocks/nse-reliance.png",
+    "name": "Reliance Industries",
+    "market": "IN",
+    "domain": "ril.com",
+    "source": "https://www.google.com/s2/favicons?domain=ril.com&sz=128"
+  },
+  "NSE:SBIN": {
+    "src": "/logos/stocks/nse-sbin.png",
+    "name": "State Bank of India",
+    "market": "IN",
+    "domain": "onlinesbi.sbi",
+    "source": "https://www.google.com/s2/favicons?domain=onlinesbi.sbi&sz=128"
+  },
+  "NSE:TCS": {
+    "src": "/logos/stocks/nse-tcs.png",
+    "name": "Tata Consultancy",
+    "market": "IN",
+    "domain": "tcs.com",
+    "source": "https://www.google.com/s2/favicons?domain=www.tcs.com&sz=128"
+  },
+  "NYSE:JPM": {
+    "src": "/logos/stocks/nyse-jpm.jpg",
+    "name": "JPMorgan",
+    "market": "US",
+    "domain": "jpmorganchase.com",
+    "source": "https://www.google.com/s2/favicons?domain=jpmorganchase.com&sz=128"
+  },
+  "NYSE:XOM": {
+    "src": "/logos/stocks/nyse-xom.png",
+    "name": "Exxon Mobil",
+    "market": "US",
+    "domain": "exxonmobil.com",
+    "source": "https://www.google.com/s2/favicons?domain=exxonmobil.com&sz=128"
+  },
+  "NYSEARCA:SPY": {
+    "src": "/logos/stocks/nysearca-spy.png",
+    "name": "S&P 500 ETF",
+    "market": "US",
+    "domain": "ssga.com",
+    "source": "https://www.google.com/s2/favicons?domain=ssga.com&sz=128"
+  },
+  "SGX:D05": {
+    "src": "/logos/stocks/sgx-d05.png",
+    "name": "DBS",
+    "market": "SG",
+    "domain": "dbs.com",
+    "source": "https://www.google.com/s2/favicons?domain=dbs.com&sz=128"
+  },
+  "SGX:O39": {
+    "src": "/logos/stocks/sgx-o39.png",
+    "name": "OCBC",
+    "market": "SG",
+    "domain": "ocbc.com",
+    "source": "https://www.google.com/s2/favicons?domain=ocbc.com&sz=128"
+  },
+  "SGX:Z74": {
+    "src": "/logos/stocks/sgx-z74.png",
+    "name": "Singtel",
+    "market": "SG",
+    "domain": "singtel.com",
+    "source": "https://www.google.com/s2/favicons?domain=singtel.com&sz=128"
+  },
+  "SIX:NESN": {
+    "src": "/logos/stocks/six-nesn.jpg",
+    "name": "Nestle",
+    "market": "CH",
+    "domain": "nestle.com",
+    "source": "https://www.google.com/s2/favicons?domain=nestle.com&sz=128"
+  },
+  "SIX:NOVN": {
+    "src": "/logos/stocks/six-novn.png",
+    "name": "Novartis",
+    "market": "CH",
+    "domain": "novartis.com",
+    "source": "https://www.google.com/s2/favicons?domain=novartis.com&sz=128"
+  },
+  "SIX:ROG": {
+    "src": "/logos/stocks/six-rog.png",
+    "name": "Roche",
+    "market": "CH",
+    "domain": "roche.com",
+    "source": "https://www.google.com/s2/favicons?domain=roche.com&sz=128"
+  },
+  "SIX:UBSG": {
+    "src": "/logos/stocks/six-ubsg.png",
+    "name": "UBS",
+    "market": "CH",
+    "domain": "ubs.com",
+    "source": "https://www.google.com/s2/favicons?domain=ubs.com&sz=128"
+  },
+  "SSE:600519": {
+    "src": "/logos/stocks/sse-600519.png",
+    "name": "Kweichow Moutai",
+    "market": "CN",
+    "domain": "moutaichina.com",
+    "source": "https://www.google.com/s2/favicons?domain=www.moutaichina.com&sz=128"
+  },
+  "SSE:601398": {
+    "src": "/logos/stocks/sse-601398.png",
+    "name": "ICBC",
+    "market": "CN",
+    "domain": "icbc.com.cn",
+    "source": "https://www.google.com/s2/favicons?domain=icbc.com.cn&sz=128"
+  },
+  "STO:ERIC-B": {
+    "src": "/logos/stocks/sto-eric-b.png",
+    "name": "Ericsson",
+    "market": "SE",
+    "domain": "ericsson.com",
+    "source": "https://www.google.com/s2/favicons?domain=ericsson.com&sz=128"
+  },
+  "STO:INVE-B": {
+    "src": "/logos/stocks/sto-inve-b.png",
+    "name": "Investor AB",
+    "market": "SE",
+    "domain": "investorab.com",
+    "source": "https://www.google.com/s2/favicons?domain=investorab.com&sz=128"
+  },
+  "STO:VOLV-B": {
+    "src": "/logos/stocks/sto-volv-b.png",
+    "name": "Volvo",
+    "market": "SE",
+    "domain": "volvogroup.com",
+    "source": "https://www.google.com/s2/favicons?domain=volvogroup.com&sz=128"
+  },
+  "SZSE:300750": {
+    "src": "/logos/stocks/szse-300750.png",
+    "name": "CATL",
+    "market": "CN",
+    "domain": "catl.com",
+    "source": "https://www.google.com/s2/favicons?domain=catl.com&sz=128"
+  },
+  "TADAWUL:1120": {
+    "src": "/logos/stocks/tadawul-1120.png",
+    "name": "Al Rajhi Bank",
+    "market": "SA",
+    "domain": "alrajhibank.com.sa",
+    "source": "https://www.google.com/s2/favicons?domain=alrajhibank.com.sa&sz=128"
+  },
+  "TADAWUL:2222": {
+    "src": "/logos/stocks/tadawul-2222.jpg",
+    "name": "Saudi Aramco",
+    "market": "SA",
+    "domain": "aramco.com",
+    "source": "https://www.google.com/s2/favicons?domain=aramco.com&sz=128"
+  },
+  "TSE:6758": {
+    "src": "/logos/stocks/tse-6758.png",
+    "name": "Sony",
+    "market": "JP",
+    "domain": "sony.com",
+    "source": "https://www.google.com/s2/favicons?domain=sony.com&sz=128"
+  },
+  "TSE:6861": {
+    "src": "/logos/stocks/tse-6861.png",
+    "name": "Keyence",
+    "market": "JP",
+    "domain": "keyence.com",
+    "source": "https://www.google.com/s2/favicons?domain=keyence.com&sz=128"
+  },
+  "TSE:7203": {
+    "src": "/logos/stocks/tse-7203.png",
+    "name": "Toyota",
+    "market": "JP",
+    "domain": "global.toyota",
+    "source": "https://www.google.com/s2/favicons?domain=global.toyota&sz=128"
+  },
+  "TSE:8306": {
+    "src": "/logos/stocks/tse-8306.png",
+    "name": "Mitsubishi UFJ",
+    "market": "JP",
+    "domain": "mufg.jp",
+    "source": "https://www.google.com/s2/favicons?domain=www.mufg.jp&sz=128"
+  },
+  "TSE:9984": {
+    "src": "/logos/stocks/tse-9984.png",
+    "name": "SoftBank Group",
+    "market": "JP",
+    "domain": "group.softbank",
+    "source": "https://www.google.com/s2/favicons?domain=group.softbank&sz=128"
+  },
+  "TSX:ENB": {
+    "src": "/logos/stocks/tsx-enb.png",
+    "name": "Enbridge",
+    "market": "CA",
+    "domain": "enbridge.com",
+    "source": "https://www.google.com/s2/favicons?domain=enbridge.com&sz=128"
+  },
+  "TSX:RY": {
+    "src": "/logos/stocks/tsx-ry.png",
+    "name": "Royal Bank of Canada",
+    "market": "CA",
+    "domain": "rbc.com",
+    "source": "https://www.google.com/s2/favicons?domain=rbc.com&sz=128"
+  },
+  "TSX:SHOP": {
+    "src": "/logos/stocks/tsx-shop.png",
+    "name": "Shopify",
+    "market": "CA",
+    "domain": "shopify.com",
+    "source": "https://www.google.com/s2/favicons?domain=shopify.com&sz=128"
+  },
+  "TWSE:2317": {
+    "src": "/logos/stocks/twse-2317.png",
+    "name": "Hon Hai",
+    "market": "TW",
+    "domain": "honhai.com",
+    "source": "https://www.google.com/s2/favicons?domain=www.honhai.com&sz=128"
+  },
+  "TWSE:2330": {
+    "src": "/logos/stocks/twse-2330.png",
+    "name": "TSMC",
+    "market": "TW",
+    "domain": "tsmc.com",
+    "source": "https://www.google.com/s2/favicons?domain=tsmc.com&sz=128"
+  },
+  "TWSE:2454": {
+    "src": "/logos/stocks/twse-2454.png",
+    "name": "MediaTek",
+    "market": "TW",
+    "domain": "mediatek.com",
+    "source": "https://www.google.com/s2/favicons?domain=mediatek.com&sz=128"
+  },
+  "XETRA:ALV": {
+    "src": "/logos/stocks/xetra-alv.png",
+    "name": "Allianz",
+    "market": "DE",
+    "domain": "allianz.com",
+    "source": "https://www.google.com/s2/favicons?domain=allianz.com&sz=128"
+  },
+  "XETRA:BMW": {
+    "src": "/logos/stocks/xetra-bmw.png",
+    "name": "BMW",
+    "market": "DE",
+    "domain": "bmwgroup.com",
+    "source": "https://www.google.com/s2/favicons?domain=bmwgroup.com&sz=128"
+  },
+  "XETRA:DTE": {
+    "src": "/logos/stocks/xetra-dte.png",
+    "name": "Deutsche Telekom",
+    "market": "DE",
+    "domain": "telekom.com",
+    "source": "https://www.google.com/s2/favicons?domain=telekom.com&sz=128"
+  },
+  "XETRA:SAP": {
+    "src": "/logos/stocks/xetra-sap.png",
+    "name": "SAP",
+    "market": "DE",
+    "domain": "sap.com",
+    "source": "https://www.google.com/s2/favicons?domain=sap.com&sz=128"
+  },
+  "XETRA:SIE": {
+    "src": "/logos/stocks/xetra-sie.png",
+    "name": "Siemens",
+    "market": "DE",
+    "domain": "siemens.com",
+    "source": "https://www.google.com/s2/favicons?domain=siemens.com&sz=128"
+  }
+}

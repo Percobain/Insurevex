@@ -5,7 +5,7 @@ import { usePoolState } from "@/lib/usePoolState";
 import { useSymbolNames } from "@/lib/useSymbolNames";
 import { usePolicies } from "@/components/MyPolicies";
 import { fmtMoney, fmtNum, fmtPct, fromUnits } from "@/lib/format";
-import { PageHead, Section, SectionHead, Panel, Stat, Row, useActiveChain, DeployGate, AddrLink, Placeholder } from "@/components/ui";
+import { PageHead, Section, SectionHead, Panel, Stat, Row, useActiveChain, DeployGate, AddrLink, Placeholder, HeroCtas, HowItWorks, Faq, More } from "@/components/ui";
 import { PoolArt } from "@/components/IsoArt";
 import ProPanel from "@/components/ProPanel";
 
@@ -19,6 +19,42 @@ function Meter({ label, value, max, sub }) {
     </div>
   );
 }
+
+const STEPS = [
+  { icon: "pay", title: "Premiums come in", body: "Every protection fee lands in the vault. That is what savers and Pro LPs earn.", stat: "Income for the vault" },
+  { icon: "lock", title: "Payouts set aside first", body: "Before a policy is sold, its maximum payout is locked. No policy is ever unfunded.", stat: "100% collateralised" },
+  { icon: "check", title: "Crash or calm", body: "A crash pays the holder from the locked money. Calm releases it and the vault keeps the premium.", stat: "Settled on the official close" },
+];
+
+const LOSS_ORDER = [
+  ["Premiums collected", "Absorbs losses first", "bg-sage"],
+  ["Pro LP capital", "Takes the next loss, earns more", "bg-accent text-white"],
+  ["Savers' vault units", "Only after Pro is used up", "bg-primary text-white"],
+  ["Savers' T-bills", "Never pays a claim", "bg-sunk text-muted"],
+];
+
+function LossOrder() {
+  return (
+    <div className="card p-5 sm:p-6">
+      <div className="text-sm font-medium">If a claim comes in, who pays?</div>
+      <ol className="mt-4 space-y-2">
+        {LOSS_ORDER.map(([t, sub, cls], i) => (
+          <li key={t} className={`rounded-xl px-4 py-3 flex items-center justify-between gap-3 ${cls}`}>
+            <span className="font-medium">{i + 1}. {t}</span>
+            <span className="text-xs opacity-80 text-right">{sub}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+const FAQ = [
+  ["Who puts money in the vault?", "Two groups. Savers, through protected notes, and Pro LPs, who take the first loss in exchange for a bigger share of premiums."],
+  ["Can the vault run out of money?", "No policy is sold unless its maximum payout can be locked. Half the capital is held in reserve and never backs policies, and no single stock can use more than its cap."],
+  ["What does the vault earn in a normal year?", "In the 2005–2026 backtest the long-run loss ratio was about 0.57–0.61: the vault kept roughly 40 cents of every premium dollar."],
+  ["Where does idle money sit?", "In tokenised T-bills (vxTBILL), so cash that is not locked for a policy still earns the Treasury rate."],
+];
 
 export default function PoolPage() {
   const { chainId, deployed, address } = useActiveChain();
@@ -58,23 +94,26 @@ export default function PoolPage() {
     <>
       <PageHead
         eyebrow="Underwriting vault"
-        title="Every policy is paid for before it is sold."
+        title="The vault that pays the claims."
         art={<PoolArt />}
-        facts={[["Locked", "max payout of every policy, up front"], ["Pro LP", "takes the first loss"], ["Never", "the savers' T-bill floor pays a claim"]]}
+        right={<HeroCtas items={[["See the vault live", "#live"], ["Earn as a Pro LP", "#pro"]]} />}
       >
-        Savers&apos; vault units and Pro LP capital back every policy. A reserve never backs policies, no stock can use more than its
-        cap, and idle cash sits in tokenised T-bills.
+        Savers and Pro LPs fund it. Stock holders pay premiums into it. Every policy&apos;s maximum payout is set aside before it is sold.
       </PageHead>
-      <Section>
+
+      <HowItWorks title="Premiums in, payouts locked" steps={STEPS} aside={<LossOrder />} />
+
+      <Section className="mt-20">
         <DeployGate chainId={chainId}>
-          <SectionHead eyebrow="Live on-chain" title="The vault right now" />
+          <SectionHead id="live" eyebrow="Live on-chain" title="The vault right now">Read straight from the contracts.</SectionHead>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Stat label="Pool assets" value={s.ok ? fmtMoney(total, { sym: "" }) : "—"} sub={pro.available ? `Savers ${fmtMoney(senior, { sym: "" })} · Pro ${fmtMoney(junior, { sym: "" })}` : stable} />
-            <Stat label="Locked collateral" value={s.ok ? fmtMoney(locked, { sym: "" }) : "—"} sub="max payout of open cover" />
-            <Stat label="Capacity left" value={s.ok ? fmtMoney(fromUnits(p.capacity), { sym: "" }) : "—"} sub="max payout the pool can still sell" />
-            <Stat label="Saver unit price" value={s.ok && p.sharePrice ? fmtNum(fromUnits(p.sharePrice), 4) : "—"} sub="vxUW per share, starts at 1.0000" />
+            <Stat label="Total in the vault" value={s.ok ? fmtMoney(total, { sym: "" }) : "—"} sub={pro.available ? `Savers ${fmtMoney(senior, { sym: "" })} · Pro ${fmtMoney(junior, { sym: "" })}` : stable} />
+            <Stat label="Set aside for payouts" value={s.ok ? fmtMoney(locked, { sym: "" }) : "—"} sub="max payout of open policies" />
+            <Stat label="Room for new cover" value={s.ok ? fmtMoney(fromUnits(p.capacity), { sym: "" }) : "—"} sub="more payout the vault can back" />
+            <Stat label="Vault unit price" value={s.ok && p.sharePrice ? fmtNum(fromUnits(p.sharePrice), 4) : "—"} sub="started at 1.0000, rises with premiums" />
           </div>
-          <div className="grid lg:grid-cols-3 gap-4 mt-4">
+          <More label="Risk limits, results and T-bill details" className="mt-5">
+          <div className="grid lg:grid-cols-3 gap-4">
             <Panel title="Risk limits" desc="Enforced by the contract, not the website.">
               <div className="space-y-5">
               <Meter label="Utilisation of working capital" value={locked} max={working} sub={`${fmtMoney(working, { sym: "" })} working capital = ${pro.available ? "Pro + " : ""}sleeves × (1 − reserve)`} />
@@ -105,18 +144,19 @@ export default function PoolPage() {
               <div className="text-xs text-muted mt-3">Vault <AddrLink address={addr(chainId, "TBillVault")} chainId={chainId} /></div>
             </Panel>
           </div>
-          <div className="mt-16">
+          </More>
+          <div id="pro" className="mt-16 scroll-mt-28">
             <ProPanel chainId={chainId} account={address} pro={pro} />
           </div>
           <div className="mt-16">
-            <SectionHead eyebrow="Exposure" title="Open cover by stock">Every open policy&apos;s maximum payout is locked in the vault until it settles.</SectionHead>
+            <SectionHead eyebrow="Exposure" title="What the vault is protecting">Open policies by stock, and how much is set aside for each.</SectionHead>
             <div>
               {bySymbol.length === 0 ? (
                 <Placeholder title="No open cover right now">Policies appear here as soon as they are bought.</Placeholder>
               ) : (
                 <div className="card overflow-x-auto">
                   <table className="table-x">
-                    <thead><tr><th>Stock</th><th>Policies</th><th>Protected</th><th>Max payout locked</th><th>Premiums</th><th>Share of working capital</th></tr></thead>
+                    <thead><tr><th>Stock</th><th>Policies</th><th>Protected</th><th>Set aside</th><th>Premiums</th><th>Share of working capital</th></tr></thead>
                     <tbody>
                       {bySymbol.map((r) => (
                         <tr key={r.symbol}>
@@ -136,6 +176,7 @@ export default function PoolPage() {
           </div>
         </DeployGate>
       </Section>
+      <Faq items={FAQ} />
     </>
   );
 }

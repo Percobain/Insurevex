@@ -192,3 +192,115 @@ export function DeployGate({ chainId, children }) {
     </Notice>
   );
 }
+
+/** Hero buttons: [label, href] pairs. The first is primary. */
+export function HeroCtas({ items }) {
+  return (
+    <div className="flex flex-wrap gap-3">
+      {items.map(([label, href], i) => (
+        <a key={href} href={href} className={i === 0 ? "btn-primary" : "btn-ghost"}>{label}</a>
+      ))}
+    </div>
+  );
+}
+
+const ICON_PATHS = {
+  search: "M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13ZM20 20l-4.7-4.7",
+  coin: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.5 0-2.5.8-2.5 1.9 0 2.6 5 1.4 5 4.1 0 1.1-1.1 2-2.6 2-1.2 0-2.1-.5-2.6-1.3M12 6.5V8m0 8v1.5",
+  shield: "M12 3 4.5 6v5.5c0 4.5 3.2 8.2 7.5 9.5 4.3-1.3 7.5-5 7.5-9.5V6L12 3ZM8.8 12.2l2.2 2.2 4.3-4.6",
+  lock: "M6.5 10.5h11v9.5h-11zM8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5M12 14.5v2",
+  split: "M12 3v6m0 0-6 6v6m6-12 6 6v6",
+  growth: "M4 19h16M6 15l4-4 3 3 6-7M15 7h4v4",
+  pay: "M3.5 7.5h17v10h-17zM3.5 11h17M7 14.5h3",
+  vault: "M4 4.5h16v14H4zM4 18.5V20m16-1.5V20M15 11.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM12 8.5V7m0 9v-1.5",
+  bolt: "M13 3 5 13.5h6L10 21l8-10.5h-6L13 3Z",
+  sliders: "M5 6h9m4 0h1M5 12h3m4 0h7M5 18h11m4 0h-1M16 4v4M10 10v4M18 16v4",
+  receipt: "M6 3h12v18l-3-2-3 2-3-2-3 2V3ZM9 8h6M9 12h6M9 16h3",
+  user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4.5 20.5c1-3.5 4-5.5 7.5-5.5s6.5 2 7.5 5.5",
+  chart: "M4 20V4m0 16h16M8 16v-4m4 4V8m4 8v-6",
+  hand: "M7 11V6.5a1.5 1.5 0 0 1 3 0V11m0-3.5V5a1.5 1.5 0 0 1 3 0v6m0-4.5a1.5 1.5 0 0 1 3 0V12m0-3a1.5 1.5 0 0 1 3 0v4.5c0 4-3 7-7 7h-.5c-2.4 0-4.2-1.1-5.5-3L4 13.6c-.7-1 .3-2.3 1.4-1.8L7 12.5",
+  check: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM8 12.3l2.7 2.7L16 9.6",
+};
+
+export function Icon({ name, className = "h-5 w-5" }) {
+  const d = ICON_PATHS[name];
+  if (!d) return null;
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d={d} />
+    </svg>
+  );
+}
+
+/**
+ * Landing-style "how it works": a row of connected step cards, with an optional visual beside them.
+ * Each step: { title, body, stat?, icon? }. The last step is the outcome and is drawn dark.
+ */
+export function HowItWorks({ id = "how", eyebrow = "How it works", title, steps, aside }) {
+  return (
+    <Section className="mt-10">
+      <SectionHead id={id} eyebrow={eyebrow} title={title} />
+      <div className={aside ? "grid lg:grid-cols-[1.35fr_1fr] gap-6 items-stretch" : ""}>
+        <ol className="grid sm:grid-cols-3 gap-4">
+          {steps.map((st, i) => {
+            const last = i === steps.length - 1;
+            return (
+              <li key={st.title} className={`relative rounded-2xl border p-5 flex flex-col min-w-0 ${last ? "bg-primary border-primary text-white" : "bg-card border-line"}`}>
+                <div className="flex items-center justify-between">
+                  <span className={`h-10 w-10 rounded-xl grid place-items-center ${last ? "bg-white/10 text-white" : "bg-accentSoft text-accent"}`}>
+                    <Icon name={st.icon} />
+                  </span>
+                  <span className={`font-mono text-[11px] tracking-[0.14em] ${last ? "text-white/50" : "text-muted"}`}>STEP {String(i + 1).padStart(2, "0")}</span>
+                </div>
+                <h3 className="mt-5 text-[17px] font-semibold tracking-tight leading-snug">{st.title}</h3>
+                <p className={`mt-1.5 text-sm leading-relaxed ${last ? "text-white/75" : "text-ink2"}`}>{st.body}</p>
+                {st.stat && (
+                  <div className={`mt-auto pt-4`}>
+                    <div className={`pt-4 border-t border-dashed text-sm font-semibold tabular ${last ? "border-white/20 text-white" : "border-line text-ink"}`}>{st.stat}</div>
+                  </div>
+                )}
+                {!last && (
+                  <span className="hidden sm:grid absolute top-[26px] -right-[22px] z-10 h-7 w-7 place-items-center rounded-full border border-line bg-paper text-ink2" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+        {aside}
+      </div>
+    </Section>
+  );
+}
+
+/** Short Q&A list, collapsed by default. */
+export function Faq({ items, title = "Good to know" }) {
+  return (
+    <Section className="mt-20 mb-8">
+      <SectionHead eyebrow="Questions" title={title} />
+      <div className="card divide-y divide-line">
+        {items.map(([q, a]) => (
+          <details key={q} className="group px-5 py-4">
+            <summary className="cursor-pointer list-none flex items-center justify-between gap-4 font-medium">
+              {q}<span className="text-muted transition group-open:rotate-45 text-xl leading-none">+</span>
+            </summary>
+            <p className="mt-2 text-[15px] text-ink2 leading-relaxed max-w-3xl">{a}</p>
+          </details>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/** A collapsible block for secondary detail ("Show details"). */
+export function More({ label, children, className = "" }) {
+  return (
+    <details className={`group ${className}`}>
+      <summary className="cursor-pointer list-none inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline underline-offset-4">
+        {label}<span className="transition group-open:rotate-180">⌄</span>
+      </summary>
+      <div className="mt-4">{children}</div>
+    </details>
+  );
+}

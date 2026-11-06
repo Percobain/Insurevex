@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Navbar from "@/components/ui/navbar";
 import KycBadge from "./KycBadge";
+import WalletButton from "./WalletButton";
 
 const NAV = [
   { label: "Protect", href: "/protect" },
@@ -44,7 +44,7 @@ export default function Header() {
             <KycBadge />
           </div>
           <div className="font-sans">
-            <ConnectButton chainStatus="icon" accountStatus={{ smallScreen: "avatar", largeScreen: "address" }} showBalance={false} label="Connect wallet" />
+            <WalletButton />
           </div>
         </>
       }

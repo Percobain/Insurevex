@@ -225,6 +225,10 @@ body {
 .iso-steps li.is-active { color: var(--iso-ink); font-weight: 500; }
 .iso-steps li.is-active .n { background: var(--iso-good); border-color: var(--iso-good); color: #fff; }
 .iso-steps li.is-done .n { border-color: var(--iso-good); color: var(--iso-good); }
+.iso-steps button { display: flex; align-items: center; gap: 8px; padding: 4px 8px; margin: -4px -8px; border-radius: 999px; color: inherit; font: inherit; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.iso-steps button:hover { background: rgb(26 36 35 / 0.06); color: var(--iso-ink); }
+.iso-steps button:hover .n { border-color: var(--iso-good); }
+.iso-steps button:focus-visible { outline: 2px solid var(--iso-good); outline-offset: 2px; }
 
 /* Full-bleed hero: the conveyor runs behind the headline. */
 .iso-stage.iso-bare { background: none; border: 0; padding: 0; border-radius: 0; }
@@ -292,3 +296,4 @@ body {
 .iso-screen-due { fill: var(--iso-accent); }
 .iso-screen-paid { fill: var(--iso-good); }
 .iso-screen-text { font: 700 13px var(--font-mono), ui-monospace, monospace; fill: #fff; letter-spacing: 0.06em; }
+@keyframes sp-in { from { opacity: 0; transform: translateY(-4px) scale(.985); } to { opacity: 1; transform: none; } }

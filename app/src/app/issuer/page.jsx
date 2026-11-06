@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useReadContract, useReadContracts } from "wagmi";
 import { isAddress } from "viem";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ABI, DEFAULT_ADMIN_ROLE, PRO_ABI, addr, notesOf } from "@/lib/contracts";
 import { useApi } from "@/lib/api";
 import { useTx } from "@/lib/useTx";
@@ -9,7 +10,7 @@ import { usePoolState } from "@/lib/usePoolState";
 import { useSymbolNames } from "@/lib/useSymbolNames";
 import { usePolicies } from "@/components/MyPolicies";
 import { fmtDate, fmtPct, roleId, symbolId, shortAddr, toUnits } from "@/lib/format";
-import { PageHead, Section, Notice, useActiveChain, DeployGate, Placeholder } from "@/components/ui";
+import { PageHead, Section, SectionHead, Notice, useActiveChain, DeployGate, HowItWorks } from "@/components/ui";
 import { COUNTRIES } from "@/components/KycModal";
 
 function Panel({ title, role, allowed, children, sub }) {
@@ -27,11 +28,18 @@ function Panel({ title, role, allowed, children, sub }) {
   );
 }
 
+const DUTIES = [
+  { icon: "user", title: "Verify people", body: "Approve KYC, freeze a wallet or block a country.", stat: "Only verified wallets can hold" },
+  { icon: "chart", title: "Post closing prices", body: "Write each stock's official close at expiry, then settle waiting policies.", stat: "Decides every payout" },
+  { icon: "sliders", title: "Run the products", body: "Pay note coupons, update the T-bill value and set the vault's risk limits.", stat: "Within contract bounds" },
+];
+
 const Field = ({ label, children }) => <label className="block space-y-1.5"><span className="label">{label}</span>{children}</label>;
 
 export default function IssuerPage() {
   const { chainId, address, isConnected, deployed } = useActiveChain();
   const { run, busy } = useTx();
+  const { openConnectModal } = useConnectModal();
   const reg = addr(chainId, "IdentityRegistry");
   const oracle = addr(chainId, "PriceOracle");
   const tbill = addr(chainId, "TBillVault");
@@ -105,17 +113,30 @@ export default function IssuerPage() {
   const [rK, setRK] = useState("25");
   const [rF, setRF] = useState("40");
 
-  if (!isConnected) return (<><PageHead eyebrow="Issuer console" title="Compliance and lifecycle controls." /><Section><Placeholder title="Connect the issuer wallet">Every control is an on-chain call gated by a role. The page enables the panels for the roles your wallet holds.</Placeholder></Section></>);
+  if (!isConnected) return (
+    <>
+      <PageHead eyebrow="Issuer console" title="The controls behind the product.">
+        For the regulated issuer only. Every button here is an on-chain call that only works if your wallet holds the matching role.
+      </PageHead>
+      <HowItWorks eyebrow="What the issuer does" title="Three jobs" steps={DUTIES} />
+      <Section className="mt-10 mb-8">
+        <div className="card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div><div className="font-semibold">Connect the issuer wallet</div><p className="text-sm text-ink2 mt-1">The page unlocks the panels for the roles your wallet holds. Anyone else sees them read-only.</p></div>
+          <button className="btn-primary shrink-0" onClick={openConnectModal}>Connect wallet</button>
+        </div>
+      </Section>
+    </>
+  );
 
   return (
     <>
-      <PageHead eyebrow="Issuer console" title="Compliance and lifecycle controls.">
-        Everything here is a contract call gated by an on-chain role: identity verification, freezes, jurisdiction blocks, pauses,
-        forced transfers, official closes, T-bill NAV and reserve attestations, coupons and pool risk limits.
+      <PageHead eyebrow="Issuer console" title="The controls behind the product.">
+        Each panel is an on-chain call. A green role tag means your wallet can use it.
       </PageHead>
       <Section>
         <DeployGate chainId={chainId}>
           {!r.some(Boolean) && roles.isSuccess && <div className="mb-4"><Notice tone="warn">This wallet holds no issuer roles on this chain. Panels are read-only.</Notice></div>}
+          <SectionHead eyebrow="1" title="People and compliance">Who may hold notes and buy cover.</SectionHead>
           <div className="grid lg:grid-cols-2 gap-4">
             <Panel title="Pending KYC requests" role="KYC_ROLE" allowed={isKyc} sub="From the request form. Approval writes to the IdentityRegistry.">
               {requests.isError && <p className="text-sm text-muted">Server offline: use the manual form.</p>}
@@ -159,29 +180,9 @@ export default function IssuerPage() {
               </div>
             </Panel>
 
-            <Panel title="Note lifecycle" role="AGENT_ROLE" allowed={note && agentOf(noteIdx)}>
-              {notes.length > 1 && (
-                <Field label="Series"><select className="input" value={noteIdx} onChange={(e) => setNoteIdx(Number(e.target.value))}>{notes.map((n, i) => <option key={n.address} value={i}>{n.name}</option>)}</select></Field>
-              )}
-              <div className="flex flex-wrap gap-2">
-                {notePaused.data ? (
-                  <button type="button" className="btn-ghost btn-sm" disabled={Boolean(busy)} onClick={() => run("Unpause note", { address: note.address, abi: ABI.ProtectedNote, functionName: "unpause", args: [] })}>Unpause</button>
-                ) : (
-                  <button type="button" className="btn-ghost btn-sm text-bad" disabled={Boolean(busy)} onClick={() => run("Pause note", { address: note.address, abi: ABI.ProtectedNote, functionName: "pause", args: [] })}>Pause transfers</button>
-                )}
-                <button type="button" className="btn-primary btn-sm" disabled={Boolean(busy)} onClick={() => run("Distribute coupon", { address: note.address, abi: ABI.ProtectedNote, functionName: "distributeCoupon", args: [] })}>Distribute coupon</button>
-              </div>
-              <div className="grid sm:grid-cols-3 gap-2">
-                <input className="input font-mono text-xs" placeholder="from 0x…" value={ftFrom} onChange={(e) => setFtFrom(e.target.value.trim())} />
-                <input className="input font-mono text-xs" placeholder="to 0x…" value={ftTo} onChange={(e) => setFtTo(e.target.value.trim())} />
-                <input className="input" placeholder="amount" value={ftAmt} onChange={(e) => setFtAmt(e.target.value)} />
-              </div>
-              <button type="button" className="btn-ghost btn-sm" disabled={!isAddress(ftFrom) || !isAddress(ftTo) || Boolean(busy)}
-                onClick={() => run("Forced transfer", { address: note.address, abi: ABI.ProtectedNote, functionName: "forcedTransfer", args: [ftFrom, ftTo, toUnits(ftAmt)] })}>
-                Forced transfer (lost key / court order)
-              </button>
-            </Panel>
-
+          </div>
+          <div className="mt-14"><SectionHead eyebrow="2" title="Prices and settlement">Official closes decide every payout.</SectionHead></div>
+          <div className="grid lg:grid-cols-2 gap-4">
             <Panel title="Official closes" role="REPORTER_ROLE" allowed={isReporter} sub="Policies settle only from a posted close at their exact expiry timestamp.">
               {awaiting.length > 0 && (
                 <div className="space-y-1">
@@ -209,6 +210,32 @@ export default function IssuerPage() {
                   Settle all with a close
                 </button>
               )}
+            </Panel>
+
+          </div>
+          <div className="mt-14"><SectionHead eyebrow="3" title="Products and risk">Notes, the T-bill fund and the vault's limits.</SectionHead></div>
+          <div className="grid lg:grid-cols-2 gap-4">
+            <Panel title="Note lifecycle" role="AGENT_ROLE" allowed={note && agentOf(noteIdx)}>
+              {notes.length > 1 && (
+                <Field label="Series"><select className="input" value={noteIdx} onChange={(e) => setNoteIdx(Number(e.target.value))}>{notes.map((n, i) => <option key={n.address} value={i}>{n.name}</option>)}</select></Field>
+              )}
+              <div className="flex flex-wrap gap-2">
+                {notePaused.data ? (
+                  <button type="button" className="btn-ghost btn-sm" disabled={Boolean(busy)} onClick={() => run("Unpause note", { address: note.address, abi: ABI.ProtectedNote, functionName: "unpause", args: [] })}>Unpause</button>
+                ) : (
+                  <button type="button" className="btn-ghost btn-sm text-bad" disabled={Boolean(busy)} onClick={() => run("Pause note", { address: note.address, abi: ABI.ProtectedNote, functionName: "pause", args: [] })}>Pause transfers</button>
+                )}
+                <button type="button" className="btn-primary btn-sm" disabled={Boolean(busy)} onClick={() => run("Distribute coupon", { address: note.address, abi: ABI.ProtectedNote, functionName: "distributeCoupon", args: [] })}>Distribute coupon</button>
+              </div>
+              <div className="grid sm:grid-cols-3 gap-2">
+                <input className="input font-mono text-xs" placeholder="from 0x…" value={ftFrom} onChange={(e) => setFtFrom(e.target.value.trim())} />
+                <input className="input font-mono text-xs" placeholder="to 0x…" value={ftTo} onChange={(e) => setFtTo(e.target.value.trim())} />
+                <input className="input" placeholder="amount" value={ftAmt} onChange={(e) => setFtAmt(e.target.value)} />
+              </div>
+              <button type="button" className="btn-ghost btn-sm" disabled={!isAddress(ftFrom) || !isAddress(ftTo) || Boolean(busy)}
+                onClick={() => run("Forced transfer", { address: note.address, abi: ABI.ProtectedNote, functionName: "forcedTransfer", args: [ftFrom, ftTo, toUnits(ftAmt)] })}>
+                Forced transfer (lost key / court order)
+              </button>
             </Panel>
 
             <Panel title="T-bill NAV and reserve" role="NAV_ROLE" allowed={isNav} sub="Rolls accrued NAV, sets the fund yield and records the custodian's attested T-bill holdings.">
