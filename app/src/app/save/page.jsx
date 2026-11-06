@@ -25,14 +25,14 @@ function humanTerm(sec) {
 }
 
 const NOTE_READS = ["name", "symbol", "snapshot", "couponInterval", "lastCoupon", "couponAvailable", "paused", "issueDate"];
-const USER_READS = ["balanceOf", "pendingCoupon", "claimableAtMaturity"];
+const USER_READS = ["balanceOf", "pendingCoupon", "claimableAtMaturity", "maturityClaimed"];
 
 function NoteCard({ note, chainId, account, kycOk }) {
   const now = useNow();
   const stable = stableSymbol(chainId);
   const stableAddr = addr(chainId, "stable");
   const { run, busy } = useTx();
-  const [amount, setAmount] = useState("100");
+  const [amount, setAmount] = useState("1");
   const reads = useReadContracts({
     contracts: [
       ...NOTE_READS.map((fn) => ({ address: note.address, abi: ABI.ProtectedNote, functionName: fn, chainId })),
@@ -44,8 +44,9 @@ function NoteCard({ note, chainId, account, kycOk }) {
   const r = (reads.data || []).map((x) => (x.status === "success" ? x.result : undefined));
   const [name, symbol, snap, couponInterval, lastCoupon, couponAvailable, paused] = r;
   const floor1000 = r[NOTE_READS.length];
-  const [bal, pending, claimable] = account ? r.slice(NOTE_READS.length + 1) : [];
+  const [bal, pending, claimable, redeemed] = account ? r.slice(NOTE_READS.length + 1) : [];
   const allowance = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "allowance", args: [account, note.address], query: { enabled: Boolean(account && stableAddr) } });
+  const wallet = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "balanceOf", args: [account], query: { enabled: Boolean(account && stableAddr), refetchInterval: 15_000 } });
 
   if (!snap) return <div className="card h-80 animate-pulse" />;
   const [supply, floorVal, sleeveVal, sleevePrin, couponsPaid, maturity, subEnd, rateBps, matured] = snap;
@@ -55,6 +56,9 @@ function NoteCard({ note, chainId, account, kycOk }) {
   const couponDue = now >= Number(lastCoupon || 0) + Number(couponInterval || 0);
   const units = toUnits(amount);
   const sleevePnL = fromUnits(sleeveVal) - fromUnits(sleevePrin);
+  const walletUnits = wallet.data;
+  const overBalance = walletUnits !== undefined && units > walletUnits;
+  const hasRedeemed = Boolean(matured && redeemed && redeemed > 0n && (!claimable || claimable === 0n));
 
   async function subscribe() {
     if ((allowance.data || 0n) < units) {
@@ -91,11 +95,12 @@ function NoteCard({ note, chainId, account, kycOk }) {
         </div>
       </div>
 
-      {account && bal > 0n && (
+      {account && (bal > 0n || hasRedeemed) && (
         <div className="rounded-xl border border-line p-4 mt-3 space-y-1.5 text-sm">
           <div className="flex justify-between"><span className="text-ink2">You hold</span><span className="tabular font-semibold">{fmtMoney(fromUnits(bal), { sym: "" })} {stable}</span></div>
           <div className="flex justify-between"><span className="text-ink2">Coupon ready to claim</span><span className="tabular">{fmtMoney(fromUnits(pending), { sym: "" })}</span></div>
-          {matured && <div className="flex justify-between"><span className="text-ink2">Claimable now</span><span className="tabular text-good">{fmtMoney(fromUnits(claimable), { sym: "" })}</span></div>}
+          {matured && !hasRedeemed && <div className="flex justify-between"><span className="text-ink2">Claimable now</span><span className="tabular text-good">{fmtMoney(fromUnits(claimable), { sym: "" })}</span></div>}
+          {hasRedeemed && <div className="flex justify-between"><span className="text-ink2">Redeemed</span><span className="tabular text-good">{fmtMoney(fromUnits(redeemed), { sym: "" })} {stable}{bal > 0n ? ` (${fromUnits(redeemed) >= fromUnits(bal) ? "+" : ""}${fmtMoney(fromUnits(redeemed) - fromUnits(bal), { sym: "" })} vs deposit)` : ""}</span></div>}
         </div>
       )}
 
@@ -107,8 +112,14 @@ function NoteCard({ note, chainId, account, kycOk }) {
                 <input className="input pr-16" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} aria-label="Deposit amount" />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted">{stable}</span>
               </div>
-              <button className="btn-primary shrink-0" disabled={!account || !kycOk || Boolean(busy) || units <= 0n || paused} onClick={subscribe}>Deposit</button>
+              <button className="btn-primary shrink-0" disabled={!account || !kycOk || Boolean(busy) || units <= 0n || paused || overBalance} onClick={subscribe}>Deposit</button>
             </div>
+            {account && walletUnits !== undefined && (
+              <p className={`text-xs ${overBalance ? "text-bad" : "text-muted"}`}>
+                {overBalance ? "More than your wallet holds. " : ""}Wallet: {fmtMoney(fromUnits(walletUnits), { sym: "" })} {stable}.{" "}
+                {walletUnits > 0n && <button type="button" className="underline underline-offset-2" onClick={() => setAmount(String(fromUnits(walletUnits)))}>Use all</button>}
+              </p>
+            )}
             {units > 0n && floor1000 !== undefined && (
               <p className="text-sm text-ink2">
                 Guaranteed back at maturity: <b className="text-ink">{fmtMoney(amt, { sym: "" })} {stable}</b>

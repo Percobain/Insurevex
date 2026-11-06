@@ -14,7 +14,7 @@ export default function ProPanel({ chainId, account, pro }) {
   const stable = stableSymbol(chainId);
   const kyc = useKyc();
   const { run, busy } = useTx();
-  const [amount, setAmount] = useState("25");
+  const [amount, setAmount] = useState("1");
   const units = toUnits(amount);
   const mine = useReadContracts({
     contracts: [
@@ -25,6 +25,8 @@ export default function ProPanel({ chainId, account, pro }) {
   });
   const [bal, maxW] = (mine.data || []).map((x) => (x.status === "success" ? x.result : undefined));
   const allowance = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "allowance", args: [account, pool], query: { enabled: Boolean(account && stableAddr && pool) } });
+  const wallet = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "balanceOf", args: [account], query: { enabled: Boolean(account && stableAddr), refetchInterval: 15_000 } });
+  const overBalance = wallet.data !== undefined && units > wallet.data;
   const price = pro?.proSharePrice !== undefined ? fromUnits(pro.proSharePrice, 18) : null;
   const myValue = bal !== undefined && price !== null ? fromUnits(bal) * price : null;
 
@@ -68,13 +70,20 @@ export default function ProPanel({ chainId, account, pro }) {
               {account && <Row k="Your Pro position" v={myValue !== null ? `${fmtMoney(myValue, { sym: "" })} ${stable}` : "—"} />}
               <div className="flex gap-2 mt-4">
                 <input className="input" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} aria-label="Pro amount" />
-                <button className="btn-primary shrink-0" disabled={!account || !kyc.verified || Boolean(busy) || units <= 0n} onClick={deposit}>Deposit</button>
+                <button className="btn-primary shrink-0" disabled={!account || !kyc.verified || Boolean(busy) || units <= 0n || overBalance} onClick={deposit}>Deposit</button>
                 <button className="btn-ghost shrink-0" disabled={!account || Boolean(busy) || units <= 0n || (maxW !== undefined && units > maxW)}
                   onClick={() => run(`Withdraw ${amount} ${stable} from Pro`, { address: pool, abi: PRO_ABI, functionName: "withdrawPro", args: [units] })}>
                   Withdraw
                 </button>
               </div>
-              <p className="text-xs text-muted mt-2">
+              {account && wallet.data !== undefined && (
+                <p className={`text-xs mt-2 ${overBalance ? "text-bad" : "text-muted"}`}>
+                  {overBalance ? "More than your wallet holds. " : ""}Wallet: {fmtMoney(fromUnits(wallet.data), { sym: "" })} {stable}.{" "}
+                  {wallet.data > 0n && <button type="button" className="underline underline-offset-2" onClick={() => setAmount(String(fromUnits(wallet.data)))}>Use all</button>}
+                  {maxW !== undefined && maxW > 0n && <> · <button type="button" className="underline underline-offset-2" onClick={() => setAmount(String(fromUnits(maxW)))}>Withdraw max</button></>}
+                </p>
+              )}
+              <p className="text-xs text-muted mt-1">
                 Withdrawable now: {maxW !== undefined ? `${fmtMoney(fromUnits(maxW), { sym: "" })} ${stable}` : "—"}. Pro capital backing open policies stays locked until they settle.
                 {account && !kyc.verified && " KYC is required to deposit."}
               </p>

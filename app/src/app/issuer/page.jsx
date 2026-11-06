@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useReadContract, useReadContracts } from "wagmi";
 import { isAddress } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -85,6 +85,16 @@ export default function IssuerPage() {
 
   // oracle
   const s = usePoolState(chainId);
+  // risk form starts from what is on-chain now, so saving without edits changes nothing
+  const riskKey = `${chainId}:${s.pool?.reserveBps}:${s.pool?.symbolCapBps}:${s.pool?.marketCapBps}:${s.pro?.proFeeBps}`;
+  useEffect(() => {
+    const pct = (v) => (v === undefined || v === null ? null : String(Number(v) / 100));
+    if (pct(s.pool?.reserveBps) !== null) setRR(pct(s.pool.reserveBps));
+    if (pct(s.pool?.symbolCapBps) !== null) setRM(pct(s.pool.symbolCapBps));
+    if (pct(s.pool?.marketCapBps) !== null) setRK(pct(s.pool.marketCapBps));
+    if (pct(s.pro?.proFeeBps) !== null) setRF(pct(s.pro.proFeeBps));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [riskKey]);
   const count = Number(s.policyCount || 0);
   const ids = useMemo(() => Array.from({ length: Math.min(count, 60) }, (_, i) => BigInt(count - 1 - i)), [count]);
   const policies = usePolicies(ids, chainId);

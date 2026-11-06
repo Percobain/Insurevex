@@ -28,7 +28,12 @@ export function useTx() {
       setBusy(label);
       const id = push({ title: label, body: "Confirm in your wallet…" });
       try {
-        const hash = await writeContractAsync(request);
+        // Hedera's JSON-RPC relay under-estimates gas for calls that touch several contracts (cover, notes, pool),
+        // which then fail with INSUFFICIENT_GAS, so give Hedera writes an explicit limit.
+        const req = chainId === 296 && request.gas === undefined
+          ? { ...request, gas: request.functionName === "approve" ? 120_000n : 1_500_000n }
+          : request;
+        const hash = await writeContractAsync(req);
         const href = chainMeta(chainId).tx(hash);
         update(id, { body: "Submitted, waiting for confirmation…", href });
         const receipt = await client.waitForTransactionReceipt({ hash, timeout: 180_000 });

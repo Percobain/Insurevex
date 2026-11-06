@@ -81,10 +81,10 @@ const FAQ = [
 
 export default function ActivityPage() {
   const { chainId, deployed } = useActiveChain();
-  const api = useApi(`/api/activity?chainId=${chainId}`, { enabled: deployed, refetchInterval: 20_000 });
+  const api = useApi(`/api/activity?chainId=${chainId}`, { enabled: deployed, refetchInterval: 20_000, timeout: 30_000 });
   const apiEvents = api.data?.events || (Array.isArray(api.data) ? api.data : null);
   const chain = useChainActivity(chainId, deployed && (api.isError || (api.isSuccess && !apiEvents)));
-  const events = apiEvents || chain.data || [];
+  const events = (apiEvents || chain.data || []).filter((e) => !((e.event || e.type) === "Subscribed" && e.args && e.args.face === undefined));
   const nameOf = useSymbolNames();
   const stable = stableSymbol(chainId);
   const [filter, setFilter] = useState("all");
@@ -106,7 +106,7 @@ export default function ActivityPage() {
       <Section className="mt-20">
         <DeployGate chainId={chainId}>
           <SectionHead id="feed" eyebrow="Live feed" title="Latest events" right={<Seg value={filter} onChange={setFilter} options={[{ value: "all", label: "All" }, { value: "cover", label: "Cover" }, { value: "notes", label: "Notes" }, { value: "compliance", label: "Compliance" }]} />} />
-          {api.isError && <p className="text-xs text-muted mb-3">Server offline: reading the last ~9,000 blocks directly from the chain.</p>}
+          {api.isError && <p className="text-xs text-muted mb-3">The InsureVEX server did not answer, so this reads the last ~9,000 blocks straight from the chain.</p>}
           {(api.isLoading || chain.isLoading) && events.length === 0 ? (
             <div className="card h-64 animate-pulse" />
           ) : shown.length === 0 ? (

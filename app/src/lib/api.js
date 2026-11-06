@@ -31,10 +31,10 @@ export async function apiPost(path, body, { timeout = 10000 } = {}) {
 }
 
 /** Server data hook. Never retries aggressively: the app must stay usable when the server is down. */
-export function useApi(path, { enabled = true, refetchInterval = false } = {}) {
+export function useApi(path, { enabled = true, refetchInterval = false, timeout } = {}) {
   return useQuery({
     queryKey: ["api", path],
-    queryFn: () => apiGet(path),
+    queryFn: () => apiGet(path, timeout ? { timeout } : undefined),
     enabled: Boolean(path) && enabled,
     retry: 0,
     refetchInterval,

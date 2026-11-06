@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useReadContract } from "wagmi";
-import { parseEther, formatEther } from "viem";
+import { parseEther, formatEther, keccak256, toBytes } from "viem";
 import { ABI, ERC20_ABI, addr, stableSymbol } from "@/lib/contracts";
 import { apiGet, apiPost, useApi } from "@/lib/api";
 import { EXCHANGES, flag } from "@/lib/exchanges";
@@ -70,8 +70,9 @@ export default function ProtectPage() {
   const [search, setSearch] = useState("");
   const [symbol, setSymbol] = useState(null);
   const [sharesHeld, setSharesHeld] = useState("50");
-  const [sharesCover, setSharesCover] = useState("50");
-  const [notional, setNotional] = useState("10000");
+  const [sharesCover, setSharesCover] = useState("1");
+  const [notional, setNotional] = useState("");
+  const [notionalTouched, setNotionalTouched] = useState(false);
   const [tenor, setTenor] = useState(28);
   const [b, setB] = useState(1000);
   const [c, setC] = useState(2000);
@@ -101,6 +102,14 @@ export default function ProtectPage() {
     setAttest(null);
   }, [symbol, chainId, address]);
   useEffect(() => setQuote((q) => (q && q._b === b ? q : null)), [sharesCover, notional, tenor, b, c]);
+  // last close in USD: cover is sized and paid in dollars, foreign closes are converted at the latest FX close
+  const usdClose = symbol ? (symbol.lastCloseUsd ?? ((symbol.currency || "USD") === "USD" ? symbol.lastClose : null)) : null;
+  // protected value follows shares-to-cover x USD close until the user types their own value
+  useEffect(() => {
+    if (notionalTouched || !usdClose) return;
+    const v = Number(sharesCover || 0) * usdClose;
+    setNotional(v > 0 ? String(Math.round(v * 100) / 100) : "");
+  }, [sharesCover, usdClose, notionalTouched]);
 
   const cover = (() => { try { return parseEther(String(sharesCover || "0")); } catch { return 0n; } })();
   const held = (() => { try { return parseEther(String(sharesHeld || "0")); } catch { return 0n; } })();
@@ -124,7 +133,7 @@ export default function ProtectPage() {
     try {
       const qs = new URLSearchParams({
         chainId: String(chainId), buyer: address || "0x0000000000000000000000000000000000000000", symbol: symbol.symbol,
-        notional: String(Math.round(Number(notional))), shares: String(sharesCover || "0"),
+        notional: String(Math.round(Number(notional) * 100) / 100), shares: String(sharesCover || "0"),
         heldShares: path === "token" && atsToken ? String(atsHeld) : attest?.heldShares ? formatEther(BigInt(attest.heldShares)) : String(sharesHeld || "0"),
         deductibleBps: String(bOverride ?? b), capBps: String(c),
       });
@@ -150,6 +159,12 @@ export default function ProtectPage() {
   const atsDec = useReadContract({ address: atsToken, abi: ERC20_ABI, functionName: "decimals", query: { enabled: Boolean(atsToken) } });
   const atsHeld = atsBal.data !== undefined ? fromUnits(atsBal.data, Number(atsDec.data ?? 18)) : 0;
   const premiumUnits = quote?.quote ? BigInt(quote.quote.premium) : 0n;
+  const poolAddr = addr(chainId, "UnderwritingPool");
+  const symCap = useReadContract({ address: poolAddr, abi: ABI.UnderwritingPool, functionName: "symbolCapacity", args: [symbol ? symbolId(symbol.symbol) : undefined], query: { enabled: Boolean(poolAddr && symbol), refetchInterval: 20000 } });
+  const mktCap = useReadContract({ address: poolAddr, abi: ABI.UnderwritingPool, functionName: "marketCapacity", args: [market?.id ? keccak256(toBytes(market.id)) : undefined], query: { enabled: Boolean(poolAddr && market?.id), refetchInterval: 20000 } });
+  const roomUnits = symCap.data !== undefined && mktCap.data !== undefined ? (symCap.data < mktCap.data ? symCap.data : mktCap.data) : undefined;
+  const room = roomUnits !== undefined ? fromUnits(roomUnits) : null; // max payout the pool can still lock for this stock
+  const maxNotional = room !== null ? room / (c / 10000) : null;
   const allowance = useReadContract({
     address: stableAddr, abi: ERC20_ABI, functionName: "allowance", args: [address, market_],
     query: { enabled: Boolean(address && stableAddr && market_) },
@@ -167,7 +182,7 @@ export default function ProtectPage() {
       await allowance.refetch();
     }
     const tuple = {
-      buyer: q.buyer, symbol: q.symbol, notional: BigInt(q.notional), shares: BigInt(q.shares), heldShares: BigInt(q.heldShares),
+      buyer: q.buyer, symbol: q.symbol, market: q.market, notional: BigInt(q.notional), shares: BigInt(q.shares), heldShares: BigInt(q.heldShares),
       deductibleBps: Number(q.deductibleBps), capBps: Number(q.capBps), premium: BigInt(q.premium), startPrice: BigInt(q.startPrice),
       expiry: BigInt(q.expiry), validUntil: BigInt(q.validUntil), nonce: BigInt(q.nonce),
     };
@@ -182,6 +197,13 @@ export default function ProtectPage() {
   const maxPayout = N * (c / 10000);
   const pay25 = N * Math.min(Math.max(0.25 - b / 10000, 0), c / 10000);
   const breakeven = prem !== null && N > 0 ? b / 10000 + prem / N : null;
+  const tooBig = maxNotional !== null && N > maxNotional + 1e-9;
+  const walletBal = balance.data !== undefined ? fromUnits(balance.data) : null;
+  const cantAfford = prem !== null && walletBal !== null && prem > walletBal;
+  const blockReason = Number(sharesCover) > Number(sharesHeld) ? "You cannot cover more shares than you hold."
+    : !(N > 0) ? "Enter how much to protect."
+    : tooBig ? `The pool can take at most ${fmtMoney(maxNotional, { sym: "" })} ${stable} of cover on this stock at a ${c / 100}% cap right now.`
+    : cantAfford ? `The premium is more than your ${stable} balance.` : null;
 
   return (
     <>
@@ -216,7 +238,7 @@ export default function ProtectPage() {
                   setMarketId(id);
                   setSearch("");
                   setSymbol(sym);
-                  if (sym.lastClose) setNotional(String(Math.round(Number(sharesHeld || 0) * sym.lastClose)));
+                  setNotionalTouched(false);
                 }}
               />
               {symbol && <div className="mt-4"><PriceChart symbol={symbol.symbol} currency={symbol.currency} deductible={b / 10000} /></div>}
@@ -226,9 +248,22 @@ export default function ProtectPage() {
               <div className="grid sm:grid-cols-3 gap-3">
                 <label className="space-y-1.5"><span className="label">Shares you own</span><input className="input" inputMode="decimal" value={sharesHeld} onChange={(e) => setSharesHeld(e.target.value)} /></label>
                 <label className="space-y-1.5"><span className="label">Shares to protect</span><input className="input" inputMode="decimal" value={sharesCover} onChange={(e) => setSharesCover(e.target.value)} /></label>
-                <label className="space-y-1.5"><span className="label">Value ({stable})</span><input className="input" inputMode="decimal" value={notional} onChange={(e) => setNotional(e.target.value)} /></label>
+                <label className="space-y-1.5"><span className="label">Value ({stable})</span><input className="input" inputMode="decimal" value={notional} onChange={(e) => { setNotional(e.target.value); setNotionalTouched(true); }} /></label>
               </div>
               {Number(sharesCover) > Number(sharesHeld) && <p className="text-xs text-bad mt-2">You cannot cover more shares than you hold. The contract enforces this.</p>}
+              {symbol && symbol.currency && symbol.currency !== "USD" && (
+                <p className="text-xs text-muted mt-2">
+                  {usdClose ? `1 ${symbol.ticker} = ${fmtNum(symbol.lastClose, 2)} ${symbol.currency} ≈ ${fmtMoney(usdClose, { sym: "" })} ${stable} at the latest FX close. The payout is in ${stable}, on the stock's fall in ${symbol.currency}.` : `No FX rate for ${symbol.currency} right now: enter the protected value in ${stable} yourself.`}
+                </p>
+              )}
+              {symbol && maxNotional !== null && (
+                <p className={`text-xs mt-2 ${tooBig ? "text-bad" : "text-muted"}`}>
+                  Pool room for {symbol.ticker}: up to {fmtMoney(maxNotional, { sym: "" })} {stable} protected at a {c / 100}% cap.{" "}
+                  {tooBig && usdClose > 0 && (
+                    <button type="button" className="underline underline-offset-2" onClick={() => { const v = Math.floor(maxNotional * 100) / 100; setNotional(String(v)); setNotionalTouched(true); setSharesCover(String(Math.floor((v / usdClose) * 1e6) / 1e6)); }}>Use the maximum</button>
+                  )}
+                </p>
+              )}
               <div className="grid gap-4 mt-5">
                 <div className="space-y-1.5"><div className="label">Length</div><Seg value={tenor} onChange={setTenor} options={[{ value: 7, label: "1 wk" }, { value: 14, label: "2 wk" }, { value: 28, label: "1 mo" }, { value: "10m", label: "10 min demo" }]} /></div>
                 <div className="space-y-1.5"><div className="label">You absorb the first</div><div className="flex flex-wrap gap-2"><Seg value={b} onChange={setB} options={[300, 500, 750, 1000, 1500, 2000, 2500].map((v) => ({ value: v, label: `${v / 100}%` }))} /></div></div>
@@ -319,13 +354,14 @@ export default function ProtectPage() {
                 </div>
               )}
               <div className="grid grid-cols-2 gap-2 mt-4">
-                <button className="btn-ghost" disabled={!symbol || quoting || offline || Number(sharesCover) > Number(sharesHeld)} onClick={() => getQuote()}>
+                <button className="btn-ghost" disabled={!symbol || quoting || offline || Number(sharesCover) > Number(sharesHeld) || !(N > 0) || tooBig} onClick={() => getQuote()}>
                   {quoting ? "Pricing…" : quote ? "Re-quote" : "Get quote"}
                 </button>
-                <button className="btn-primary" disabled={!quote?.ok || quote?.pricing?.refused || !isConnected || !deployed || !kyc.verified || Boolean(busy)} onClick={buy}>
+                <button className="btn-primary" disabled={!quote?.ok || quote?.pricing?.refused || !isConnected || !deployed || !kyc.verified || Boolean(busy) || Boolean(blockReason)} onClick={buy}>
                   {busy || "Buy cover"}
                 </button>
               </div>
+              {symbol && blockReason && <p className="text-xs text-bad mt-3">{blockReason}</p>}
               {isConnected && balance.data !== undefined && (
                 <p className="text-xs text-muted mt-3">Wallet: {fmtMoney(fromUnits(balance.data), { sym: "" })} {stable}. Quote valid until {quote?.quote ? new Date(Number(quote.quote.validUntil) * 1000).toLocaleTimeString() : "—"}.</p>
               )}

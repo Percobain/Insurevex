@@ -32,7 +32,9 @@ export function fmtMoney(n, { dp = 2, sym = "$" } = {}) {
   if (n === undefined || n === null || Number.isNaN(Number(n))) return "—";
   const x = Number(n);
   const abs = Math.abs(x);
-  const s = abs >= 1e6 ? `${(abs / 1e6).toFixed(2)}M` : abs.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp });
+  // small non-zero amounts (testnet premiums) keep enough decimals to never read as 0.00
+  const d = abs > 0 && abs < 1 && dp === 2 ? Math.min(6, Math.max(2, 1 - Math.floor(Math.log10(abs)))) : dp;
+  const s = abs >= 1e6 ? `${(abs / 1e6).toFixed(2)}M` : abs.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   return `${x < 0 ? "−" : ""}${sym}${s}`;
 }
 
