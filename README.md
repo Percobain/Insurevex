@@ -1,5 +1,17 @@
 # InsureVEX
 
+**New: Hedera x402 underwriting agent.** A dedicated testnet agent discovers and pays for underwriting through HTTP 402, validates a signed insurance quote, and pays the exact premium through `CoverMarket`. Persistent spending budgets, merchant and contract allowlists, on-chain ATS holdings checks, replay protection, an emergency stop, and an HCS spending-audit anchor bound its authority. The new `/agent` dashboard shows service limits and payment receipts. [Setup, architecture, guardrails and track requirements](docs/HEDERA_X402.md).
+
+The existing product comprises the notes, underwriting pool, crash policies, pricing research and ATS integrations below. The x402 agent, paid underwriting endpoint, persistent policy controls, HCS spending audit and Agent dashboard are the new integration.
+
+**Recorded autonomous Hedera testnet run (6 November 2026):**
+- x402 underwriting fee, **0.01 HBAR**, settled by the official facilitator: [`0.0.9185802@1793930226.658562707`](https://hashscan.io/testnet/transaction/0.0.9185802%401793930226.658562707).
+- Insurance premium, **0.002091 test USD**, issued policy **#4** protecting **1.816 test USD** of tokenised NVIDIA: [premium + policy transaction](https://hashscan.io/testnet/transaction/0x55a420aa99da3be5f0296ec3ff7bec6de018aa9ca79a297baff3cb4674085b49).
+- HCS spending-audit anchor, topic **0.0.11332661**: [transaction](https://hashscan.io/testnet/transaction/0.0.11332658%401793930247.715859731).
+- [42.5-second live-run demo video](docs/evidence/hedera-x402-demo.mp4), [sanitised receipts](docs/evidence/hedera-x402.json), and [independent Mirror Node verification](docs/evidence/hedera-x402-verification.json).
+
+Reproduce with `cd server`, `npm ci`, `npm run agent:setup`, start the merchant as described in [the integration guide](docs/HEDERA_X402.md), then run `npm run agent:plan` and `npm run agent:run`. All funds are test assets; agent payments are disabled by default.
+
 **Two scared people protect each other.**
 
 - A **Saver** is scared of losing money. They buy a note that always repays its full face value, plus whatever the note earns.
@@ -59,7 +71,9 @@ Settlement token (official test USDT): [`0xcedfB56113143d55b2358b8CFbB0dEB5Ad2f5
 | Holder buys a monthly Toyota floor (TSE:7203) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0x937a8670096337fdd5f74144e3340763520930adcd2e2c942cb536080ec60ea8) |
 | Holder buys a 15-minute SPY floor (settled by the keeper from the official price) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0xafb5abf660385f4c2d5fe525f456858abf101f1f5a211b51af064e6adb6d903c) |
 | T-bill custodian proceeds in USDT, then NAV and reserve attested | Issuer | [tx](https://explorer.testnet.whitechain.io/tx/0xf09b9ef9abbdc3512f574ee4a657225c7945ad1e8528844445fac18dcdf77695) · [NAV](https://explorer.testnet.whitechain.io/tx/0x4c99a0247d62b16af3c83d5afd31bde78f0c9912c7ede8a8535de757bf9db15a) |
-| **Maturity:** a full-term demo note (contracts v2) matured and the Saver redeemed **8 USDT in, 8.000113 USDT back**: principal protected, plus the T-bill accrual | Saver | [mature](https://explorer.testnet.whitechain.io/tx/0x57a6e53bf0a0c82735d02cff3389ee661a97ce5d39944ec9046916b36f0a7d69) · [redeem](https://explorer.testnet.whitechain.io/tx/0x2000f6b1f4a00931ca299c9f13e92d10f75b7153670dad3ecded867d6fc41eff) |
+| Saver claims the USDT coupon paid from underwriting profit | Saver | [tx](https://explorer.testnet.whitechain.io/tx/0x4f1ca2609c4a007777e8a9f9bc9fcb108bc94ed00c8193d0915935d885a27b50) |
+| **Maturity:** the demo note matures and the Saver redeems **2 USDT in, 2.000026 USDT back** (principal protected, plus T-bill accrual) | Saver | [tx](https://explorer.testnet.whitechain.io/tx/0x24d2361d7c64521e6902a43f0523a2229824968bd42a2d65eb90fb9a894b0a89) |
+| Earlier full-term run (v2): 8 USDT in, 8.000113 USDT back | Saver | [mature](https://explorer.testnet.whitechain.io/tx/0x57a6e53bf0a0c82735d02cff3389ee661a97ce5d39944ec9046916b36f0a7d69) · [redeem](https://explorer.testnet.whitechain.io/tx/0x2000f6b1f4a00931ca299c9f13e92d10f75b7153670dad3ecded867d6fc41eff) |
 
 ### Hedera testnet (chain 296): with Asset Tokenization Studio
 
@@ -92,9 +106,10 @@ Settlement token (InsureVEX test USD): [`0xDF7DE17d60876a32b902dc4f4698633C7d849
 | Holder buys NVDA cover; insurable interest proven by the **ATS balance on-chain** | [tx](https://hashscan.io/testnet/transaction/0xc2052f731865cbaa9bbf3cf8c8d1c96b8babfcb1d6450f1115a2f24459c4634d) |
 | Cover on 150 NVDA with only 90 transferable: **reverted on-chain** (`cover exceeds holdings`) | `scripts/hedera-demo-checks.js` |
 | ATS compliance: freeze 10 of the holder's tokenised shares | [tx](https://hashscan.io/testnet/transaction/0xb6df323782b41dc637c037ffc71cbd7c4b2d7af43db7a2b240704d1c5ba7b9bf) |
-| **Hedera Schedule Service** (HIP-1215): next coupon scheduled natively. Proven on v2: schedule 0.0.11331278 was **executed by the network at 00:06:34 UTC, paying 0.498 tUSD with no keeper** | [v3 schedule](https://hashscan.io/testnet/transaction/0xbcc84e157f4a2764b12c994b4cfea36e6bec4998fc439299156b6745b6956cb6) · [v2 executed](https://hashscan.io/testnet/schedule/0.0.11331278) |
+| **Hedera Schedule Service** (HIP-1215): the note coupon is scheduled natively and **executed by the network with no keeper**: v3 at 01:21:41 UTC and v2 at 00:06:34 UTC, each paying 0.498 tUSD to note holders | [v3 schedule tx](https://hashscan.io/testnet/transaction/0xbcc84e157f4a2764b12c994b4cfea36e6bec4998fc439299156b6745b6956cb6) · [v2 schedule 0.0.11331278](https://hashscan.io/testnet/schedule/0.0.11331278) |
 | Saver subscribes 5,000 · Pro LP 2,000 · tradfi covers on Reliance (NSE), SAP (Xetra), SPY | [sub](https://hashscan.io/testnet/transaction/0x56bc968679c1dc7161ea7d80e8961211d4e2342b64ad1d2a0406b55124a1743b) · [Pro](https://hashscan.io/testnet/transaction/0xe6c35fb5025b3bfa3aa50c37d4913b8daa761d1338c438dd4fd66f7186cb9ecf) · [RELIANCE](https://hashscan.io/testnet/transaction/0x4cd1830afdf7755f3da209355061798e310009dc428365f65cb899c5cd5514ad) · [SAP](https://hashscan.io/testnet/transaction/0x2231bccba3a39aa05303d7d6be8f0655815d0810181bcf4647e6b0a2561d4ebb) |
 | T-bill NAV + reserve attestation | [tx](https://hashscan.io/testnet/transaction/0x0ebeb0a8d869fbca57d1fb74808549a8c768884adce69ddf5afd3b4b95fbbdda) |
+| Saver claims the coupon; the demo note matures and redeems **1,000 tUSD in, 1,000.014 tUSD back** | [coupon](https://hashscan.io/testnet/transaction/0x62393ffcddf9cb42b881b07a00846f63ba62541e61bd491b400434146c52a538) · [redeem](https://hashscan.io/testnet/transaction/0x88fbb1e30b1e69880ed5f0b2005f34ecec0634825d31d9d4c939f0cd974039e2) |
 
 ### Arc testnet (chain 5042002): settling in USDC
 
@@ -118,6 +133,7 @@ USDC is both the settlement token (`0x3600…0000`) and the gas token, so a Save
 | Pro LP deposits 2 USDC of first-loss capital | [tx](https://explorer.testnet.arc.io/tx/0x6ea31a9823dabbf7c7ee5c72723f9ad4196a8d33583e34f011100f515283b3fb) |
 | Holder covers MSFT (weekly), Tencent (HKEX, 2 weeks) and SPY (15 minutes) | [MSFT](https://explorer.testnet.arc.io/tx/0xcc9e6b5d5cbdbffbcb9c1b455cb0a440dba53198ee651f29e8429c1b44218197) · [Tencent](https://explorer.testnet.arc.io/tx/0xe1062700cea4a7b1fa714ba1e6768ffbe7b9d23e50743318c7797320276bb90f) · [SPY](https://explorer.testnet.arc.io/tx/0xfc2713e2883a06d28ba01a2f61db5c9dc3ab62698b91ba0f508adf73e7a64a16) |
 | T-bill NAV + reserve attestation | [tx](https://explorer.testnet.arc.io/tx/0xfb98dfacc62bd8af34fa00c52ea154775d04e9f33ff4b266d45ee82e8ffe46c5) |
+| Saver claims the USDC coupon; the demo note matures and redeems **1 USDC in, 1.000012 USDC back** (gas paid separately in USDC) | [coupon](https://explorer.testnet.arc.io/tx/0x74dfd1ac034c5b4ce469c2eac18b04c194ad390baa91e7ac07f9238c12f9db59) · [redeem](https://explorer.testnet.arc.io/tx/0x399fed68ff961778d29dbe3c1a67b21fd64dc5eec5cb092792e0ae7eb676056b) |
 
 ## How it works
 

@@ -7,6 +7,7 @@ cache/
 typechain-types/
 coverage/
 .next/
+.next-agent-preview/
 out/
 dist/
 *.log
@@ -16,3 +17,4 @@ backtest/data/
 .vercel
 server/data/store.json
 server/.keeper-secret.local
+.agent-state/

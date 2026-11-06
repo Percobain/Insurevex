@@ -106,5 +106,17 @@
     "tx": "0x4c99a0247d62b16af3c83d5afd31bde78f0c9912c7ede8a8535de757bf9db15a",
     "url": "https://explorer.testnet.whitechain.io/tx/0x4c99a0247d62b16af3c83d5afd31bde78f0c9912c7ede8a8535de757bf9db15a",
     "at": "2026-11-06T00:22:24.046Z"
+  },
+  {
+    "step": "Saver claims USDT coupon (3Y note)",
+    "tx": "0x4f1ca2609c4a007777e8a9f9bc9fcb108bc94ed00c8193d0915935d885a27b50",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x4f1ca2609c4a007777e8a9f9bc9fcb108bc94ed00c8193d0915935d885a27b50",
+    "at": "2026-11-06T08:06:58.914Z"
+  },
+  {
+    "step": "Saver redeems demo note at maturity: 2 USDT in, 2.000026 USDT back",
+    "tx": "0x24d2361d7c64521e6902a43f0523a2229824968bd42a2d65eb90fb9a894b0a89",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x24d2361d7c64521e6902a43f0523a2229824968bd42a2d65eb90fb9a894b0a89",
+    "at": "2026-11-06T08:07:02.989Z"
   }
 ]

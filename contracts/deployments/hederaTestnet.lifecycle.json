@@ -1,6 +1,6 @@
 [
   {
-    "step": "CoverMarket.setSymbolToken(NASDAQ:NVDA -> ATS equity 0xe77F\u00e2\u20ac\u00a6465E)",
+    "step": "CoverMarket.setSymbolToken(NASDAQ:NVDA -> ATS equity 0xe77F\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a6465E)",
     "tx": "0xf5f64933226fd8a5218088466fcd44d504711ed32439f0809097d098666c0263",
     "url": "https://hashscan.io/testnet/transaction/0xf5f64933226fd8a5218088466fcd44d504711ed32439f0809097d098666c0263",
     "at": "2026-11-06T00:23:23.251Z"
@@ -130,5 +130,17 @@
     "tx": "0xb6df323782b41dc637c037ffc71cbd7c4b2d7af43db7a2b240704d1c5ba7b9bf",
     "url": "https://hashscan.io/testnet/transaction/0xb6df323782b41dc637c037ffc71cbd7c4b2d7af43db7a2b240704d1c5ba7b9bf",
     "at": "2026-11-06T00:25:16.172Z"
+  },
+  {
+    "step": "Saver claims tUSD coupon (3Y note)",
+    "tx": "0x62393ffcddf9cb42b881b07a00846f63ba62541e61bd491b400434146c52a538",
+    "url": "https://hashscan.io/testnet/transaction/0x62393ffcddf9cb42b881b07a00846f63ba62541e61bd491b400434146c52a538",
+    "at": "2026-11-06T08:07:25.813Z"
+  },
+  {
+    "step": "Saver redeems demo note at maturity: 1,000 tUSD in, 1,000.014199 tUSD back",
+    "tx": "0x88fbb1e30b1e69880ed5f0b2005f34ecec0634825d31d9d4c939f0cd974039e2",
+    "url": "https://hashscan.io/testnet/transaction/0x88fbb1e30b1e69880ed5f0b2005f34ecec0634825d31d9d4c939f0cd974039e2",
+    "at": "2026-11-06T08:07:31.839Z"
   }
 ]

@@ -9,6 +9,7 @@ const NAV = [
   { label: "Protect", href: "/protect" },
   { label: "Save", href: "/save" },
   { label: "Pool", href: "/pool" },
+  { label: "Agent", href: "/agent" },
   { label: "Research", href: "/docs" },
   { label: "Activity", href: "/activity" },
   { label: "Issuer", href: "/issuer" },
