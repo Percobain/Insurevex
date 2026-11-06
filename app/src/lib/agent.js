@@ -1,4 +1,4 @@
-import { canonicalJson, controlMessage } from "../../../shared/agent-control.mjs";
+import { canonicalJson, controlMessage } from "../shared/agent-control.mjs";
 import { API_BASE, apiPost } from "./api";
 
 export async function authoriseAgentAction({ action, payload = {}, address, signMessageAsync }) {

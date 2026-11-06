@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { ethers } from "ethers";
-import { CONTROL_ACTIONS, controlMessage } from "../../../shared/agent-control.mjs";
+import { CONTROL_ACTIONS, controlMessage } from "../shared/agent-control.mjs";
 import { AgentState } from "./state.js";
 import { audit } from "./audit.js";
 import { AgentRuntime, parameters } from "./runtime.js";
