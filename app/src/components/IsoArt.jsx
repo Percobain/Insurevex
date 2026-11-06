@@ -576,156 +576,244 @@ function Card({ x, y, w, d, children, dark }) {
   return <Box x={x} y={y} w={w} d={d} h={3} className={dark ? "iso-black" : ""} top={children} />;
 }
 
-/** Plates of the exploded stack, bottom to top: what each contract does, in plain words. */
+/** Plates of the stack, bottom to top: each contract and what it does. */
 const PLATES = [
-  { key: "kyc", name: "KYC registry", cls: "iso-teal" },
-  { key: "price", name: "Oracle: official closes", cls: "" },
-  { key: "vault", name: "T-bill vault: savers' floor", cls: "" },
-  { key: "pool", name: "Underwriting vault", cls: "iso-sage" },
-  { key: "cover", name: "Cover market", cls: "iso-black" },
+  { key: "kyc", name: "KYC registry", role: "only verified wallets", cls: "iso-teal" },
+  { key: "price", name: "Oracle", role: "official closing prices", cls: "" },
+  { key: "vault", name: "T-bill vault", role: "savers' $1,000 floor", cls: "" },
+  { key: "pool", name: "Underwriting vault", role: "vault units, pays claims", cls: "iso-sage" },
+  { key: "cover", name: "Cover market", role: "sells and settles cover", cls: "iso-black" },
 ];
 
-/** Wires on the ground between a card and the stack. `step` is when it lights up; tone says what moves on it. */
+/** Who is outside the stack, placed around it on the ground (world coordinates of each card's centre). */
+const CARDS = {
+  tbills: { at: [-294, -6], title: "T-bills" },
+  saver: { at: [-186, 206], w: 110, d: 84, title: "Saver · $1,000", tone: "ink" },
+  holder: { at: [26, 314], w: 110, d: 84, title: "Holder · $10,000 NVDA", tone: "ink" },
+  engine: { at: [238, 262], w: 100, d: 76, title: "Pricing engine" },
+  proof: { at: [334, 126], w: 90, d: 84, title: "Broker proof" },
+  close: { at: [308, -108], w: 150, d: 110, title: "Official close" },
+};
+
+/** Ground wires from a card to the stack. `step` is when it carries something; tone: what (money in, out, data). */
 const WIRES = [
-  { path: [[-160, 238], [-160, 120], [-60, 120], [-60, 82]], step: 0, tone: "good", label: "Saver deposits $1,000", below: true },
-  { path: [[-40, -82], [-40, -200], [-120, -200], [-120, -268]], step: 0, tone: "good", label: "$952 → T-bills" },
-  { path: [[0, 278], [0, 82]], step: 1, tone: "accent", label: "$90 premium" },
-  { path: [[257, -20], [82, -20]], step: 1, tone: "ink", label: "proof of shares" },
-  { path: [[120, -307], [120, -150], [40, -150], [40, -82]], step: 1, tone: "ink", label: "signed quote" },
-  { path: [[160, 118], [118, 118], [118, 40], [82, 40]], step: 2, tone: "ink", label: "official close" },
-  { path: [[40, 82], [40, 278]], step: 3, tone: "good", label: "crash payout $1,500" },
-  { path: [[-40, 82], [-40, 160], [-125, 160], [-125, 238]], step: 3, tone: "good", label: "coupons + $1,000 at maturity", below: true },
+  { path: [[-186, 164], [-186, 120], [-60, 120], [-60, 82]], step: 0, tone: "good" },
+  { path: [[-82, -30], [-262, -30]], step: 0, tone: "good" },
+  { path: [[238, 224], [238, 60], [82, 60]], step: 1, tone: "ink" },
+  { path: [[289, 126], [160, 126], [160, 20], [82, 20]], step: 1, tone: "ink" },
+  { path: [[10, 272], [10, 82]], step: 1, tone: "accent" },
+  { path: [[233, -60], [82, -60]], step: 2, tone: "ink" },
+  { path: [[45, 82], [45, 272]], step: 3, tone: "good" },
+  { path: [[-35, 82], [-35, 150], [-150, 150], [-150, 164]], step: 3, tone: "good" },
 ];
 
-const LIT = [["vault", "pool"], ["cover", "kyc"], ["price"], ["pool", "cover"]];
+const LIT = [["vault", "pool"], ["cover", "kyc"], ["price", "cover"], ["pool", "cover"]];
+const STORY = [
+  ["The saver deposits $1,000", "$952 goes into T-bills that grow back to $1,000. $48 buys vault units in the underwriting vault."],
+  ["The holder buys cover", "The pricing engine signs a $90 quote, the broker proof shows the shares, and the holder pays into the cover market."],
+  ["The official close is posted", "At expiry the oracle records the exchange's closing price. Nobody can choose it."],
+  ["Money goes out", "Crash: the vault pays the holder. No crash: the $90 stays and every vault unit is worth more."],
+];
+
+/** Flat drawings for each card's top face (no text: the title floats above the card). */
+function CardArt({ kind }) {
+  switch (kind) {
+    case "saver":
+      return (
+        <>
+          <circle cx="24" cy="26" r="11" className="iso-green-fill" />
+          {[0, 1, 2].map((k) => (
+            <rect key={k} x="48" y={18 + k * 9} width={46 - k * 12} height="4" rx="2" className="iso-ink-fill" opacity="0.7" />
+          ))}
+          {[0, 1, 2, 3].map((k) => (
+            <ellipse key={k} cx="30" cy={66 - k * 4} rx="14" ry="5" className="iso-node" />
+          ))}
+        </>
+      );
+    case "holder":
+      return (
+        <>
+          <circle cx="24" cy="26" r="11" className="iso-green-fill" />
+          {[0, 1, 2].map((k) => (
+            <rect key={k} x="48" y={18 + k * 9} width={46 - k * 12} height="4" rx="2" className="iso-ink-fill" opacity="0.7" />
+          ))}
+          {[14, 22, 18, 30, 26].map((h, k) => (
+            <rect key={k} x={16 + k * 16} y={74 - h} width="10" height={h} rx="1.5" className={k === 4 ? "iso-green-fill" : "iso-ink-fill"} opacity={k === 4 ? 1 : 0.7} />
+          ))}
+        </>
+      );
+    case "engine":
+      return (
+        <>
+          <polyline points="10,58 26,44 40,50 58,30 74,36 90,18" className="iso-chart is-good" />
+          <circle cx="90" cy="18" r="4" className="iso-green-fill" />
+        </>
+      );
+    case "proof":
+      return (
+        <>
+          {[0, 1, 2].map((k) => (
+            <g key={k}>
+              <rect x="10" y={14 + k * 22} width="12" height="12" rx="2" className="iso-line" />
+              <rect x="30" y={18 + k * 22} width="48" height="4" rx="2" className="iso-ink-fill" opacity="0.6" />
+            </g>
+          ))}
+          <path d="M12 20 L16 24 L22 16" className="iso-tick" />
+          <path d="M12 42 L16 46 L22 38" className="iso-tick" />
+        </>
+      );
+    case "close":
+      return (
+        <>
+          <rect x="0" y="0" width="150" height="14" className="iso-ink-fill" />
+          {[9, 17, 25].map((x) => (
+            <circle key={x} cx={x} cy="7" r="2.2" fill="#fff" />
+          ))}
+          <line x1="12" x2="140" y1="58" y2="58" className="iso-guide" />
+          <polyline points="12,36 34,40 52,34 74,52 96,62 118,82 140,90" className="iso-chart is-bad" />
+          <circle cx="140" cy="90" r="4" className="iso-chart-dot is-bad" />
+        </>
+      );
+    default:
+      return null;
+  }
+}
 
 export function SystemArt() {
-  const [ref, phase] = usePhase(16000, 0.3);
+  const [ref, phase] = usePhase(18000, 0.1);
   const ids = useIds();
   const step = Math.min(3, Math.floor(phase * 4));
   const local = phase * 4 - step;
-  const gap = 30 + 9 * (0.5 - 0.5 * Math.cos(phase * Math.PI * 8));
+  const gap = 30 + 8 * (0.5 - 0.5 * Math.cos(phase * Math.PI * 8));
   const zOf = (k) => k * (6 + gap);
   const PILLARS = [[-72, -72], [72, -72], [72, 72], [-72, 72]];
   const grid = [];
   for (let v = -440; v <= 440; v += 40) grid.push([[v, -440, 0], [v, 440, 0]], [[-440, v, 0], [440, v, 0]]);
+  const LABEL_X = 196; // the plate labels form one column on the right
 
   return (
     <Stage className="grid gap-4">
-      <IsoSvg svgRef={ref} vb={[-500, -350, 1000, 600]} role="img" aria-label="The InsureVEX contracts as a stack: KYC registry, oracle, T-bill vault, underwriting vault and cover market, wired to the saver, the holder, T-bills, the pricing engine, broker proof and the official close.">
-        <Defs ids={ids} />
-        {grid.map(([a, b], i) => (
-          <line key={i} x1={P(...a)[0]} y1={P(...a)[1]} x2={P(...b)[0]} y2={P(...b)[1]} className="iso-grid" />
-        ))}
+      <div className="relative">
+        {/* what is happening right now */}
+        <div className="absolute right-0 top-0 z-10 max-w-[340px] rounded-xl border border-line bg-card/95 p-4 shadow-sm backdrop-blur" aria-live="polite">
+          <div className="flex items-center gap-2 text-sm font-semibold text-ink">
+            <span className="grid h-6 w-6 place-items-center rounded-full bg-primary text-[11px] font-semibold text-white">{step + 1}</span>
+            {STORY[step][0]}
+          </div>
+          <p className="mt-2 text-[13.5px] leading-relaxed text-ink2">{STORY[step][1]}</p>
+        </div>
 
-        {/* Wires first, so cards and the stack sit on top of their ends */}
-        {WIRES.map((w, i) => {
-          const on = w.step === step;
-          const d = pts(...w.path.map(([x, y]) => [x, y, 0]));
-          const [s0, s1] = [P(...w.path[0], 0), P(...w.path[w.path.length - 1], 0)];
-          return (
-            <g key={i}>
-              <polyline points={d} className={`iso-wire ${on ? `is-${w.tone}` : "is-dim"}`} />
-              <circle cx={s0[0]} cy={s0[1]} r="3" className="iso-node" />
-              <circle cx={s1[0]} cy={s1[1]} r="3" className="iso-node" />
-            </g>
-          );
-        })}
-
-        {/* Cards around the stack, back to front */}
-        <Card x={65} y={-373} w={110} d={66}>
-          <text x="8" y="18" className="iso-text iso-bold">PRICING ENGINE</text>
-          <polyline points="10,52 26,40 40,46 58,28 74,34 96,20" className="iso-chart is-good" />
-        </Card>
-        {[0, 1, 2, 3].map((k) => (
-          <Box key={k} x={-150} y={-330} z={k * 22} w={60} d={60} h={22} shadow={k === 0} className={k === 3 ? "iso-sage" : ""} front={k === 0 ? <text x="6" y="15" className="iso-text iso-bold">T-BILLS</text> : null} />
-        ))}
-        <Card x={257} y={-62} w={86} d={84}>
-          <text x="8" y="15" className="iso-text iso-bold">PROOF</text>
-          {[0, 1, 2].map((i) => (
-            <g key={i}>
-              <rect x="8" y={24 + i * 18} width="10" height="10" className="iso-line" />
-              <line x1="24" x2="76" y1={29 + i * 18} y2={29 + i * 18} className="iso-line" />
-            </g>
+        <IsoSvg svgRef={ref} vb={[-500, -330, 1000, 640]} role="img" aria-label="The five InsureVEX contracts as a stack: KYC registry, oracle, T-bill vault, underwriting vault and cover market. Around it: the saver, the holder, T-bills, the pricing engine, the broker proof and the official close.">
+          <Defs ids={ids} />
+          {grid.map(([a, b], i) => (
+            <line key={i} x1={P(...a)[0]} y1={P(...a)[1]} x2={P(...b)[0]} y2={P(...b)[1]} className="iso-grid" />
           ))}
-          <path d="M9.5 29 L13 33 L18 25" className="iso-tick" />
-        </Card>
-        <Card x={-235} y={238} w={110} d={84}>
-          <circle cx="18" cy="20" r="9" className="iso-green-fill" />
-          <text x="34" y="24" className="iso-text iso-bold">SAVER</text>
-          <text x="10" y="58" className="iso-text iso-bold">$1,000</text>
-        </Card>
 
-        {/* The stack: plates on pillars, gently opening and closing */}
-        {PLATES.map((pl, k) => {
-          const z = zOf(k);
-          const lit = LIT[step].includes(pl.key);
-          const top = {
-            kyc: <>{[30, 62, 94].map((x) => <circle key={x} cx={x} cy="40" r="9" className="iso-node" />)}<rect x="22" y="70" width="80" height="8" rx="4" className="iso-node" /></>,
-            price: <polyline points="16,110 40,96 58,104 80,70 100,82 128,40" className="iso-chart is-good" />,
-            vault: <>{[0, 1, 2, 3].flatMap((r) => [0, 1, 2].map((c) => <rect key={`${r}${c}`} x={22 + c * 38} y={18 + r * 30} width="30" height="20" rx="2" className="iso-line" />))}</>,
-            pool: <circle cx="72" cy="72" r="42" fill={`url(#${ids.hatch})`} className="iso-line" />,
-            cover: <><rect x="18" y="20" width="54" height="40" rx="4" className="iso-cut" /><circle cx="108" cy="46" r="20" className="iso-cut" /><rect x="22" y="96" width="100" height="12" rx="6" className="iso-cut" /></>,
-          }[pl.key];
-          return (
-            <g key={pl.key}>
-              <Box x={-80} y={-80} z={z} w={160} d={160} h={6} shadow={k === 0} className={`${pl.cls} ${lit && !pl.cls.includes("black") && !pl.cls.includes("teal") ? "iso-plate-lit" : ""}`} top={<g transform="translate(8 8)">{top}</g>} />
-              {k < PLATES.length - 1 &&
-                PILLARS.map(([x, y]) => {
-                  const a = P(x, y, z + 6);
-                  const b = P(x, y, zOf(k + 1));
-                  return (
-                    <g key={`${x}${y}`}>
-                      <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} className="iso-pillar" />
-                      <ellipse cx={a[0]} cy={a[1]} rx="3" ry="1.6" className="iso-node" />
-                    </g>
-                  );
-                })}
-            </g>
-          );
-        })}
-
-        <Card x={160} y={60} w={150} d={110}>
-          <rect x="0" y="0" width="150" height="14" className="iso-ink-fill" />
-          {[8, 16, 24].map((x) => <circle key={x} cx={x} cy="7" r="2.2" fill="#fff" />)}
-          <text x="10" y="32" className="iso-text iso-bold">OFFICIAL CLOSE</text>
-          <polyline points="12,48 34,52 52,46 74,62 96,70 118,86 140,92" className={`iso-chart ${step >= 2 ? "is-bad" : "is-good"}`} />
-          <line x1="12" x2="140" y1="66" y2="66" className="iso-guide" />
-        </Card>
-        <Card x={-35} y={278} w={110} d={84}>
-          <circle cx="18" cy="20" r="9" className="iso-green-fill" />
-          <text x="34" y="24" className="iso-text iso-bold">HOLDER</text>
-          <text x="10" y="58" className="iso-text iso-bold">$10,000 NVDA</text>
-        </Card>
-
-        {/* What is moving right now: coins for money, white blocks for information */}
-        {WIRES.filter((w) => w.step === step).flatMap((w, i) =>
-          [0, 1].map((k) => {
-            const t = local * 1.5 - k * 0.4;
-            if (t <= 0 || t >= 1) return null;
-            const [x, y] = along(w.path, t);
-            const o = clamp(t / 0.1) * clamp((1 - t) / 0.1);
-            return w.tone === "ink" ? (
-              <Box key={`${i}${k}`} x={x - 6} y={y - 6} z={0} w={12} d={12} h={8} shadow={false} className="iso-packet" style={{ opacity: o }} />
-            ) : (
-              <Coin key={`${i}${k}`} at={[x, y, 1]} tone={w.tone} opacity={o} />
+          {/* wires under everything */}
+          {WIRES.map((w, i) => {
+            const on = w.step === step;
+            const s0 = P(...w.path[0], 0);
+            const s1 = P(...w.path[w.path.length - 1], 0);
+            return (
+              <g key={i}>
+                <polyline points={pts(...w.path.map(([x, y]) => [x, y, 0]))} className={`iso-wire ${on ? `is-${w.tone}` : "is-dim"}`} />
+                <circle cx={s0[0]} cy={s0[1]} r="3" className="iso-node" />
+                <circle cx={s1[0]} cy={s1[1]} r="3" className="iso-node" />
+              </g>
             );
-          }),
-        )}
+          })}
 
-        {PLATES.map((pl, k) => (
-          <Tag key={pl.key} at={P(-80, 80, zOf(k) + 3)} text={pl.name} dx={-120} dy={-4} tone={LIT[step].includes(pl.key) ? "good" : ""} />
-        ))}
-        {WIRES.filter((w) => w.step === step).map((w, i) => {
-          // Label near the card end of the wire, away from the plate labels by the stack.
-          const fromStack = Math.abs(w.path[0][0]) <= 82 && Math.abs(w.path[0][1]) <= 82;
-          const [x, y] = along(w.path, fromStack ? 0.82 : 0.18);
-          return <Tag key={`w${i}`} at={P(x, y, 0)} text={w.label} dx={0} dy={w.below ? 34 : -26} tone={w.tone === "accent" ? "accent" : w.tone === "good" ? "good" : "ink"} opacity={span(local, 0.05, 0.15)} />;
-        })}
-      </IsoSvg>
-      <Steps items={["Saver deposits", "Holder buys cover", "Close is posted", "Payouts and coupons"]} active={step} />
+          {/* cards behind the stack */}
+          {[0, 1, 2, 3].map((k) => (
+            <Box key={k} x={CARDS.tbills.at[0] - 30} y={CARDS.tbills.at[1] - 30} z={k * 22} w={60} d={60} h={22} shadow={k === 0} className={k === 3 ? "iso-sage" : ""} />
+          ))}
+          <Card x={CARDS.close.at[0] - 75} y={CARDS.close.at[1] - 55} w={150} d={110}>
+            <CardArt kind="close" />
+          </Card>
+
+          {/* the stack */}
+          {PLATES.map((pl, k) => {
+            const z = zOf(k);
+            const lit = LIT[step].includes(pl.key);
+            const top = {
+              kyc: <>{[30, 62, 94].map((x) => <circle key={x} cx={x} cy="40" r="9" className="iso-node" />)}</>,
+              price: <polyline points="16,110 40,96 58,104 80,70 100,82 128,40" className="iso-chart is-good" />,
+              vault: <>{[0, 1, 2, 3].flatMap((r) => [0, 1, 2].map((c) => <rect key={`${r}${c}`} x={22 + c * 38} y={18 + r * 30} width="30" height="20" rx="2" className="iso-line" />))}</>,
+              pool: <circle cx="72" cy="72" r="42" fill={`url(#${ids.hatch})`} className="iso-line" />,
+              cover: <><rect x="18" y="20" width="54" height="40" rx="4" className="iso-cut" /><circle cx="108" cy="46" r="20" className="iso-cut" /><rect x="22" y="96" width="100" height="12" rx="6" className="iso-cut" /></>,
+            }[pl.key];
+            return (
+              <g key={pl.key}>
+                <Box x={-80} y={-80} z={z} w={160} d={160} h={6} shadow={k === 0} className={`${pl.cls} ${lit && !pl.cls.includes("black") && !pl.cls.includes("teal") ? "iso-plate-lit" : ""}`} top={<g transform="translate(8 8)">{top}</g>} />
+                {k < PLATES.length - 1 &&
+                  PILLARS.map(([x, y]) => {
+                    const a = P(x, y, z + 6);
+                    const b = P(x, y, zOf(k + 1));
+                    return <line key={`${x}${y}`} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} className="iso-pillar" />;
+                  })}
+              </g>
+            );
+          })}
+
+          {/* cards in front of the stack */}
+          {["saver", "holder", "engine", "proof"].map((k) => {
+            const c = CARDS[k];
+            return (
+              <Card key={k} x={c.at[0] - c.w / 2} y={c.at[1] - c.d / 2} w={c.w} d={c.d}>
+                <CardArt kind={k} />
+              </Card>
+            );
+          })}
+
+          {/* what is moving: coins are money, white blocks are information */}
+          {WIRES.filter((w) => w.step === step).flatMap((w, i) =>
+            [0, 1].map((k) => {
+              const t = local * 1.5 - k * 0.4;
+              if (t <= 0 || t >= 1) return null;
+              const [x, y] = along(w.path, t);
+              const o = clamp(t / 0.1) * clamp((1 - t) / 0.1);
+              return w.tone === "ink" ? (
+                <Box key={`${i}${k}`} x={x - 6} y={y - 6} z={0} w={12} d={12} h={8} shadow={false} className="iso-packet" style={{ opacity: o }} />
+              ) : (
+                <Coin key={`${i}${k}`} at={[x, y, 1]} tone={w.tone} opacity={o} />
+              );
+            }),
+          )}
+
+          {/* plate labels: one tidy column on the right, a straight leader from each plate's right corner */}
+          {PLATES.map((pl, k) => {
+            const lit = LIT[step].includes(pl.key);
+            const [cx, cy] = P(80, -80, zOf(k) + 3);
+            const ly = cy;
+            return (
+              <g key={pl.key} className={`iso-plate-label ${lit ? "is-lit" : ""}`}>
+                <line x1={cx + 4} y1={cy} x2={LABEL_X - 6} y2={ly} className="iso-leader" />
+                <circle cx={cx} cy={cy} r="2.6" className="iso-pin" />
+                <text x={LABEL_X} y={ly - 2} className="iso-plate-name">{pl.name}</text>
+                <text x={LABEL_X} y={ly + 14} className="iso-plate-role">{pl.role}</text>
+              </g>
+            );
+          })}
+
+          {/* card titles, upright */}
+          {Object.entries(CARDS).map(([k, c]) => {
+            // pin the title to the card's top corner (its highest point on screen), clear of the drawing
+            const w = c.w || 60;
+            const d = c.d || 60;
+            const [x, y] = P(c.at[0] - w / 2, c.at[1] - d / 2, k === "tbills" ? 88 : 3);
+            const on = WIRES.some((wi, i) => wi.step === step && cardForWire(i) === k);
+            return <Tag key={k} at={[x, y]} text={c.title} tone={on ? "ink" : ""} dx={k === "close" ? 90 : 0} dy={k === "close" ? -10 : -26} />;
+          })}
+        </IsoSvg>
+      </div>
+      <Steps items={STORY.map((s) => s[0])} active={step} />
     </Stage>
   );
+}
+
+/** Which card each wire belongs to (by index in WIRES). */
+function cardForWire(i) {
+  return ["saver", "tbills", "engine", "proof", "holder", "close", "holder", "saver"][i];
 }
 
 /* ───────────────────────── The pool: tranches and collateral ───────────────────────── */

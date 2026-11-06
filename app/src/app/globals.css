@@ -276,3 +276,9 @@ body {
 .iso-stage.iso-bare { box-shadow: none; background-image: none; }
 .iso-tagpill { transition: opacity 0.25s ease; }
 .iso-steps li { transition: color 0.3s ease; }
+.iso-plate-name { font: 600 14px var(--font-sans), ui-sans-serif, system-ui; fill: var(--iso-muted); transition: fill 0.3s; }
+.iso-plate-role { font: 400 12px var(--font-sans), ui-sans-serif, system-ui; fill: var(--iso-muted); opacity: 0.8; }
+.iso-plate-label.is-lit .iso-plate-name { fill: var(--iso-ink); }
+.iso-plate-label.is-lit .iso-plate-role { fill: var(--iso-ink2); opacity: 1; }
+.iso-plate-label.is-lit .iso-pin { fill: var(--iso-accent); stroke: var(--iso-accent); }
+.iso-plate-label.is-lit .iso-leader { stroke: var(--iso-accent); opacity: 0.8; }
