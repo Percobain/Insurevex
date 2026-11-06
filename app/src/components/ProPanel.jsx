@@ -6,6 +6,7 @@ import { fmtMoney, fmtNum, fmtPct, fromUnits, toUnits } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
 import { Row, Notice } from "./ui";
 import { useKyc } from "./KycBadge";
+import { useDemo, DEMO_BALANCE } from "@/lib/demo";
 
 /** Junior first-loss tranche: deposit/withdraw and position. */
 export default function ProPanel({ chainId, account, pro }) {
@@ -25,7 +26,9 @@ export default function ProPanel({ chainId, account, pro }) {
   });
   const [bal, maxW] = (mine.data || []).map((x) => (x.status === "success" ? x.result : undefined));
   const allowance = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "allowance", args: [account, pool], query: { enabled: Boolean(account && stableAddr && pool) } });
-  const wallet = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "balanceOf", args: [account], query: { enabled: Boolean(account && stableAddr), refetchInterval: 15_000 } });
+  const walletRead = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "balanceOf", args: [account], query: { enabled: Boolean(account && stableAddr), refetchInterval: 15_000 } });
+  const demo = useDemo();
+  const wallet = demo ? { data: DEMO_BALANCE } : walletRead;
   const overBalance = wallet.data !== undefined && units > wallet.data;
   const price = pro?.proSharePrice !== undefined ? fromUnits(pro.proSharePrice, 18) : null;
   const myValue = bal !== undefined && price !== null ? fromUnits(bal) * price : null;

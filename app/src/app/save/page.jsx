@@ -4,6 +4,7 @@ import { useReadContract, useReadContracts } from "wagmi";
 import { ABI, ERC20_ABI, addr, notesOf, stableSymbol } from "@/lib/contracts";
 import { fmtDate, fmtDuration, fmtMoney, fmtPct, fromUnits, toUnits } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
+import { useDemo, DEMO_BALANCE } from "@/lib/demo";
 import { PageHead, Section, SectionHead, Notice, Row, useActiveChain, DeployGate, AddrLink, Placeholder, HeroCtas, HowItWorks, Faq } from "@/components/ui";
 import { SaverArt } from "@/components/IsoArt";
 import { useKyc } from "@/components/KycBadge";
@@ -48,6 +49,8 @@ function NoteCard({ note, chainId, account, kycOk }) {
   const allowance = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "allowance", args: [account, note.address], query: { enabled: Boolean(account && stableAddr) } });
   const wallet = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "balanceOf", args: [account], query: { enabled: Boolean(account && stableAddr), refetchInterval: 15_000 } });
 
+  const demo = useDemo();
+  useEffect(() => { if (demo) setAmount("1000"); }, [demo]);
   if (!snap) return <div className="card h-80 animate-pulse" />;
   const [supply, floorVal, sleeveVal, sleevePrin, couponsPaid, maturity, subEnd, rateBps, matured] = snap;
   const subOpen = now <= Number(subEnd);
@@ -56,7 +59,7 @@ function NoteCard({ note, chainId, account, kycOk }) {
   const couponDue = now >= Number(lastCoupon || 0) + Number(couponInterval || 0);
   const units = toUnits(amount);
   const sleevePnL = fromUnits(sleeveVal) - fromUnits(sleevePrin);
-  const walletUnits = wallet.data;
+  const walletUnits = demo ? DEMO_BALANCE : wallet.data;
   const overBalance = walletUnits !== undefined && units > walletUnits;
   const hasRedeemed = Boolean(matured && redeemed && redeemed > 0n && (!claimable || claimable === 0n));
 
@@ -77,7 +80,7 @@ function NoteCard({ note, chainId, account, kycOk }) {
     <div className="card p-5 sm:p-6 flex flex-col">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="text-lg font-semibold truncate">{name}</h3>
+          <h3 className="text-lg font-semibold leading-snug break-words">{name}</h3>
           <div className="text-xs text-muted font-mono mt-0.5">{symbol}</div>
         </div>
         <span className={`chip shrink-0 ${statusCls}`}>{status}</span>

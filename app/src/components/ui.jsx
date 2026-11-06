@@ -3,6 +3,7 @@ import { useAccount, useSwitchChain } from "wagmi";
 import { chainMeta, CHAINS } from "@/lib/chains";
 import { isDeployed } from "@/lib/contracts";
 import { shortHash, shortAddr } from "@/lib/format";
+import { useDemo, DEMO_ADDR } from "@/lib/demo";
 
 /**
  * Page header. With `art`, the scene sits beside the title (two columns on large screens) and `facts` show as a short
@@ -118,7 +119,7 @@ export function Placeholder({ title = "Not available yet", children }) {
 
 export function Seg({ value, onChange, options }) {
   return (
-    <div className="seg" role="radiogroup">
+    <div className={`seg ${options.length > 4 ? "max-sm:grid max-sm:grid-cols-4 max-sm:w-full" : ""}`} role="radiogroup">
       {options.map((o) => (
         <button key={String(o.value)} type="button" role="radio" aria-checked={value === o.value} data-on={value === o.value} className="seg-item" onClick={() => onChange(o.value)}>
           {o.label}
@@ -152,6 +153,8 @@ const SUPPORTED = new Set(CHAINS.map((c) => c.id));
 
 export function useActiveChain() {
   const { chainId: walletChain, isConnected, address } = useAccount();
+  const demo = useDemo();
+  if (demo) return { chainId: DEFAULT_CHAIN, walletChain: DEFAULT_CHAIN, unsupported: false, isConnected: true, address: DEMO_ADDR, deployed: isDeployed(DEFAULT_CHAIN), meta: chainMeta(DEFAULT_CHAIN), demo: true };
   // On a chain InsureVEX does not run on, keep showing live data from the default chain (read-only) and ask to switch.
   const unsupported = Boolean(walletChain) && !SUPPORTED.has(walletChain);
   const id = walletChain && !unsupported ? walletChain : DEFAULT_CHAIN;
@@ -240,7 +243,7 @@ export function HowItWorks({ id = "how", eyebrow = "How it works", title, steps,
   return (
     <Section className="mt-10">
       <SectionHead id={id} eyebrow={eyebrow} title={title} />
-      <div className={aside ? "grid lg:grid-cols-[1.35fr_1fr] gap-6 items-stretch" : ""}>
+      <div className={aside ? "grid xl:grid-cols-[1.45fr_1fr] gap-6 items-stretch" : ""}>
         <ol className="grid sm:grid-cols-3 gap-4">
           {steps.map((st, i) => {
             const last = i === steps.length - 1;

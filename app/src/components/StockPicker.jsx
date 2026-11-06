@@ -151,9 +151,25 @@ export default function StockPicker({ marketId, symbol, symbolsFor, loading, off
             />
           </div>
 
-          <div ref={listRef} className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] h-[360px]">
-            {/* exchanges */}
-            <div className="overflow-y-auto border-r border-line py-2" role="listbox" aria-label="Exchanges">
+          {/* phones: exchanges as a scrolling row of chips above a single stock column */}
+          {exchanges.length > 0 && (
+            <div className="sm:hidden flex gap-2 overflow-x-auto border-b border-line px-3 py-2.5 [scrollbar-width:none]">
+              {exchanges.map((e) => {
+                const on = e.id === ex.id;
+                return (
+                  <button key={e.id} type="button" onClick={() => { setExId(e.id); setCol(1); setRow(0); }}
+                    className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs ${on ? "border-primary bg-primary text-white" : "border-line bg-card text-ink2"}`}>
+                    <Flag code={e.code} className="h-3 w-[18px] rounded-[2px] ring-1 ring-black/10" />
+                    {e.exchange}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <div ref={listRef} className="grid sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] h-[min(360px,55vh)]">
+            {/* exchanges (sm and up) */}
+            <div className="hidden sm:block overflow-y-auto border-r border-line py-2" role="listbox" aria-label="Exchanges">
               {exchanges.length === 0 && <div className="px-4 py-6 text-sm text-muted">No exchange is called that. Stock matches from every exchange are on the right →</div>}
               {REGIONS.map((r) => {
                 const here = exchanges.filter((e) => e.region === r);
@@ -242,11 +258,11 @@ export default function StockPicker({ marketId, symbol, symbolsFor, loading, off
           </div>
 
           <div className="flex items-center gap-4 border-t border-line bg-sunk/50 px-4 py-2 text-[11px] text-muted">
-            <span><kbd className="font-sans">↑↓</kbd> move</span>
-            <span><kbd className="font-sans">←→</kbd> exchanges / stocks</span>
-            <span><kbd className="font-sans">↵</kbd> pick</span>
-            <span><kbd className="font-sans">esc</kbd> close</span>
-            <span className="ml-auto">premium shown at a 10% deductible</span>
+            <span className="hidden md:inline"><kbd className="font-sans">↑↓</kbd> move</span>
+            <span className="hidden md:inline"><kbd className="font-sans">←→</kbd> exchanges / stocks</span>
+            <span className="hidden md:inline"><kbd className="font-sans">↵</kbd> pick</span>
+            <span className="hidden md:inline"><kbd className="font-sans">esc</kbd> close</span>
+            <span className="md:ml-auto">Premium shown at a 10% deductible</span>
           </div>
         </div>
       )}
