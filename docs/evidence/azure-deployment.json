@@ -1,0 +1,144 @@
+{
+  "verifiedAt": "2026-11-06T23:03:07.934236+00:00",
+  "origin": "https://insurevex-api-30d9bd1c.centralindia.cloudapp.azure.com",
+  "resources": {
+    "resourceGroup": "insurevex-rg",
+    "vm": "insurevex-api",
+    "region": "centralindia",
+    "size": "Standard_B2als_v2",
+    "publicIp": "40.80.81.213"
+  },
+  "endpoints": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "seconds": 0.07,
+      "cors": true
+    },
+    {
+      "path": "/api/markets?prices=0",
+      "status": 200,
+      "seconds": 0.07,
+      "cors": true
+    },
+    {
+      "path": "/api/markets",
+      "status": 200,
+      "seconds": 0.08,
+      "cors": true
+    },
+    {
+      "path": "/api/price?symbol=NASDAQ:NVDA",
+      "status": 200,
+      "seconds": 0.11,
+      "cors": true
+    },
+    {
+      "path": "/api/agent/discovery",
+      "status": 200,
+      "seconds": 0.04,
+      "cors": true,
+      "enabled": true,
+      "endpoint": "https://insurevex-api-30d9bd1c.centralindia.cloudapp.azure.com/api/agent/underwrite"
+    },
+    {
+      "path": "/api/agent/control/status",
+      "status": 200,
+      "seconds": 0.04,
+      "cors": true,
+      "ready": true,
+      "stopped": false,
+      "locked": false
+    },
+    {
+      "path": "/api/state?chainId=1874",
+      "status": 200,
+      "seconds": 0.69,
+      "cors": true
+    },
+    {
+      "path": "/api/state?chainId=296",
+      "status": 200,
+      "seconds": 1.45,
+      "cors": true
+    },
+    {
+      "path": "/api/state?chainId=5042002",
+      "status": 200,
+      "seconds": 0.62,
+      "cors": true
+    }
+  ],
+  "quotes": [
+    {
+      "chainId": 1874,
+      "status": 200,
+      "validTypedSignature": true,
+      "quoteExpiry": 1794006701
+    },
+    {
+      "chainId": 296,
+      "status": 200,
+      "validTypedSignature": true,
+      "quoteExpiry": 1794006701
+    },
+    {
+      "chainId": 5042002,
+      "status": 200,
+      "validTypedSignature": true,
+      "quoteExpiry": 1794006701
+    }
+  ],
+  "migration": {
+    "walletPreserved": true,
+    "limitsPreserved": true,
+    "allSpendingRecordsPreserved": true,
+    "budgetTotalsPreserved": true,
+    "replayDatabasesMigrated": true,
+    "sqliteIntegrityChecks": 3,
+    "localAgentStopped": true
+  },
+  "containerRestartPersistence": "PASS",
+  "agent": {
+    "enabled": true,
+    "ready": true,
+    "signedControlsEnabled": true,
+    "locked": false
+  },
+  "guardChecks": [
+    {
+      "method": "GET",
+      "path": "/api/keeper/tick",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/agent/control",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/agent/underwrite",
+      "status": 400,
+      "expected": 400
+    },
+    {
+      "method": "GET",
+      "path": "/.env",
+      "status": 404,
+      "expected": 404
+    },
+    {
+      "method": "GET",
+      "path": "/data/agent/credentials.json",
+      "status": 404,
+      "expected": 404
+    }
+  ],
+  "publicApiPort8080Blocked": true,
+  "keeperEnabled": false,
+  "frontendCutover": "Pending: existing frontend belongs to a different Vercel account",
+  "transactionsBroadcast": 0
+}

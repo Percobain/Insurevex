@@ -1,6 +1,6 @@
 # InsureVEX
 
-**Backend hosting:** [Deploy on Render with persistent agent/payment storage](docs/RENDER.md). The root `render.yaml` defines the service, disk, Node version and health check.
+**Backend hosting:** [Azure deployment and operations](docs/AZURE.md) · [live API health](https://insurevex-api-30d9bd1c.centralindia.cloudapp.azure.com/api/health). [Render](docs/RENDER.md) remains an alternative deployment recipe.
 
 **New: Hedera x402 underwriting agent.** A dedicated testnet agent discovers and pays for underwriting through HTTP 402, validates a signed insurance quote, and pays the exact premium through `CoverMarket`. Persistent spending budgets, merchant and contract allowlists, on-chain ATS holdings checks, replay protection, an emergency stop, and an HCS spending-audit anchor bound its authority. The new `/agent` dashboard shows service limits and payment receipts. [Setup, architecture, guardrails and track requirements](docs/HEDERA_X402.md).
 
