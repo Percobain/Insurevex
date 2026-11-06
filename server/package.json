@@ -10,9 +10,13 @@
     "selftest": "node scripts/selftest.js"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.13"
   },
+  "overrides": { "ws": "^8.21.0" },
   "dependencies": {
+    "@hiero-ledger/sdk": "2.90.1",
+    "@x402/core": "2.30.0",
+    "@x402/hedera": "2.30.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.9",
     "ethers": "^6.17.0",

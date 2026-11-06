@@ -62,7 +62,7 @@ export function activeChains() {
 
 export const symbolId = (s) => ethers.id(s);
 
-const QUOTE_TYPES = { Quote: [
+export const QUOTE_TYPES = { Quote: [
   { name: "buyer", type: "address" }, { name: "symbol", type: "bytes32" }, { name: "market", type: "bytes32" }, { name: "notional", type: "uint256" },
   { name: "shares", type: "uint256" }, { name: "heldShares", type: "uint256" }, { name: "deductibleBps", type: "uint32" },
   { name: "capBps", type: "uint32" }, { name: "premium", type: "uint256" }, { name: "startPrice", type: "uint256" },

@@ -16,3 +16,4 @@ backtest/data/
 .vercel
 server/data/store.json
 server/.keeper-secret.local
+.agent-state/
