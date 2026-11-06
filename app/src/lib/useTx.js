@@ -4,6 +4,7 @@ import { useAccount, usePublicClient, useWriteContract } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToasts } from "@/components/Toasts";
 import { chainMeta } from "./chains";
+import { useDemo, sleep, fakeHash } from "./demo";
 
 function cleanError(e) {
   const m = e?.shortMessage || e?.details || e?.message || String(e);
@@ -22,9 +23,23 @@ export function useTx() {
   const qc = useQueryClient();
   const { push, update } = useToasts();
   const [busy, setBusy] = useState(null);
+  const demo = useDemo();
 
   const run = useCallback(
     async (label, request) => {
+      if (demo) {
+        // Demo: play the toasts, send nothing. Approvals are skipped so a purchase is a single step on screen.
+        if (request?.functionName === "approve") return { status: "success" };
+        setBusy(label);
+        const id = push({ title: label, body: "Confirm in your wallet…" });
+        await sleep(700);
+        const href = chainMeta(chainId || 1874).tx(fakeHash());
+        update(id, { body: "Submitted, waiting for confirmation…", href });
+        await sleep(900);
+        update(id, { state: "success", body: "Confirmed on-chain.", href });
+        setBusy(null);
+        return { status: "success" };
+      }
       setBusy(label);
       const id = push({ title: label, body: "Confirm in your wallet…" });
       try {
@@ -48,7 +63,7 @@ export function useTx() {
         setBusy(null);
       }
     },
-    [chainId, client, writeContractAsync, push, update, qc],
+    [chainId, client, writeContractAsync, push, update, qc, demo],
   );
 
   return { run, busy };

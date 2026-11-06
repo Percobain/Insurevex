@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useAccount, useReadContract } from "wagmi";
 import { ABI, addr } from "@/lib/contracts";
 import KycModal from "./KycModal";
+import { useDemo } from "@/lib/demo";
 
 export function useKyc() {
   const { address, chainId } = useAccount();
@@ -21,11 +22,15 @@ export function useKyc() {
     args: [address],
     query: { enabled: Boolean(address && registry) },
   });
+  const demo = useDemo();
+  if (demo) return { verified: true, frozen: false, loading: false, available: true };
   return { verified: Boolean(verified), frozen: Boolean(frozen), loading: isLoading, available: Boolean(registry && address) };
 }
 
 export default function KycBadge() {
-  const { isConnected } = useAccount();
+  const { isConnected: walletConnected } = useAccount();
+  const demo = useDemo();
+  const isConnected = walletConnected || demo;
   const { verified, frozen, available } = useKyc();
   const [open, setOpen] = useState(false);
   if (!isConnected || !available) return null;

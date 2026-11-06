@@ -98,7 +98,7 @@ body {
     @apply inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-xs text-ink2;
   }
   .seg {
-    @apply inline-flex rounded-xl border border-line bg-sunk p-1 gap-1;
+    @apply inline-flex flex-wrap max-w-full rounded-xl border border-line bg-sunk p-1 gap-1;
   }
   .seg-item {
     @apply h-8 px-3 rounded-lg text-sm text-ink2 hover:text-ink;

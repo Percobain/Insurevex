@@ -7,6 +7,7 @@ import { apiGet, apiPost, useApi } from "@/lib/api";
 import { EXCHANGES, flag } from "@/lib/exchanges";
 import { fmtMoney, fmtNum, fmtPct, fromUnits, shortHash, symbolId } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
+import { useDemo, sleep, DEMO_BALANCE } from "@/lib/demo";
 import { PageHead, Section, SectionHead, Seg, Notice, Row, useActiveChain, DeployGate, HeroCtas, HowItWorks, Faq, More } from "@/components/ui";
 import { HolderArt } from "@/components/IsoArt";
 import { useKyc } from "@/components/KycBadge";
@@ -60,6 +61,8 @@ function PayoutExample() {
 
 export default function ProtectPage() {
   const { chainId, address, isConnected, deployed } = useActiveChain();
+  const demo = useDemo();
+  useEffect(() => { if (demo) { setSharesHeld("50"); setSharesCover("50"); } }, [demo]);
   const kyc = useKyc();
   const stable = stableSymbol(chainId);
   const markets = useApi("/api/markets");
@@ -116,6 +119,12 @@ export default function ProtectPage() {
 
   async function doAttest() {
     setAttesting(true);
+    if (demo) {
+      await sleep(600);
+      setAttest({ heldShares: (BigInt(Math.round(Number(sharesHeld || 0) * 1e6)) * 10n ** 12n).toString(), ref: "0x5e1f0c0ffee0d3m0" });
+      setAttesting(false);
+      return;
+    }
     try {
       const r = await apiPost("/api/holdings/attest", { address, symbol: symbol.symbol, source: source === "ibkr" ? "statement" : source, broker: source, shares: sharesHeld, chainId });
       setAttest(r);
@@ -130,6 +139,16 @@ export default function ProtectPage() {
     if (bOverride !== undefined) setB(bOverride);
     setQuoting(true);
     setQuoteErr("");
+    if (demo) {
+      // Demo quote: the stock's indicative monthly rate, scaled to the tenor. Nothing is signed.
+      await sleep(700);
+      const days = tenor === "10m" ? 1 : Number(tenor);
+      const bps = (symbol?.monthlyPremiumBps || 90) * (days / 28);
+      const premium = Number(notional || 0) * bps / 1e4;
+      setQuote({ ok: true, premium, quote: { premium: String(Math.round(premium * 1e6)), validUntil: Math.floor(Date.now() / 1000) + 300 }, pricing: { pPayout: Math.min(0.4, bps / 1e4 * 4), fairBps: bps * 0.8 }, _b: bOverride ?? b });
+      setQuoting(false);
+      return;
+    }
     try {
       const qs = new URLSearchParams({
         chainId: String(chainId), buyer: address || "0x0000000000000000000000000000000000000000", symbol: symbol.symbol,
@@ -175,6 +194,10 @@ export default function ProtectPage() {
   });
 
   async function buy() {
+    if (demo) {
+      await run(`Buy cover on ${symbol.ticker || symbol.symbol}`, { functionName: "buyCover" });
+      return; // demo: keep the quote on screen so the purchase reads clearly
+    }
     const q = quote.quote;
     if ((allowance.data || 0n) < premiumUnits) {
       const ok = await run(`Approve ${stable} premium`, { address: stableAddr, abi: ERC20_ABI, functionName: "approve", args: [market_, premiumUnits] });
@@ -197,8 +220,8 @@ export default function ProtectPage() {
   const maxPayout = N * (c / 10000);
   const pay25 = N * Math.min(Math.max(0.25 - b / 10000, 0), c / 10000);
   const breakeven = prem !== null && N > 0 ? b / 10000 + prem / N : null;
-  const tooBig = maxNotional !== null && N > maxNotional + 1e-9;
-  const walletBal = balance.data !== undefined ? fromUnits(balance.data) : null;
+  const tooBig = !demo && maxNotional !== null && N > maxNotional + 1e-9;
+  const walletBal = demo ? fromUnits(DEMO_BALANCE) : balance.data !== undefined ? fromUnits(balance.data) : null;
   const cantAfford = prem !== null && walletBal !== null && prem > walletBal;
   const blockReason = Number(sharesCover) > Number(sharesHeld) ? "You cannot cover more shares than you hold."
     : !(N > 0) ? "Enter how much to protect."
@@ -256,7 +279,7 @@ export default function ProtectPage() {
                   {usdClose ? `1 ${symbol.ticker} = ${fmtNum(symbol.lastClose, 2)} ${symbol.currency} ≈ ${fmtMoney(usdClose, { sym: "" })} ${stable} at the latest FX close. The payout is in ${stable}, on the stock's fall in ${symbol.currency}.` : `No FX rate for ${symbol.currency} right now: enter the protected value in ${stable} yourself.`}
                 </p>
               )}
-              {symbol && maxNotional !== null && (
+              {symbol && !demo && maxNotional !== null && (
                 <p className={`text-xs mt-2 ${tooBig ? "text-bad" : "text-muted"}`}>
                   Pool room for {symbol.ticker}: up to {fmtMoney(maxNotional, { sym: "" })} {stable} protected at a {c / 100}% cap.{" "}
                   {tooBig && usdClose > 0 && (
@@ -362,8 +385,8 @@ export default function ProtectPage() {
                 </button>
               </div>
               {symbol && blockReason && <p className="text-xs text-bad mt-3">{blockReason}</p>}
-              {isConnected && balance.data !== undefined && (
-                <p className="text-xs text-muted mt-3">Wallet: {fmtMoney(fromUnits(balance.data), { sym: "" })} {stable}. Quote valid until {quote?.quote ? new Date(Number(quote.quote.validUntil) * 1000).toLocaleTimeString() : "—"}.</p>
+              {isConnected && walletBal !== null && (
+                <p className="text-xs text-muted mt-3">Wallet: {fmtMoney(walletBal, { sym: "" })} {stable}. Quote valid until {quote?.quote ? new Date(Number(quote.quote.validUntil) * 1000).toLocaleTimeString() : "—"}.</p>
               )}
             </div>
           </div>

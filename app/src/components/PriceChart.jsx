@@ -40,15 +40,20 @@ export default function PriceChart({ symbol, currency, deductible }) {
   const up = change >= 0;
   const cur = currency ? ` ${currency}` : "";
 
+  const floor = deductible && last ? last * (1 - deductible) : null;
+
   return (
-    <div>
-      <div className="flex items-center justify-between text-sm">
+    <div className="min-w-0">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
         <Seg value={win} onChange={setWin} options={WINDOWS.map((w) => ({ value: w.secs, label: w.label }))} />
         {points.length > 0 && (
-          <span className={`tabular font-medium ${up ? "text-good" : "text-bad"}`}>{up ? "+" : ""}{fmtNum(change * 100, 1)}%</span>
+          <span className="flex items-baseline gap-2 tabular">
+            <span className="font-semibold text-ink">{fmtNum(last, 2)}<span className="text-xs font-normal text-muted">{cur}</span></span>
+            <span className={`font-medium ${up ? "text-good" : "text-bad"}`}>{up ? "+" : ""}{fmtNum(change * 100, 1)}%</span>
+          </span>
         )}
       </div>
-      <div className="h-56 mt-2 -mx-1">
+      <div className="h-56 mt-2">
         <Liveline
           data={points}
           value={last}
@@ -58,9 +63,9 @@ export default function PriceChart({ symbol, currency, deductible }) {
           window={win}
           momentum={false}
           pulse={false}
-          badgeVariant="minimal"
-          referenceLine={deductible && last ? { value: last * (1 - deductible), label: `Payout below ${fmtNum(last * (1 - deductible), 2)}` } : undefined}
-          formatValue={(v) => `${fmtNum(v, 2)}${cur}`}
+          badge={false}
+          referenceLine={floor ? { value: floor } : undefined}
+          formatValue={(v) => fmtNum(v, v >= 1000 ? 0 : 2)}
           formatTime={(t) => {
             const d = new Date((t - offset) * 1000);
             return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
@@ -68,6 +73,12 @@ export default function PriceChart({ symbol, currency, deductible }) {
           emptyText="Price history unavailable"
         />
       </div>
+      {floor && (
+        <div className="mt-2 flex items-center gap-2 text-xs text-ink2">
+          <span className="w-5 border-t border-dashed border-muted" aria-hidden="true" />
+          Cover starts paying below <span className="font-medium text-ink tabular">{fmtNum(floor, 2)}{cur}</span>
+        </div>
+      )}
     </div>
   );
 }
