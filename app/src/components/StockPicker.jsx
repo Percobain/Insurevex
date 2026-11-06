@@ -129,7 +129,7 @@ export default function StockPicker({ marketId, symbol, symbolsFor, loading, off
                 {symbol.lastClose ? ` · ${fmtNum(symbol.lastClose, 2)} ${symbol.currency || ""}` : ""}
               </>
             ) : (
-              `${EXCHANGES.length} exchanges · search by name, ticker or country`
+              `${EXCHANGES.length} exchanges · search by name or country`
             )}
           </span>
         </span>
@@ -220,7 +220,7 @@ export default function StockPicker({ marketId, symbol, symbolsFor, loading, off
               </div>
               {loading && <div className="px-4 py-6 text-sm text-muted">Loading stocks…</div>}
               {!loading && stocks.length === 0 && (
-                <div className="px-4 py-6 text-sm text-muted">{offline ? "Stocks load from the pricing server, which is offline." : q ? `Nothing matches “${query}”.` : "No stocks listed here yet."}</div>
+                <div className="px-4 py-6 text-sm text-muted">{offline ? "Stocks can't load right now. Try again in a few minutes." : q ? `Nothing matches “${query}”.` : "No stocks listed here yet."}</div>
               )}
               {stocks.map(({ s, e }, i) => {
                 const kb = col === 1 && i === row;
@@ -248,7 +248,7 @@ export default function StockPicker({ marketId, symbol, symbolsFor, loading, off
                     </span>
                     <span className="shrink-0 text-right tabular">
                       <span className="block text-sm">{s.lastClose ? fmtNum(s.lastClose, 2) : "—"} <span className="text-[11px] text-muted">{s.currency || ""}</span></span>
-                      {s.monthlyPremiumBps ? <span className="block text-[11px] text-accent">≈{fmtPct(s.monthlyPremiumBps / 1e4, 2)}/mo</span> : !s.quotable ? <span className="block text-[11px] text-warn">not quotable</span> : null}
+                      {s.monthlyPremiumBps ? <span className="block text-[11px] text-accent">≈{fmtPct(s.monthlyPremiumBps / 1e4, 2)} a month</span> : !s.quotable ? <span className="block text-[11px] text-warn">not available</span> : null}
                     </span>
                     {kb && <kbd className="hidden sm:block shrink-0 rounded border border-line bg-card px-1.5 text-[10px] text-muted">↵</kbd>}
                   </button>
@@ -262,7 +262,7 @@ export default function StockPicker({ marketId, symbol, symbolsFor, loading, off
             <span className="hidden md:inline"><kbd className="font-sans">←→</kbd> exchanges / stocks</span>
             <span className="hidden md:inline"><kbd className="font-sans">↵</kbd> pick</span>
             <span className="hidden md:inline"><kbd className="font-sans">esc</kbd> close</span>
-            <span className="md:ml-auto">Premium shown at a 10% deductible</span>
+            <span className="md:ml-auto">Price shown if it starts paying after a 10% drop</span>
           </div>
         </div>
       )}

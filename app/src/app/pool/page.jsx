@@ -20,40 +20,26 @@ function Meter({ label, value, max, sub }) {
   );
 }
 
-const STEPS = [
-  { icon: "pay", title: "Premiums come in", body: "Every protection fee lands in the vault. That is what savers and Pro LPs earn.", stat: "Income for the vault" },
-  { icon: "lock", title: "Payouts set aside first", body: "Before a policy is sold, its maximum payout is locked. No policy is ever unfunded.", stat: "100% collateralised" },
-  { icon: "check", title: "Crash or calm", body: "A crash pays the holder from the locked money. Calm releases it and the vault keeps the premium.", stat: "Settled on the official close" },
-];
+/** Dollars, without cents once the amount is large. */
+const usd = (x) => fmtMoney(x, { dp: Math.abs(Number(x) || 0) >= 100 ? 0 : 2 });
 
-const LOSS_ORDER = [
-  ["Premiums collected", "Absorbs losses first", "bg-sage"],
-  ["Pro LP capital", "Takes the next loss, earns more", "bg-accent text-white"],
-  ["Savers' vault units", "Only after Pro is used up", "bg-primary text-white"],
-  ["Savers' T-bills", "Never pays a claim", "bg-sunk text-muted"],
-];
-
-function LossOrder() {
-  return (
-    <div className="card p-5 sm:p-6">
-      <div className="text-sm font-medium">If a claim comes in, who pays?</div>
-      <ol className="mt-4 space-y-2">
-        {LOSS_ORDER.map(([t, sub, cls], i) => (
-          <li key={t} className={`rounded-xl px-4 py-3 flex items-center justify-between gap-3 ${cls}`}>
-            <span className="font-medium">{i + 1}. {t}</span>
-            <span className="text-xs opacity-80 text-right">{sub}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
+/** "Half" for 50%, otherwise "30%". */
+function shareWord(bps) {
+  const x = Number(bps || 0) / 1e4;
+  return x === 0.5 ? "Half" : fmtPct(x, 0);
 }
 
+const STEPS = [
+  { icon: "pay", title: "Fees come in", body: "Stock owners pay a fee for protection. It goes to the pool.", stat: "Income for the pool" },
+  { icon: "lock", title: "Payouts set aside first", body: "Before protection is sold, its biggest possible payout is locked.", stat: "Every payout fully backed" },
+  { icon: "check", title: "Crash or calm", body: "Crash: the stock owner is paid. Calm: the pool keeps the fee.", stat: "Paid at the closing price" },
+];
+
 const FAQ = [
-  ["Who puts money in the vault?", "Two groups. Savers, through protected notes, and Pro LPs, who take the first loss in exchange for a bigger share of premiums."],
-  ["Can the vault run out of money?", "No policy is sold unless its maximum payout can be locked. Half the capital is held in reserve and never backs policies, and no single stock can use more than its cap."],
-  ["What does the vault earn in a normal year?", "In the 2005–2026 backtest the long-run loss ratio was about 0.57–0.61: the vault kept roughly 40 cents of every premium dollar."],
-  ["Where does idle money sit?", "In tokenised T-bills (vxTBILL), so cash that is not locked for a policy still earns the Treasury rate."],
+  ["Who puts money in the pool?", "Savers, through savings plans, and Pro, who take the first hit for a bigger share of the fees."],
+  ["Can the pool run out of money?", "Protection is only sold if its biggest payout can be set aside first. Part of the money is also always kept in reserve."],
+  ["What does the pool earn in a normal year?", "In tests from 2005 to 2026, the pool kept about 40 cents of every $1 in fees."],
+  ["Where does spare money wait?", "In US government bonds (T-bills), so it keeps earning interest."],
 ];
 
 export default function PoolPage() {
@@ -67,7 +53,7 @@ export default function PoolPage() {
 
   const p = s.pool;
   const pro = s.pro || {};
-  const senior = fromUnits(p.totalAssets); // Savers' sleeves (senior NAV)
+  const senior = fromUnits(p.totalAssets); // Savers' earning parts (senior NAV)
   const junior = pro.available ? fromUnits(pro.juniorAssets) : 0;
   const total = pro.available && pro.physicalAssets !== undefined ? fromUnits(pro.physicalAssets) : senior;
   const locked = fromUnits(p.locked);
@@ -93,90 +79,102 @@ export default function PoolPage() {
   return (
     <>
       <PageHead
-        eyebrow="Underwriting vault"
-        title="The vault that pays the claims."
+        eyebrow="Earn"
+        title="Earn the fees from crash protection."
         art={<PoolArt />}
-        right={<HeroCtas items={[["See the vault live", "#live"], ["Earn as a Pro LP", "#pro"]]} />}
+        right={<HeroCtas items={[["Start earning", "#pro"]]} />}
       >
-        Savers and Pro LPs fund it. Stock holders pay premiums into it. Every policy&apos;s maximum payout is set aside before it is sold.
+        People pay to protect their stocks. The pool collects those fees and pays out in crashes.
       </PageHead>
 
-      <HowItWorks title="Premiums in, payouts locked" steps={STEPS} aside={<LossOrder />} />
-
-      <Section className="mt-20">
+      <Section className="mt-6">
         <DeployGate chainId={chainId}>
-          <SectionHead id="live" eyebrow="Live on-chain" title="The vault right now">Read straight from the contracts.</SectionHead>
+          <SectionHead id="live" eyebrow="Live" title="The pool right now" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Stat label="Total in the vault" value={s.ok ? fmtMoney(total, { sym: "" }) : "—"} sub={pro.available ? `Savers ${fmtMoney(senior, { sym: "" })} · Pro ${fmtMoney(junior, { sym: "" })}` : stable} />
-            <Stat label="Set aside for payouts" value={s.ok ? fmtMoney(locked, { sym: "" }) : "—"} sub="max payout of open policies" />
-            <Stat label="Room for new cover" value={s.ok ? fmtMoney(fromUnits(p.capacity), { sym: "" }) : "—"} sub="more payout the vault can back" />
-            <Stat label="Vault unit price" value={s.ok && p.sharePrice ? fmtNum(fromUnits(p.sharePrice), 4) : "—"} sub="started at 1.0000, rises with premiums" />
+            <Stat label="Money in the pool" value={s.ok ? usd(total) : "—"} sub={pro.available ? `Savers ${usd(senior)} · Pro ${usd(junior)}` : "from savers"} />
+            <Stat label="Set aside for payouts" value={s.ok ? usd(locked) : "—"} sub="for protection sold now" />
+            <Stat label="Room for new protection" value={s.ok ? usd(fromUnits(p.capacity)) : "—"} sub="more payouts the pool can back" />
+            <Stat label="Value of 1 share of the pool" value={s.ok && p.sharePrice ? `$${fmtNum(fromUnits(p.sharePrice), 4)}` : "—"} sub="started at $1, grows with fees" />
           </div>
-          <More label="Risk limits, results and T-bill details" className="mt-5">
-          <div className="grid lg:grid-cols-3 gap-4">
-            <Panel title="Risk limits" desc="Enforced by the contract, not the website.">
-              <div className="space-y-5">
-              <Meter label="Utilisation of working capital" value={locked} max={working} sub={`${fmtMoney(working, { sym: "" })} working capital = ${pro.available ? "Pro + " : ""}sleeves × (1 − reserve)`} />
-              <Row k="Reserve R (never backs policies)" v={fmtPct(Number(p.reserveBps || 0) / 1e4, 0)} />
-              <Row k="Per-stock cap m" v={fmtPct(Number(p.symbolCapBps || 0) / 1e4, 0)} />
-              <Row k="Per-market cap" v={fmtPct(Number(p.marketCapBps || 0) / 1e4, 0)} />
-              <Row k="Cash / T-bills" v={`${fmtMoney(fromUnits(p.cash), { sym: "" })} / ${fmtMoney(fromUnits(p.tbillAssets), { sym: "" })}`} />
-              <div className="text-xs text-muted">Pool <AddrLink address={addr(chainId, "UnderwritingPool")} chainId={chainId} /></div>
-              </div>
-            </Panel>
-            <Panel title="Underwriting result" desc="Premiums in, claims out.">
-              <div>
-                <Row k="Premiums earned" v={`${fmtMoney(prem, { sym: "" })} ${stable}`} />
-                <Row k="Claims paid" v={`${fmtMoney(paid, { sym: "" })} ${stable}`} />
-                <Row k="Loss ratio" v={prem > 0 ? fmtPct(paid / prem, 1) : "—"} strong />
-                <Row k="Policies written" v={fmtNum(count)} />
-                <Row k="Settled / paid out" v={`${settled.length} / ${settled.filter((x) => Number(x.payout) > 0).length}`} />
-              </div>
-              <p className="text-xs text-muted mt-3">The backtest's long-run loss ratio is about 0.57–0.61: savers keep roughly 40 cents of every premium dollar.</p>
-            </Panel>
-            <Panel title="Tokenised T-bill" desc="vxTBILL: where idle cash and savers' floors sit.">
-              <div>
-                <Row k="NAV per share" v={nav ? fmtNum(nav, 6) : "—"} strong />
-                <Row k="Fund yield" v={s.tbill.apyBps !== undefined ? fmtPct(Number(s.tbill.apyBps) / 1e4, 2) : "—"} />
-                <Row k="Fund assets" v={fmtMoney(fromUnits(s.tbill.totalAssets), { sym: "" })} />
-                <Row k="Attested reserve" v={fmtMoney(fromUnits(s.tbill.attestedReserve), { sym: "" })} />
-              </div>
-              <div className="text-xs text-muted mt-3">Vault <AddrLink address={addr(chainId, "TBillVault")} chainId={chainId} /></div>
-            </Panel>
-          </div>
-          </More>
-          <div id="pro" className="mt-16 scroll-mt-28">
+
+          <div id="pro" className="mt-10 scroll-mt-28">
             <ProPanel chainId={chainId} account={address} pro={pro} />
           </div>
+
+          <div className="mt-10 grid lg:grid-cols-3 gap-4">
+            <Panel title="Safety rules" desc="Built into the contract. The website cannot change them.">
+              <div className="space-y-5">
+                <Meter label="Used for protection" value={locked} max={working} sub={`${usd(working)} can back protection`} />
+                <ul className="space-y-2 text-sm text-ink2">
+                  <li>{shareWord(p.reserveBps)} of the money is always kept in reserve</li>
+                  <li>At most {fmtPct(Number(p.symbolCapBps || 0) / 1e4, 0)} on any one stock</li>
+                  <li>At most {fmtPct(Number(p.marketCapBps || 0) / 1e4, 0)} on any one country</li>
+                </ul>
+              </div>
+            </Panel>
+            <Panel title="Fees vs payouts" desc="What came in, what went out.">
+              <div>
+                <Row k="Fees collected" v={usd(prem)} />
+                <Row k="Paid out in crashes" v={usd(paid)} />
+                <Row k="Share paid back" v={prem > 0 ? fmtPct(paid / prem, 1) : "—"} strong />
+                <Row k="Protections sold" v={fmtNum(count)} />
+                <Row k="Ended" v={`${settled.length} (${settled.filter((x) => Number(x.payout) > 0).length} paid out)`} />
+              </div>
+              <p className="text-xs text-muted mt-3">In tests from 2005 to 2026, about 60 cents of every $1 in fees was paid back. The pool kept the rest.</p>
+            </Panel>
+            <Panel title="Government bonds" desc="Where spare money waits and keeps earning.">
+              <div>
+                <Row k="Rate" v={s.tbill.apyBps !== undefined ? `${fmtPct(Number(s.tbill.apyBps) / 1e4, 2)} a year` : "—"} strong />
+                <Row k="Value" v={usd(fromUnits(s.tbill.totalAssets))} />
+                <Row k="Reserve checked by the issuer" v={usd(fromUnits(s.tbill.attestedReserve))} />
+              </div>
+            </Panel>
+          </div>
+
           <div className="mt-16">
-            <SectionHead eyebrow="Exposure" title="What the vault is protecting">Open policies by stock, and how much is set aside for each.</SectionHead>
-            <div>
-              {bySymbol.length === 0 ? (
-                <Placeholder title="No open cover right now">Policies appear here as soon as they are bought.</Placeholder>
-              ) : (
-                <div className="card overflow-x-auto">
-                  <table className="table-x">
-                    <thead><tr><th>Stock</th><th>Policies</th><th>Protected</th><th>Set aside</th><th>Premiums</th><th>Share of working capital</th></tr></thead>
-                    <tbody>
-                      {bySymbol.map((r) => (
-                        <tr key={r.symbol}>
-                          <td className="font-mono text-xs">{nameOf(r.symbol)}</td>
-                          <td>{r.n}</td>
-                          <td>{fmtMoney(r.notional, { sym: "" })}</td>
-                          <td>{fmtMoney(r.maxPayout, { sym: "" })}</td>
-                          <td>{fmtMoney(r.premium, { sym: "" })}</td>
-                          <td>{working > 0 ? fmtPct(r.maxPayout / working, 1) : "—"}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
+            <SectionHead eyebrow="Protection" title="Protection sold, by stock">Open protection, and the money set aside for each stock.</SectionHead>
+            {bySymbol.length === 0 ? (
+              <Placeholder title="No protection sold right now">Stocks show up here as soon as someone protects one.</Placeholder>
+            ) : (
+              <div className="card overflow-x-auto">
+                <table className="table-x">
+                  <thead><tr><th>Stock</th><th>Protections</th><th>Amount protected</th><th>Set aside</th><th>Fees paid</th><th>Share of the pool</th></tr></thead>
+                  <tbody>
+                    {bySymbol.map((r) => (
+                      <tr key={r.symbol}>
+                        <td className="font-mono text-xs">{nameOf(r.symbol)}</td>
+                        <td>{r.n}</td>
+                        <td>{usd(r.notional)}</td>
+                        <td>{usd(r.maxPayout)}</td>
+                        <td>{usd(r.premium)}</td>
+                        <td>{working > 0 ? fmtPct(r.maxPayout / working, 1) : "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </DeployGate>
       </Section>
+
+      <HowItWorks title="Three steps" steps={STEPS} />
+
       <Faq items={FAQ} />
+
+      {deployed && (
+        <Section className="mb-8">
+          <More label="Details">
+            <div className="card p-5 text-sm max-w-xl">
+              <Row k="Pool contract" v={<AddrLink address={addr(chainId, "UnderwritingPool")} chainId={chainId} />} />
+              <Row k="Government bond fund contract" v={<AddrLink address={addr(chainId, "TBillVault")} chainId={chainId} />} />
+              <Row k="Pool cash / in government bonds" v={`${usd(fromUnits(p.cash))} / ${usd(fromUnits(p.tbillAssets))}`} />
+              <Row k="Price of 1 bond fund share" v={nav ? fmtNum(nav, 6) : "—"} />
+              <Row k="Paid in" v={stable} />
+            </div>
+          </More>
+        </Section>
+      )}
     </>
   );
 }

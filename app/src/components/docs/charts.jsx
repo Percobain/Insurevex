@@ -8,6 +8,7 @@ import { fmtPct, fmtNum, marketLabel } from "@/lib/format";
 export const SERIES = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"];
 const tip = { background: "var(--card)", border: "1px solid var(--line)", borderRadius: 10, fontSize: 12, color: "var(--ink)" };
 const axis = { stroke: "var(--muted)", fontSize: 11, tickLine: false, axisLine: false };
+const seriesLabel = (k) => (k === "TBILLS" ? "Government bonds only" : marketLabel(k));
 
 export function EquityChart({ data }) {
   const markets = Object.keys(data?.series || {}).filter((k) => k !== "GLOBAL" && k !== "TBILLS");
@@ -31,8 +32,8 @@ export function EquityChart({ data }) {
             <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
             <XAxis dataKey="d" {...axis} minTickGap={40} />
             <YAxis {...axis} width={44} tickFormatter={(v) => `${fmtNum(v, 1)}×`} domain={["auto", "auto"]} />
-            <Tooltip contentStyle={tip} formatter={(v, k) => [`${fmtNum(v, 3)}×`, marketLabel(k)]} />
-            <Legend formatter={(k) => <span style={{ color: "var(--ink2)", fontSize: 12 }}>{marketLabel(k)}</span>} />
+            <Tooltip contentStyle={tip} formatter={(v, k) => [`${fmtNum(v, 3)}×`, seriesLabel(k)]} />
+            <Legend formatter={(k) => <span style={{ color: "var(--ink2)", fontSize: 12 }}>{seriesLabel(k)}</span>} />
             {keys.map((k, i) => (
               <Line key={k} type="monotone" dataKey={k} dot={false} strokeWidth={2} stroke={k === "TBILLS" ? "var(--muted)" : SERIES[i]} strokeDasharray={k === "TBILLS" ? "4 4" : undefined} />
             ))}
@@ -52,8 +53,8 @@ export function LossRatioChart({ rows, breakeven = 1 / 1.5 }) {
           <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
           <XAxis dataKey="year" {...axis} />
           <YAxis {...axis} width={36} tickFormatter={(v) => fmtNum(v, 1)} />
-          <Tooltip contentStyle={tip} cursor={{ fill: "var(--sunk)" }} formatter={(v, k, p) => [k === "lr" ? `${fmtNum(p.payload.raw, 2)} (pool ${fmtPct(p.payload.uw, 1, { sign: true })})` : v, "Loss ratio"]} />
-          <ReferenceLine y={breakeven} stroke="var(--muted)" strokeDasharray="4 4" label={{ value: "break-even at 1.5× markup", position: "insideTopRight", fill: "var(--muted)", fontSize: 11 }} />
+          <Tooltip contentStyle={tip} cursor={{ fill: "var(--sunk)" }} formatter={(v, k, p) => [k === "lr" ? `${fmtNum(p.payload.raw, 2)} (pool ${fmtPct(p.payload.uw, 1, { sign: true })})` : v, "Payouts ÷ fees"]} />
+          <ReferenceLine y={breakeven} stroke="var(--muted)" strokeDasharray="4 4" label={{ value: "break-even (price 1.5× fair)", position: "insideTopRight", fill: "var(--muted)", fontSize: 11 }} />
           <Bar dataKey="lr" radius={[4, 4, 0, 0]} maxBarSize={22}>
             {data.map((d) => <Cell key={d.year} fill={d.raw > 1 ? "var(--bad)" : "var(--chart-1)"} />)}
           </Bar>
@@ -72,7 +73,7 @@ export function WalkForwardChart({ rows }) {
           <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
           <XAxis dataKey="year" {...axis} />
           <YAxis {...axis} width={44} tickFormatter={(v) => fmtPct(v, 0)} />
-          <Tooltip contentStyle={tip} cursor={{ fill: "var(--sunk)" }} formatter={(v) => [fmtPct(v, 1), "Out-of-sample pool return"]} />
+          <Tooltip contentStyle={tip} cursor={{ fill: "var(--sunk)" }} formatter={(v) => [fmtPct(v, 1), "Pool return, no hindsight"]} />
           <ReferenceLine y={0} stroke="var(--muted)" />
           <Bar dataKey="oos" radius={[4, 4, 0, 0]} maxBarSize={22}>
             {data.map((d) => <Cell key={d.year} fill={d.oos < 0 ? "var(--bad)" : "var(--chart-3)"} />)}

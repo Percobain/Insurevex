@@ -180,7 +180,7 @@ export function DeployGate({ chainId, children }) {
     return (
       <>
         <Notice tone="warn">
-          Your wallet is on a network InsureVEX does not run on (chain {walletChain}). You are seeing live data from {chainMeta(chainId).short}; switch networks to subscribe, buy cover or sign.
+          This network isn&apos;t supported. Switch to Whitechain, Hedera or Arc.
           <SwitchButtons />
         </Notice>
         {children}
@@ -190,7 +190,7 @@ export function DeployGate({ chainId, children }) {
   if (isDeployed(chainId)) return children;
   return (
     <Notice tone="warn">
-      InsureVEX is not deployed on {chainMeta(chainId).short} yet.
+      InsureVEX isn&apos;t on {chainMeta(chainId).short} yet. Switch to a network below.
       <SwitchButtons />
     </Notice>
   );
@@ -278,10 +278,10 @@ export function HowItWorks({ id = "how", eyebrow = "How it works", title, steps,
 }
 
 /** Short Q&A list, collapsed by default. */
-export function Faq({ items, title = "Good to know" }) {
+export function Faq({ items, title = "Questions" }) {
   return (
     <Section className="mt-20 mb-8">
-      <SectionHead eyebrow="Questions" title={title} />
+      <SectionHead eyebrow="Good to know" title={title} />
       <div className="card divide-y divide-line">
         {items.map(([q, a]) => (
           <details key={q} className="group px-5 py-4">
@@ -297,7 +297,7 @@ export function Faq({ items, title = "Good to know" }) {
 }
 
 /** A collapsible block for secondary detail ("Show details"). */
-export function More({ label, children, className = "" }) {
+export function More({ label = "More details", children, className = "" }) {
   return (
     <details className={`group ${className}`}>
       <summary className="cursor-pointer list-none inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline underline-offset-4">

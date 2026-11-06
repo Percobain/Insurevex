@@ -6,7 +6,7 @@ import { useSymbolNames } from "@/lib/useSymbolNames";
 import { fmtDate, fmtMoney, fmtNum, fmtPct, fromUnits } from "@/lib/format";
 import { useActiveChain, Placeholder } from "./ui";
 
-export const STATUS = ["—", "Open", "Settled"];
+export const STATUS = ["—", "Active", "Ended"];
 
 export function usePolicies(ids, chainId) {
   const market = addr(chainId, "CoverMarket");
@@ -34,19 +34,19 @@ export default function MyPolicies() {
     <div>
       <div className="flex items-end justify-between mb-4">
         <div>
-          <div className="eyebrow">Your cover</div>
-          <h2 className="font-display text-3xl tracking-tight mt-2">My policies</h2>
+          <div className="eyebrow">Bought so far</div>
+          <h2 className="font-display text-3xl tracking-tight mt-2">Your protection</h2>
         </div>
       </div>
       {!isConnected || !deployed ? (
-        <Placeholder title="Connect a wallet on a live chain">Your policies are read directly from the CoverMarket contract.</Placeholder>
+        <Placeholder title="Connect your wallet">Your protection shows up here once your wallet is connected.</Placeholder>
       ) : list.length === 0 ? (
-        <Placeholder title="No policies yet">Buy cover above and it will appear here with its settlement result.</Placeholder>
+        <Placeholder title="No protection yet">Pick a stock above to get your price.</Placeholder>
       ) : (
         <div className="card overflow-x-auto">
           <table className="table-x">
             <thead>
-              <tr><th>#</th><th>Stock</th><th>Protected</th><th>Terms</th><th>Premium</th><th>Start</th><th>Expiry</th><th>Status</th><th>Result</th><th></th></tr>
+              <tr><th>Stock</th><th>Protected amount</th><th>Starts paying after</th><th>Paid for</th><th>Ends on</th><th>Status</th><th>Result</th><th></th></tr>
             </thead>
             <tbody>
               {list.map((p) => {
@@ -55,16 +55,14 @@ export default function MyPolicies() {
                 const ret = settled ? Number(p.settlePrice) / Number(p.startPrice) - 1 : null;
                 return (
                   <tr key={p.id}>
-                    <td className="text-muted">{p.id}</td>
-                    <td className="font-mono text-xs">{nameOf(p.symbol)}</td>
+                    <td className="font-mono text-xs" title={`#${p.id}`}>{nameOf(p.symbol)}</td>
                     <td>{fmtMoney(fromUnits(p.notional), { sym: "" })} {stable}</td>
-                    <td>{fmtPct(Number(p.deductibleBps) / 1e4, 0)} / {fmtPct(Number(p.capBps) / 1e4, 0)}</td>
-                    <td>{fmtMoney(fromUnits(p.premium), { sym: "" })}</td>
-                    <td>{fmtNum(Number(p.startPrice) / 1e8, 2)}</td>
+                    <td title={`Pays up to ${fmtPct(Number(p.capBps) / 1e4, 0)}`}>a {fmtPct(Number(p.deductibleBps) / 1e4, 0)} drop</td>
+                    <td title={`Price when bought: ${fmtNum(Number(p.startPrice) / 1e8, 2)}`}>{fmtMoney(fromUnits(p.premium), { sym: "" })} {stable}</td>
                     <td>{fmtDate(p.expiry)}</td>
                     <td>
                       <span className={`chip ${settled ? "" : expired ? "text-warn border-warn/40" : "text-accent border-accent/40"}`}>
-                        {settled ? "Settled" : expired ? "Awaiting close" : "Active"}
+                        {settled ? (Number(p.payout) > 0 ? `Ended – paid ${fmtMoney(fromUnits(p.payout), { sym: "$" })}` : "Ended – no payout") : expired ? "Ended – checking price" : "Active"}
                       </span>
                     </td>
                     <td>
@@ -72,15 +70,15 @@ export default function MyPolicies() {
                         <span>
                           <span className={ret < 0 ? "text-bad" : "text-good"}>{fmtPct(ret, 1, { sign: true })}</span>
                           {" · "}
-                          <span className={Number(p.payout) > 0 ? "text-good font-medium" : "text-muted"}>paid {fmtMoney(fromUnits(p.payout), { sym: "" })}</span>
+                          <span className={Number(p.payout) > 0 ? "text-good font-medium" : "text-muted"}>{Number(p.payout) > 0 ? `you got ${fmtMoney(fromUnits(p.payout), { sym: "" })} ${stable}` : "no payout"}</span>
                         </span>
                       ) : "—"}
                     </td>
                     <td>
                       {!settled && expired && (
                         <button className="btn-ghost btn-sm" disabled={Boolean(busy)}
-                          onClick={() => run(`Settle policy #${p.id}`, { address: market, abi: ABI.CoverMarket, functionName: "settle", args: [BigInt(p.id)] })}>
-                          Settle
+                          onClick={() => run(`Get result for #${p.id}`, { address: market, abi: ABI.CoverMarket, functionName: "settle", args: [BigInt(p.id)] })}>
+                          Get result
                         </button>
                       )}
                     </td>

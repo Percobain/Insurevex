@@ -17,7 +17,7 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 /**
  * Daily closes drawn with Liveline. Liveline anchors its right edge at "now", so every point is shifted forward by the
  * gap between the last close and now; the axis labels add that gap back so they show the real trading dates.
- * `deductible` (0–1) draws the price below which the cover starts paying.
+ * `deductible` (0–1) draws the price below which the protection starts paying.
  */
 export default function PriceChart({ symbol, currency, deductible }) {
   const q = useApi(symbol ? `/api/price?symbol=${encodeURIComponent(symbol)}` : null);
@@ -31,7 +31,7 @@ export default function PriceChart({ symbol, currency, deductible }) {
   }, [q.data]);
 
   if (!symbol) return null;
-  if (!q.isLoading && !points.length) return <div className="h-40 rounded-xl bg-sunk grid place-items-center text-xs text-muted">Price history unavailable</div>;
+  if (!q.isLoading && !points.length) return <div className="h-40 rounded-xl bg-sunk grid place-items-center text-xs text-muted">No price history for this stock yet</div>;
 
   const last = points.length ? points[points.length - 1].value : 0;
   const cutoff = (points.length ? points[points.length - 1].time : 0) - win;
@@ -70,13 +70,13 @@ export default function PriceChart({ symbol, currency, deductible }) {
             const d = new Date((t - offset) * 1000);
             return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
           }}
-          emptyText="Price history unavailable"
+          emptyText="No price history for this stock yet"
         />
       </div>
       {floor && (
         <div className="mt-2 flex items-center gap-2 text-xs text-ink2">
           <span className="w-5 border-t border-dashed border-muted" aria-hidden="true" />
-          Cover starts paying below <span className="font-medium text-ink tabular">{fmtNum(floor, 2)}{cur}</span>
+          Pays below <span className="font-medium text-ink tabular">{fmtNum(floor, 2)}{cur}</span>
         </div>
       )}
     </div>

@@ -8,11 +8,14 @@ import WalletButton from "./WalletButton";
 const NAV = [
   { label: "Protect", href: "/protect" },
   { label: "Save", href: "/save" },
-  { label: "Pool", href: "/pool" },
-  { label: "Agent", href: "/agent" },
-  { label: "Metrics", href: "/metrics" },
+  { label: "Earn", href: "/pool" },
+  { label: "Proof", href: "/metrics" },
+];
+
+const MORE = [
   { label: "Research", href: "/docs" },
   { label: "Activity", href: "/activity" },
+  { label: "AI agent", href: "/agent" },
   { label: "Issuer", href: "/issuer" },
   { label: "Admin", href: "/admin" },
 ];
@@ -40,6 +43,7 @@ export default function Header() {
       brand="InsureVEX"
       className={`sticky top-0 z-40 transition-transform duration-300 ease-out ${hidden ? "-translate-y-full" : "translate-y-0"}`}
       items={NAV.map((n) => ({ ...n, active: Boolean(path?.startsWith(n.href)) }))}
+      more={MORE.map((n) => ({ ...n, active: Boolean(path?.startsWith(n.href)) }))}
       action={
         <>
           <div className="hidden sm:block font-sans">

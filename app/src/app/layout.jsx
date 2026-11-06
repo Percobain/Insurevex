@@ -9,8 +9,8 @@ const display = Inter_Tight({ subsets: ["latin"], weight: ["600", "700"], variab
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
 export const metadata = {
-  title: "InsureVEX",
-  description: "Principal-protected notes that insure stock holders against crashes. Settled on-chain in stablecoins.",
+  title: "InsureVEX: protect your stocks, save safely",
+  description: "Get paid if your stock crashes. Or save with your money back guaranteed, plus extra from the fees.",
 };
 
 export const viewport = { width: "device-width", initialScale: 1 };

@@ -26,9 +26,9 @@ export default function KycModal({ onClose }) {
     try {
       await apiPost("/api/kyc/request", { address, country: Number(country), name });
       setDone(true);
-      push({ state: "success", title: "KYC request sent", body: "The issuer approves it on-chain from the Issuer console." });
+      push({ state: "success", title: "ID check sent", body: "You will be verified shortly. This page updates by itself." });
     } catch (err) {
-      push({ state: "error", title: "Could not reach the InsureVEX server", body: String(err.message || err) });
+      push({ state: "error", title: "We couldn't send your ID check", body: "Please try again in a minute." });
     } finally {
       setBusy(false);
     }
@@ -38,15 +38,14 @@ export default function KycModal({ onClose }) {
     <div className="fixed inset-0 z-50 bg-black/40 grid place-items-center p-4" role="dialog" aria-modal="true" onClick={onClose}>
       <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="card w-full max-w-md p-6 space-y-4">
         <div>
-          <div className="eyebrow">Identity</div>
-          <h2 className="text-xl font-semibold mt-1">Verify to hold notes and buy cover</h2>
+          <div className="eyebrow">ID check</div>
+          <h2 className="text-xl font-semibold mt-1">Verify your ID</h2>
           <p className="text-sm text-ink2 mt-2">
-            InsureVEX notes and policies are restricted assets. The issuer records your verification in the on-chain identity registry;
-            every transfer checks it. Testnet: no documents needed.
+            Needed once before you buy. This is a test version: no documents, and the issuer approves it quickly.
           </p>
         </div>
         {done ? (
-          <div className="rounded-xl bg-sunk p-4 text-sm">Request received for <span className="font-mono">{address}</span>. You can close this window.</div>
+          <div className="rounded-xl bg-sunk p-4 text-sm">Got it. You will be verified shortly. You can close this window.</div>
         ) : (
           <>
             <label className="block space-y-1.5">
@@ -65,7 +64,7 @@ export default function KycModal({ onClose }) {
         )}
         <div className="flex gap-2 justify-end">
           <button type="button" className="btn-ghost" onClick={onClose}>Close</button>
-          {!done && <button className="btn-primary" disabled={busy || !name}>{busy ? "Sending…" : "Request verification"}</button>}
+          {!done && <button className="btn-primary" disabled={busy || !name}>{busy ? "Sending…" : "Verify my ID"}</button>}
         </div>
       </form>
     </div>

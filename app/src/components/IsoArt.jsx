@@ -287,10 +287,10 @@ export function LayerArt() {
 
   return (
     <Stage className="iso-bare">
-      <IsoSvg svgRef={ref} vb={[-400, -330, 800, 480]} role="img" aria-label="A saver's $1,000 splits into $952 of T-bills and $48 of vault units. A holder pays a $90 premium into the vault for crash cover, which raises the price of every vault unit.">
+      <IsoSvg svgRef={ref} vb={[-400, -330, 800, 480]} role="img" aria-label="You save $1,000: $952 goes into US government bonds and $48 into the pool's earning part. A stock owner pays a $90 fee into the pool for crash protection, which grows the earning part.">
         <Defs ids={ids} />
         {/* back: T-bills and the holder */}
-        <Box x={T[0] - 40} y={T[1] - 40} w={80} d={80} h={50} topFill={`url(#${ids.dots})`} front={<text x="8" y="20" className="iso-text iso-bold">T-BILLS</text>} />
+        <Box x={T[0] - 40} y={T[1] - 40} w={80} d={80} h={50} topFill={`url(#${ids.dots})`} front={<text x="8" y="20" className="iso-text iso-bold">GOV BONDS</text>} />
         <Box x={H[0] - 50} y={H[1] - 50} w={100} d={100} h={10} className="iso-sage" />
         <Box x={H[0] - 25} y={H[1] - 25} z={10} w={50} d={50} h={36} shadow={false} top={<text x="25" y="30" textAnchor="middle" className="iso-text iso-bold">NVDA</text>} />
 
@@ -310,15 +310,15 @@ export function LayerArt() {
         {prem > 0 && prem < 1 && <Coin at={fly([H[0], H[1], 46], VTOP, smooth(prem), 80)} tone="accent" />}
         {shield > 0.01 && <Shield x={sx} y={sy} s={1.5} opacity={shield} />}
 
-        <Tag at={P(S[0], S[1], 12)} text="Saver" tone="ink" dx={-40} dy={50} />
-        <Tag at={P(H[0], H[1], 12)} text="Holder" tone="ink" dx={60} dy={-20} />
-        <Tag at={P(0, 0, 72)} text={`Vault · unit $${unit.toFixed(3)}`} tone="good" dy={-46} size="lg" />
-        <Tag at={P(T[0], T[1], 50)} text="$952 → $1,000 at maturity" dx={-30} dy={-40} opacity={span(phase, 0.2, 0.26) * (1 - out)} />
-        <Tag at={P(S[0], S[1], 18)} text="$48 = vault units" tone="good" dx={-10} dy={-50} opacity={span(phase, 0.34, 0.38) * (1 - out)} />
-        <Tag at={P(E[0], E[1], 34)} text="engine quotes $90 / month" dx={70} dy={40} opacity={span(phase, 0.38, 0.42) * (1 - span(phase, 0.6, 0.64))} />
-        <Tag at={[sx, sy - 18]} text="covered: 10% → 30% fall" tone="good" dx={50} dy={-30} opacity={shield} />
+        <Tag at={P(S[0], S[1], 12)} text="You save" tone="ink" dx={-40} dy={50} />
+        <Tag at={P(H[0], H[1], 12)} text="Stock owner" tone="ink" dx={60} dy={-20} />
+        <Tag at={P(0, 0, 72)} text={`Pool · part worth $${unit.toFixed(3)}`} tone="good" dy={-46} size="lg" />
+        <Tag at={P(T[0], T[1], 50)} text="$952 → $1,000 at the end" dx={-30} dy={-40} opacity={span(phase, 0.2, 0.26) * (1 - out)} />
+        <Tag at={P(S[0], S[1], 18)} text="$48 = earning part" tone="good" dx={-10} dy={-50} opacity={span(phase, 0.34, 0.38) * (1 - out)} />
+        <Tag at={P(E[0], E[1], 34)} text="price: $90 a month" dx={70} dy={40} opacity={span(phase, 0.38, 0.42) * (1 - span(phase, 0.6, 0.64))} />
+        <Tag at={[sx, sy - 18]} text="protected: 10% → 30% drop" tone="good" dx={50} dy={-30} opacity={shield} />
       </IsoSvg>
-      <Steps items={["Saver deposits $1,000", "Holder pays $90 for cover", "The premium raises every vault unit"]} active={active} starts={[0, 0.37, 0.58]} onSeek={seek} />
+      <Steps items={["You save $1,000", "A stock owner pays a $90 fee", "The fee grows your earning part"]} active={active} starts={[0, 0.37, 0.58]} onSeek={seek} />
     </Stage>
   );
 }
@@ -383,12 +383,12 @@ export function SaverArt() {
 
   return (
     <Stage className="grid gap-5">
-      <IsoSvg svgRef={ref} vb={[-260, -205, 520, 380]} role="img" aria-label="A saver deposits $1,000. $952 goes into T-bills that grow back to $1,000 by maturity; $48 buys vault units. Holders' premiums raise the unit price. At maturity the saver gets $1,000 plus the units.">
+      <IsoSvg svgRef={ref} vb={[-260, -205, 520, 380]} role="img" aria-label="You save $1,000. $952 goes into US government bonds that grow back to $1,000 by the end date; $48 goes into the earning part. Fees from stock owners grow it. At the end you get $1,000 back plus the extra.">
         <Defs ids={ids} />
         <Box x={S[0] - 40} y={S[1] - 40} w={80} d={80} h={10} className="iso-sage" />
         <Box x={TB.x} y={TB.y} w={TB.w} d={TB.d} h={TB.h} topFill={`url(#${ids.dots})`} front={
           <>
-            <text x="8" y="18" className="iso-text iso-bold">T-BILLS</text>
+            <text x="8" y="18" className="iso-text iso-bold">GOV BONDS</text>
             <text x="8" y="36" className="iso-text">{money(tb)}</text>
             <rect x="8" y="44" width="74" height="6" rx="3" className="iso-meter" />
             <rect x="8" y="44" width={74 * (tb / 1000)} height="6" rx="3" className="iso-meter-fill" />
@@ -404,15 +404,15 @@ export function SaverArt() {
         ))}
         {chipAt && <Box x={chipAt[0] - 10} y={chipAt[1] - 10} z={chipAt[2]} w={20} d={20} h={6} shadow={false} className="iso-unit" style={{ opacity: 1 - out }} />}
 
-        <Tag at={P(S[0], S[1], 52)} text="Saver deposits $1,000" tone="ink" dy={-30} opacity={1 - span(phase, 0.14, 0.18)} />
-        <Tag at={P(...TTOP)} text={`${money(FLOOR)} → T-bills`} dy={-48} opacity={span(phase, 0.3, 0.34) * (1 - span(phase, 0.44, 0.46))} />
+        <Tag at={P(S[0], S[1], 52)} text="You save $1,000" tone="ink" dy={-30} opacity={1 - span(phase, 0.14, 0.18)} />
+        <Tag at={P(...TTOP)} text={`${money(FLOOR)} → gov bonds`} dy={-48} opacity={span(phase, 0.3, 0.34) * (1 - span(phase, 0.44, 0.46))} />
         <Tag at={P(...TTOP)} text="grows back to $1,000 by itself" tone="good" dy={-48} opacity={span(phase, 0.46, 0.5) * (1 - span(phase, 0.8, 0.82))} />
-        <Tag at={P(...VTOP)} text={`${money(SLEEVE)} → vault units`} tone="good" dx={20} dy={48} opacity={span(phase, 0.3, 0.34) * (1 - span(phase, 0.48, 0.5))} />
-        <Tag at={P(...VTOP)} text={`unit price $${unit.toFixed(3)}`} tone="good" dx={20} dy={48} opacity={span(phase, 0.5, 0.52) * (1 - out)} />
-        <Tag at={P(PR[0], PR[1], PR[2])} text="holders' premiums" tone="accent" dx={10} dy={-80} opacity={span(phase, 0.52, 0.56) * (1 - span(phase, 0.8, 0.84))} />
-        <Tag at={P(S[0], S[1], 52)} text={`$1,000 + units worth $${units.toFixed(2)}`} tone="ink" dy={-30} opacity={span(phase, 0.9, 0.93) * (1 - out)} />
+        <Tag at={P(...VTOP)} text={`${money(SLEEVE)} → earning part`} tone="good" dx={20} dy={48} opacity={span(phase, 0.3, 0.34) * (1 - span(phase, 0.48, 0.5))} />
+        <Tag at={P(...VTOP)} text={`part worth $${unit.toFixed(3)}`} tone="good" dx={20} dy={48} opacity={span(phase, 0.5, 0.52) * (1 - out)} />
+        <Tag at={P(PR[0], PR[1], PR[2])} text="stock owners' fees" tone="accent" dx={10} dy={-80} opacity={span(phase, 0.52, 0.56) * (1 - span(phase, 0.8, 0.84))} />
+        <Tag at={P(S[0], S[1], 52)} text={`$1,000 + $${units.toFixed(2)} extra`} tone="ink" dy={-30} opacity={span(phase, 0.9, 0.93) * (1 - out)} />
       </IsoSvg>
-      <Steps items={["Deposit $1,000", "$952 to T-bills, $48 to vault units", "Premiums raise the unit price", "$1,000 back, plus the units"]} active={active} starts={[0, 0.18, 0.44, 0.8]} onSeek={seek} />
+      <Steps items={["Save $1,000", "$952 to gov bonds, $48 to the earning part", "Fees grow the earning part", "$1,000 back, plus extra"]} active={active} starts={[0, 0.18, 0.44, 0.8]} onSeek={seek} />
     </Stage>
   );
 }
@@ -447,12 +447,12 @@ export function HolderArt() {
   const vAt = (pct) => V0 + pct * K;
   const marker = vAt(fall * 100);
   const active = phase < 0.16 ? 0 : phase < 0.34 ? 1 : phase < 0.58 ? 2 : phase < 0.86 ? 3 : -1;
-  const state = fall < 0.1 ? `−${Math.round(fall * 100)}%: inside the first 10%, no payout` : fall < 0.3 ? `−${Math.round(fall * 100)}%: pays the ${Math.round(fall * 100) - 10}% past 10%` : `−${Math.round(fall * 100)}%: capped at 20% of $10,000`;
+  const state = fall < 0.1 ? `−${Math.round(fall * 100)}%: under 10%, no payout` : fall < 0.3 ? `−${Math.round(fall * 100)}%: pays the ${Math.round(fall * 100) - 10}% past 10%` : `−${Math.round(fall * 100)}%: the most it pays, $2,000`;
   const markerPt = P(RULER.x + 66, RULER.y + RULER.d, RULER.h - marker);
 
   return (
     <Stage className="grid gap-5">
-      <IsoSvg svgRef={ref} vb={[-300, -290, 600, 410]} role="img" aria-label="A holder pays a $90 premium for cover on $10,000 of NVDA that pays the part of a fall between 10% and 30%. A 5% fall pays nothing, a 25% fall pays $1,500, a 40% fall pays the $2,000 maximum.">
+      <IsoSvg svgRef={ref} vb={[-300, -290, 600, 410]} role="img" aria-label="You own $10,000 of NVDA and pay $90 for protection. It starts paying after a 10% drop and pays up to 20%. A 5% drop pays nothing, a 25% drop pays $1,500, a 40% drop pays the most, $2,000.">
         <Defs ids={ids} />
         <Cyl x={V[0]} y={V[1]} r={36} h={40} className="iso-vault" topFill={`url(#${ids.hatch})`} />
         <Box x={RULER.x} y={RULER.y} w={RULER.w} d={RULER.d} h={RULER.h} front={
@@ -464,7 +464,7 @@ export function HolderArt() {
               <text key={p} x="40" y={vAt(p) + 4} textAnchor="end" className="iso-text">{p}%</text>
             ))}
             <text x="82" y={vAt(5) + 4} className="iso-text">you</text>
-            <text x="82" y={vAt(20) + 4} className="iso-text iso-bold iso-good-text">covered</text>
+            <text x="82" y={vAt(20) + 4} className="iso-text iso-bold iso-good-text">we pay</text>
             <text x="82" y={vAt(35) + 4} className="iso-text">you</text>
             <line x1="40" x2="80" y1={marker} y2={marker} className="iso-marker" />
           </>
@@ -480,11 +480,11 @@ export function HolderArt() {
         ))}
 
         <Tag at={P(H[0], H[1], 10)} text={`$10,000 → ${money(10000 * (1 - fall))}`} tone="ink" dx={-20} dy={70} />
-        <Tag at={P(V[0], V[1], 40)} text="$90 premium → vault" tone="accent" dx={20} dy={-36} opacity={span(phase, 0.04, 0.08) * (1 - span(phase, 0.2, 0.24))} />
+        <Tag at={P(V[0], V[1], 40)} text="$90 fee → pool" tone="accent" dx={20} dy={-36} opacity={span(phase, 0.04, 0.08) * (1 - span(phase, 0.2, 0.24))} />
         {phase > 0.16 && phase < 0.86 && <Tag at={markerPt} text={state} tone={payout > 0 ? "good" : ""} dx={150} dy={-10} />}
-        <Tag at={P(PAY[0], PAY[1], 6 + Math.max(1, nCoins) * 4)} text={`payout ${money(payout)}`} tone="good" dy={-40} size="lg" opacity={fade} />
+        <Tag at={P(PAY[0], PAY[1], 6 + Math.max(1, nCoins) * 4)} text={`you get ${money(payout)}`} tone="good" dy={-40} size="lg" opacity={fade} />
       </IsoSvg>
-      <Steps items={["Pay $90 to cover a 10–30% fall", "Falls 5%: $0", "Falls 25%: $1,500", "Falls 40%: $2,000 max"]} active={active} starts={[0, 0.16, 0.34, 0.58]} onSeek={seek} />
+      <Steps items={["Pay $90 for protection", "Drops 5%: $0", "Drops 25%: you get $1,500", "Drops 40%: you get $2,000 max"]} active={active} starts={[0, 0.16, 0.34, 0.58]} onSeek={seek} />
     </Stage>
   );
 }
@@ -537,14 +537,14 @@ export function SettleArt() {
 
   return (
     <Stage className="grid gap-4">
-      <IsoSvg svgRef={ref} vb={[-262,-272,500,400]} role="img" aria-label="At expiry the official close is posted on-chain. After a 25% fall the vault pays the holder $1,500. After a calm month nothing is paid and the premium stays with savers.">
+      <IsoSvg svgRef={ref} vb={[-262,-272,500,400]} role="img" aria-label="On the end date the stock exchange's closing price is recorded. After a 25% drop the pool pays the stock owner $1,500 automatically. With no crash nothing is paid and the fee goes to savers.">
         <Defs ids={ids} />
         <Box x={SAVER[0] - 30} y={SAVER[1] - 30} w={60} d={60} h={8} className="iso-sage" />
         <Box x={ORACLE.x - 10} y={ORACLE.y - 10} w={ORACLE.w + 20} d={30} h={6} />
         <Box x={ORACLE.x} y={ORACLE.y} z={6} w={ORACLE.w} d={ORACLE.d} h={ORACLE.h} front={
           <>
             <rect x="4" y="4" width={ORACLE.w - 8} height={ORACLE.h - 8} rx="3" className="iso-screen" />
-            <text x="10" y="18" className="iso-text iso-bold">OFFICIAL CLOSE</text>
+            <text x="10" y="18" className="iso-text iso-bold">CLOSING PRICE</text>
             <line x1={X0} x2={X1} y1={yOf(-0.1)} y2={yOf(-0.1)} className="iso-guide" />
             <text x={X1} y={yOf(-0.1) - 3} textAnchor="end" className="iso-text">−10%</text>
             {crash && closed > 0 && <rect x={X0} y={yOf(-0.1)} width={X1 - X0} height={yOf(last) - yOf(-0.1)} fill={`url(#${ids.hatchBad})`} style={{ opacity: closed }} />}
@@ -563,18 +563,18 @@ export function SettleArt() {
 
         <Tag at={P(ORACLE.x + ORACLE.w / 2, ORACLE.y, ORACLE.h + 6)} text={crash ? "NVDA closed −25%" : "NVDA closed +2%"} dx={0} dy={-26} tone={crash ? "bad" : ""} opacity={closed * (1 - out)} />
         {crash ? (
-          <Tag at={P(HOLDER[0], HOLDER[1], 30)} text="vault pays $1,500" dx={10} dy={-50} tone="good" size="lg" opacity={span(h, 0.72, 0.76) * (1 - out)} />
+          <Tag at={P(HOLDER[0], HOLDER[1], 30)} text="pool pays $1,500" dx={10} dy={-50} tone="good" size="lg" opacity={span(h, 0.72, 0.76) * (1 - out)} />
         ) : (
           <>
-            <Tag at={P(HOLDER[0], HOLDER[1], 30)} text="no payout · $2,000 released" dx={10} dy={-50} opacity={span(h, 0.5, 0.54) * (1 - out)} />
+            <Tag at={P(HOLDER[0], HOLDER[1], 30)} text="no crash · $2,000 freed up" dx={10} dy={-50} opacity={span(h, 0.5, 0.54) * (1 - out)} />
             <Tag at={P(SAVER[0], SAVER[1], 14)} text="the $90 goes to savers" dx={130} dy={20} tone="good" opacity={span(h, 0.7, 0.74) * (1 - out)} />
           </>
         )}
-        <Tag at={P(SAVER[0], SAVER[1], 8)} text="Saver" tone="ink" dx={-30} dy={-34} />
-        <Tag at={P(HOLDER[0], HOLDER[1], 8)} text="Holder" tone="ink" dx={60} dy={40} />
-        <Tag at={P(POOL[0], POOL[1], 46)} text="Vault" tone="good" dx={-40} dy={-40} />
+        <Tag at={P(SAVER[0], SAVER[1], 8)} text="Savers" tone="ink" dx={-30} dy={-34} />
+        <Tag at={P(HOLDER[0], HOLDER[1], 8)} text="Stock owner" tone="ink" dx={60} dy={40} />
+        <Tag at={P(POOL[0], POOL[1], 46)} text="Pool" tone="good" dx={-40} dy={-40} />
       </IsoSvg>
-      <Steps items={["Official close posted on-chain", "Crash: the vault pays $1,500", "Calm: the $90 goes to savers"]} active={active} starts={[0, 0.24, 0.74]} onSeek={seek} />
+      <Steps items={["Closing price is recorded", "Crash: the pool pays $1,500", "No crash: the $90 goes to savers"]} active={active} starts={[0, 0.24, 0.74]} onSeek={seek} />
     </Stage>
   );
 }
@@ -599,21 +599,21 @@ function Card({ x, y, w, d, children, dark }) {
 
 /** Plates of the stack, bottom to top: each contract and what it does. */
 const PLATES = [
-  { key: "kyc", name: "KYC registry", role: "only verified wallets", cls: "iso-teal" },
-  { key: "price", name: "Oracle", role: "official closing prices", cls: "" },
-  { key: "vault", name: "T-bill vault", role: "savers' $1,000 floor", cls: "" },
-  { key: "pool", name: "Underwriting vault", role: "vault units, pays claims", cls: "iso-sage" },
-  { key: "cover", name: "Cover market", role: "sells and settles cover", cls: "iso-black" },
+  { key: "kyc", name: "ID check", role: "only verified wallets", cls: "iso-teal" },
+  { key: "price", name: "Price feed", role: "stock closing prices", cls: "" },
+  { key: "vault", name: "Gov bonds", role: "keeps savers' $1,000 safe", cls: "" },
+  { key: "pool", name: "Pool", role: "earns fees, pays crashes", cls: "iso-sage" },
+  { key: "cover", name: "Protection", role: "sells and pays protection", cls: "iso-black" },
 ];
 
 /** Who is outside the stack, placed around it on the ground (world coordinates of each card's centre). */
 const CARDS = {
-  tbills: { at: [-294, -6], title: "T-bills" },
-  saver: { at: [-186, 206], w: 110, d: 84, title: "Saver · $1,000", tone: "ink" },
-  holder: { at: [26, 314], w: 110, d: 84, title: "Holder · $10,000 NVDA", tone: "ink" },
-  engine: { at: [238, 262], w: 100, d: 76, title: "Pricing engine" },
-  proof: { at: [334, 126], w: 90, d: 84, title: "Broker proof" },
-  close: { at: [308, -108], w: 150, d: 110, title: "Official close" },
+  tbills: { at: [-294, -6], title: "Gov bonds" },
+  saver: { at: [-186, 206], w: 110, d: 84, title: "You save $1,000", tone: "ink" },
+  holder: { at: [26, 314], w: 110, d: 84, title: "You own $10,000 NVDA", tone: "ink" },
+  engine: { at: [238, 262], w: 100, d: 76, title: "Price calculator" },
+  proof: { at: [334, 126], w: 90, d: 84, title: "Proof you own it" },
+  close: { at: [308, -108], w: 150, d: 110, title: "Closing price" },
 };
 
 /** Ground wires from a card to the stack. `step` is when it carries something; tone: what (money in, out, data). */
@@ -630,10 +630,10 @@ const WIRES = [
 
 const LIT = [["vault", "pool"], ["cover", "kyc"], ["price", "cover"], ["pool", "cover"]];
 const STORY = [
-  ["The saver deposits $1,000", "$952 goes into T-bills that grow back to $1,000. $48 buys vault units in the underwriting vault."],
-  ["The holder buys cover", "The pricing engine signs a $90 quote, the broker proof shows the shares, and the holder pays into the cover market."],
-  ["The official close is posted", "At expiry the oracle records the exchange's closing price. Nobody can choose it."],
-  ["Money goes out", "Crash: the vault pays the holder. No crash: the $90 stays and every vault unit is worth more."],
+  ["You save $1,000", "$952 goes into US government bonds and grows back to $1,000. $48 goes into the pool to earn fees."],
+  ["A stock owner buys protection", "We price it at $90, check they really own the shares, and they pay."],
+  ["The closing price is recorded", "On the end date the stock exchange's closing price is saved. Nobody can change it."],
+  ["Money goes out", "Crash: the pool pays the stock owner. No crash: the $90 stays and savers earn it."],
 ];
 
 /** Flat drawings for each card's top face (no text: the title floats above the card). */
@@ -724,7 +724,7 @@ export function SystemArt() {
           <p className="mt-2 text-[13.5px] leading-relaxed text-ink2">{STORY[step][1]}</p>
         </div>
 
-        <IsoSvg svgRef={ref} vb={[-500, -330, 1000, 640]} role="img" aria-label="The five InsureVEX contracts as a stack: KYC registry, oracle, T-bill vault, underwriting vault and cover market. Around it: the saver, the holder, T-bills, the pricing engine, the broker proof and the official close.">
+        <IsoSvg svgRef={ref} vb={[-500, -330, 1000, 640]} role="img" aria-label="The five parts of InsureVEX as a stack: ID check, price feed, government bonds, the pool and protection. Around it: savers, stock owners, government bonds, the price calculator, proof of ownership and the closing price.">
           <Defs ids={ids} />
           {grid.map(([a, b], i) => (
             <line key={i} x1={P(...a)[0]} y1={P(...a)[1]} x2={P(...b)[0]} y2={P(...b)[1]} className="iso-grid" />
@@ -863,7 +863,7 @@ export function PoolArt() {
 
   return (
     <Stage className="grid gap-4">
-      <IsoSvg svgRef={ref} vb={[-305,-262,580,395]} role="img" aria-label="The underwriting vault is a stack: reserve, savers' units, and Pro LP first-loss capital on top. Premiums come in, each policy's max payout is locked, a claim is paid by Pro LP first, and unused collateral is released.">
+      <IsoSvg svgRef={ref} vb={[-305,-262,580,395]} role="img" aria-label="The pool is a stack: backup money, savers' money, and Pro money on top. Fees come in, each payout is set aside, in a crash Pro pays first, and with no crash the money is freed up.">
         <Defs ids={ids} />
         {HOLDERS.map(([x, y], i) => (
           <g key={i}>
@@ -877,9 +877,9 @@ export function PoolArt() {
         })}
 
         {/* The tower: reserve, senior sleeves, Pro first-loss */}
-        <Box x={-50} y={-50} w={100} d={100} h={20} className="iso-sage" front={<text x="6" y="14" className="iso-text iso-bold">RESERVE</text>} />
-        <Box x={-50} y={-50} z={20} w={100} d={100} h={60} shadow={false} front={<text x="6" y="20" className="iso-text iso-bold">SAVERS&apos; UNITS</text>} />
-        <Box x={-50} y={-50} z={80} w={100} d={100} h={proH} shadow={false} className="iso-orange" front={proH > 16 ? <text x="6" y="14" className="iso-text iso-bold iso-on-dark">PRO LP</text> : null} />
+        <Box x={-50} y={-50} w={100} d={100} h={20} className="iso-sage" front={<text x="6" y="14" className="iso-text iso-bold">BACKUP</text>} />
+        <Box x={-50} y={-50} z={20} w={100} d={100} h={60} shadow={false} front={<text x="6" y="20" className="iso-text iso-bold">SAVERS&apos; MONEY</text>} />
+        <Box x={-50} y={-50} z={80} w={100} d={100} h={proH} shadow={false} className="iso-orange" front={proH > 16 ? <text x="6" y="14" className="iso-text iso-bold iso-on-dark">PRO</text> : null} />
 
         {CAGES.map((c, i) => (
           <g key={i}>
@@ -895,12 +895,12 @@ export function PoolArt() {
         {backB > 0 && backB < 1 && <Box x={blockB[0] - 15} y={blockB[1] - 15} z={blockB[2]} w={30} d={30} h={20} shadow={false} className="iso-collateral" style={{ opacity: blockBo }} />}
         {payA > 0 && payA < 1 && <Coin at={fly(cageC(CAGES[0]), [HOLDERS[0][0], HOLDERS[0][1], 22], smooth(payA), 110)} tone="good" />}
 
-        <Tag at={P(-20, -20, TOP)} text="premiums in" dy={-36} tone="accent" opacity={span(phase, 0.08, 0.12) * (1 - span(phase, 0.28, 0.32))} />
-        <Tag at={P(137, -93, 40)} text="max payout locked" dx={-20} dy={-40} tone="good" opacity={span(phase, 0.42, 0.46) * (1 - span(phase, 0.56, 0.6))} />
-        <Tag at={P(-20, -20, TOP)} text="crash: Pro LP pays first" dx={60} dy={-44} tone="accent" opacity={span(phase, 0.62, 0.66) * (1 - span(phase, 0.8, 0.82))} />
-        <Tag at={P(137, 47, 40)} text="calm: collateral released" dx={70} dy={40} tone="good" opacity={span(phase, 0.82, 0.86) * (1 - out)} />
+        <Tag at={P(-20, -20, TOP)} text="fees in" dy={-36} tone="accent" opacity={span(phase, 0.08, 0.12) * (1 - span(phase, 0.28, 0.32))} />
+        <Tag at={P(137, -93, 40)} text="payout set aside" dx={-20} dy={-40} tone="good" opacity={span(phase, 0.42, 0.46) * (1 - span(phase, 0.56, 0.6))} />
+        <Tag at={P(-20, -20, TOP)} text="crash: Pro pays first" dx={60} dy={-44} tone="accent" opacity={span(phase, 0.62, 0.66) * (1 - span(phase, 0.8, 0.82))} />
+        <Tag at={P(137, 47, 40)} text="no crash: money freed up" dx={70} dy={40} tone="good" opacity={span(phase, 0.82, 0.86) * (1 - out)} />
       </IsoSvg>
-      <Steps items={["Premiums in", "Max payout locked", "Crash: Pro LP loses first", "Calm: collateral released"]} active={active} starts={[0, 0.28, 0.54, 0.78]} onSeek={seek} />
+      <Steps items={["Fees in", "Payout set aside", "Crash: Pro pays first", "No crash: money freed up"]} active={active} starts={[0, 0.28, 0.54, 0.78]} onSeek={seek} />
     </Stage>
   );
 }
@@ -972,7 +972,7 @@ export function AgentArt({ stage }) {
 
   return (
     <Stage className="grid gap-5">
-      <IsoSvg svgRef={ref} vb={[-288, -262, 642, 430]} role="img" aria-label="The agent drives a toll road: a guardrail gate checks KYC, shares and budget; an x402 toll booth charges 0.01 HBAR and returns a signed quote; the cover market takes the premium and issues a policy shield; the HCS ledger records the payment. Then it drives off protected.">
+      <IsoSvg svgRef={ref} vb={[-288, -262, 642, 430]} role="img" aria-label="The AI agent drives a toll road: a gate checks your ID, your shares and the budget; a toll booth charges 0.01 HBAR for a price; the protection stop takes the fee and protects the stock; a public record saves the payment. Then it drives off protected.">
         <Defs ids={ids} />
 
         {/* stations behind the lane */}
@@ -1036,19 +1036,19 @@ export function AgentArt({ stage }) {
         <line x1={P(...post)[0]} y1={P(...post)[1]} x2={P(...armEnd)[0]} y2={P(...armEnd)[1]} className="iso-arm-stripe" />
 
         {/* station names */}
-        <Tag at={P(GX, SY, 8)} text="Guardrails" dy={-46} tone={k === 0 ? "ink" : ""} />
-        <Tag at={P(BX, SY, 76)} text="x402 toll" dy={-30} tone={k === 1 ? "ink" : ""} />
-        <Tag at={P(CX2, SY, 60)} text="Cover market" dy={-30} tone={k === 2 ? "ink" : ""} />
-        <Tag at={P(LX, SY, 8 + blocks * 15)} text="HCS ledger" dy={-30} tone={k === 3 ? "ink" : ""} />
+        <Tag at={P(GX, SY, 8)} text="Safety checks" dy={-46} tone={k === 0 ? "ink" : ""} />
+        <Tag at={P(BX, SY, 76)} text="Pay for price" dy={-30} tone={k === 1 ? "ink" : ""} />
+        <Tag at={P(CX2, SY, 60)} text="Protection" dy={-30} tone={k === 2 ? "ink" : ""} />
+        <Tag at={P(LX, SY, 8 + blocks * 15)} text="Public record" dy={-30} tone={k === 3 ? "ink" : ""} />
 
         {/* what is happening */}
-        {k === 0 && ph > 0.06 && <Tag at={P(ax, 0, AZ + 6)} text={["checking…", "✓ KYC", "✓ KYC  ✓ shares", "✓ KYC  ✓ shares  ✓ budget"][checks]} tone="good" dy={70} />}
-        {k === 1 && ph > 0.29 && <Tag at={P(ax, 0, AZ + 6)} text={ph < 0.39 ? "pays 0.01 HBAR" : "signed quote received"} tone={ph < 0.39 ? "accent" : "good"} dy={70} />}
-        {k === 2 && ph > 0.53 && <Tag at={P(ax, 0, AZ + 6)} text={ph < 0.6 ? "pays the premium" : "policy issued · payout locked"} tone={ph < 0.6 ? "accent" : "good"} dy={70} />}
-        {k === 3 && ph > 0.74 && <Tag at={P(ax, 0, AZ + 6)} text="spending record anchored" tone="good" dy={70} />}
+        {k === 0 && ph > 0.06 && <Tag at={P(ax, 0, AZ + 6)} text={["checking…", "✓ ID", "✓ ID  ✓ shares", "✓ ID  ✓ shares  ✓ budget"][checks]} tone="good" dy={70} />}
+        {k === 1 && ph > 0.29 && <Tag at={P(ax, 0, AZ + 6)} text={ph < 0.39 ? "pays 0.01 HBAR" : "price received"} tone={ph < 0.39 ? "accent" : "good"} dy={70} />}
+        {k === 2 && ph > 0.53 && <Tag at={P(ax, 0, AZ + 6)} text={ph < 0.6 ? "pays the fee" : "protected · payout set aside"} tone={ph < 0.6 ? "accent" : "good"} dy={70} />}
+        {k === 3 && ph > 0.74 && <Tag at={P(ax, 0, AZ + 6)} text="spending saved publicly" tone="good" dy={70} />}
         {k === 4 && <Tag at={P(ax, 0, AZ + 6)} text="protected · within budget" tone="good" dy={70} opacity={1 - span(ph, 0.92, 0.96)} />}
       </IsoSvg>
-      <Steps items={["Check guardrails", "Pay for underwriting", "Buy protection", "Record the audit", "Protection active"]} active={k} starts={[0, 0.21, 0.46, 0.68, 0.86]} onSeek={held >= 0 ? undefined : seek} />
+      <Steps items={["Safety checks", "Pay for a price", "Buy protection", "Save a record", "Protection active"]} active={k} starts={[0, 0.21, 0.46, 0.68, 0.86]} onSeek={held >= 0 ? undefined : seek} />
     </Stage>
   );
 }

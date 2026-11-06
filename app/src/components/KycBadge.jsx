@@ -34,17 +34,17 @@ export default function KycBadge() {
   const { verified, frozen, available } = useKyc();
   const [open, setOpen] = useState(false);
   if (!isConnected || !available) return null;
-  if (frozen) return <span className="chip border-bad/40 text-bad">Frozen</span>;
+  if (frozen) return <span className="chip border-bad/40 text-bad" title="Your wallet is paused by the issuer. Contact support.">Wallet paused</span>;
   if (verified)
     return (
       <span className="chip border-good/40 text-good">
-        <span className="h-1.5 w-1.5 rounded-full bg-good" /> KYC verified
+        <span className="h-1.5 w-1.5 rounded-full bg-good" /> ID verified
       </span>
     );
   return (
     <>
       <button className="chip hover:bg-sunk" onClick={() => setOpen(true)}>
-        <span className="h-1.5 w-1.5 rounded-full bg-warn" /> Verify identity
+        <span className="h-1.5 w-1.5 rounded-full bg-warn" /> Verify ID
       </button>
       {open && <KycModal onClose={() => setOpen(false)} />}
     </>

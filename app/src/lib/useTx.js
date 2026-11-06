@@ -8,6 +8,10 @@ import { useDemo, sleep, fakeHash } from "./demo";
 
 function cleanError(e) {
   const m = e?.shortMessage || e?.details || e?.message || String(e);
+  const all = `${m} ${e?.message || ""} ${e?.cause?.message || ""}`;
+  if (e?.name === "UserRejectedRequestError" || e?.cause?.name === "UserRejectedRequestError" || /user (rejected|denied)|rejected the request|request rejected|denied transaction/i.test(all)) return "Cancelled in your wallet.";
+  if (/insufficient funds|exceeds the balance|insufficient balance for transfer|INSUFFICIENT_PAYER_BALANCE/i.test(all)) return "Not enough test money for the network fee.";
+  if (/^Transaction reverted$/.test(m)) return "It didn't go through. Please try again.";
   const reason = /reverted with the following reason:\s*\n?(.+)/i.exec(m)?.[1] || /reason:\s*(.+)/i.exec(m)?.[1];
   return (reason || m).split("\n")[0].slice(0, 220);
 }
@@ -34,9 +38,9 @@ export function useTx() {
         const id = push({ title: label, body: "Confirm in your wallet…" });
         await sleep(700);
         const href = chainMeta(chainId || 1874).tx(fakeHash());
-        update(id, { body: "Submitted, waiting for confirmation…", href });
+        update(id, { body: "Sent. Waiting for the network…", href });
         await sleep(900);
-        update(id, { state: "success", body: "Confirmed on-chain.", href });
+        update(id, { state: "success", body: "Done.", href });
         setBusy(null);
         return { status: "success" };
       }
@@ -50,10 +54,10 @@ export function useTx() {
           : request;
         const hash = await writeContractAsync(req);
         const href = chainMeta(chainId).tx(hash);
-        update(id, { body: "Submitted, waiting for confirmation…", href });
+        update(id, { body: "Sent. Waiting for the network…", href });
         const receipt = await client.waitForTransactionReceipt({ hash, timeout: 180_000 });
         if (receipt.status !== "success") throw new Error("Transaction reverted");
-        update(id, { state: "success", body: "Confirmed on-chain.", href });
+        update(id, { state: "success", body: "Done.", href });
         qc.invalidateQueries();
         return receipt;
       } catch (e) {

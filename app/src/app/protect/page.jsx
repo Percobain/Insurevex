@@ -5,7 +5,7 @@ import { parseEther, formatEther, keccak256, toBytes } from "viem";
 import { ABI, ERC20_ABI, addr, stableSymbol } from "@/lib/contracts";
 import { apiGet, apiPost, useApi } from "@/lib/api";
 import { EXCHANGES, flag } from "@/lib/exchanges";
-import { fmtMoney, fmtNum, fmtPct, fromUnits, shortHash, symbolId } from "@/lib/format";
+import { fmtMoney, fmtNum, fmtPct, fromUnits, symbolId } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
 import { useDemo, sleep, DEMO_BALANCE } from "@/lib/demo";
 import { PageHead, Section, SectionHead, Seg, Notice, Row, useActiveChain, DeployGate, HeroCtas, HowItWorks, Faq, More } from "@/components/ui";
@@ -28,24 +28,24 @@ function Step({ n, title, children, done }) {
 }
 
 const STEPS = [
-  { icon: "search", title: "Pick your stock", body: "From your broker or tokenised on-chain. You keep your shares.", stat: "23 exchanges" },
-  { icon: "pay", title: "Pay a small fee", body: "The most you can be paid is fixed before you buy.", stat: "≈ $90 per $10k a month" },
-  { icon: "shield", title: "Paid if it crashes", body: "If the official close falls past your threshold, the vault pays the difference.", stat: "Paid automatically" },
+  { icon: "search", title: "Pick your stock", body: "Any stock you own, on 23 exchanges. You keep your shares.", stat: "23 exchanges" },
+  { icon: "pay", title: "Pay a small fee", body: "You see exactly what you pay and could get back.", stat: "About $90 per $10,000 a month" },
+  { icon: "shield", title: "Get paid if it crashes", body: "Paid automatically at the stock exchange's closing price.", stat: "No claim forms" },
 ];
 
 const FAQ = [
-  ["What exactly is covered?", "A band of the fall. With the default settings you absorb the first 10%, and the vault pays the next 20%. So a 25% fall pays 15% of your protected value, and anything past 30% pays the full 20%."],
-  ["Do I have to sell my shares?", "No. You keep your shares where they are. You only prove you hold them, so cover never exceeds what you own."],
-  ["How is the price set?", "From the stock's recent volatility, compared with the history of past falls across every market, plus a risk margin. Stocks already in free fall are refused."],
-  ["Is the payout guaranteed to be there?", "Yes. The maximum payout of every policy is locked in the vault the moment you buy, before the policy exists."],
-  ["Which price decides the payout?", "The exchange's official closing price at your expiry time, posted on-chain. Anyone can trigger settlement after expiry."],
+  ["Do I have to sell my shares?", "No. You keep them where they are and just show that you own them."],
+  ["How much can I get paid?", "With the usual settings, if $10,000 of stock falls 25%, you get $1,500. The most you can get is $2,000."],
+  ["Which price decides the payout?", "The stock exchange's closing price on your end date. You are paid automatically, no claim needed."],
+  ["Is the money really there?", "Yes. The most you could be paid is set aside the moment you buy."],
+  ["How is the price set?", "From how much the stock usually moves and how past crashes played out. Stocks already crashing cannot be protected."],
 ];
 
 function PayoutExample() {
-  const rows = [["Falls 5%", "$0", "Inside the first 10% you absorb"], ["Falls 25%", "$1,500", "Vault pays 25% − 10%"], ["Falls 40%", "$2,000", "Capped at 20% of $10,000"]];
+  const rows = [["Falls 5%", "$0", "Less than the 10% drop it starts after"], ["Falls 25%", "$1,500", "The drop past 10%: 15% of $10,000"], ["Falls 40%", "$2,000", "The most it pays: 20% of $10,000"]];
   return (
     <div className="card p-5 sm:p-6">
-      <div className="text-sm text-ink2">You protect <b className="text-ink">$10,000</b> of NVIDIA for 1 month and pay <b className="text-ink">$90</b>.</div>
+      <div className="text-sm text-ink2"><b className="text-ink">$10,000</b> of NVIDIA for 1 month costs about <b className="text-ink">$90</b>. If it falls 25%, you get <b className="text-ink">$1,500</b>.</div>
       <div className="mt-4 divide-y divide-line">
         {rows.map(([k, v, sub]) => (
           <div key={k} className="py-3 flex items-center justify-between gap-4">
@@ -54,7 +54,7 @@ function PayoutExample() {
           </div>
         ))}
       </div>
-      <div className="mt-2 pt-3 border-t border-line text-xs text-muted">The stock stays calm? Your $90 goes to the savers who backed it.</div>
+      <div className="mt-2 pt-3 border-t border-line text-xs text-muted">No crash? You keep your shares. The $90 was the price of protection.</div>
     </div>
   );
 }
@@ -153,7 +153,7 @@ export default function ProtectPage() {
       if (tenor === "10m") qs.set("tenorMinutes", "10"); else qs.set("tenorDays", String(tenor));
       const r = await apiGet(`/api/quote?${qs.toString()}`);
       if (id !== reqRef.current) return; // the inputs changed while this was in flight
-      setQuoteErr(!r.ok || r.pricing?.refused ? r.pricing?.reason || r.error || "The pool cannot quote this cover right now." : "");
+      setQuoteErr(!r.ok || r.pricing?.refused ? r.pricing?.reason || r.error || "We can't price this right now. Try a different setting." : "");
       setQuote({ ...r, _key: key });
     } catch (e) {
       if (id === reqRef.current) setQuoteErr(String(e.message || e));
@@ -205,12 +205,12 @@ export default function ProtectPage() {
 
   async function buy() {
     if (demo) {
-      await run(`Buy cover on ${symbol.ticker || symbol.symbol}`, { functionName: "buyCover" });
+      await run(`Protect ${symbol.ticker || symbol.symbol}`, { functionName: "buyCover" });
       return; // demo: keep the quote on screen so the purchase reads clearly
     }
     const q = quote.quote;
     if ((allowance.data || 0n) < premiumUnits) {
-      const ok = await run(`Approve ${stable} premium`, { address: stableAddr, abi: ERC20_ABI, functionName: "approve", args: [market_, premiumUnits] });
+      const ok = await run(`Allow the ${stable} payment`, { address: stableAddr, abi: ERC20_ABI, functionName: "approve", args: [market_, premiumUnits] });
       if (!ok) return;
       await allowance.refetch();
     }
@@ -219,7 +219,7 @@ export default function ProtectPage() {
       deductibleBps: Number(q.deductibleBps), capBps: Number(q.capBps), premium: BigInt(q.premium), startPrice: BigInt(q.startPrice),
       expiry: BigInt(q.expiry), validUntil: BigInt(q.validUntil), nonce: BigInt(q.nonce),
     };
-    const r = await run(`Buy cover on ${symbol.symbol}`, { address: market_, abi: ABI.CoverMarket, functionName: "buyCover", args: [tuple, quote.signature] });
+    const r = await run(`Protect ${symbol.ticker || symbol.symbol}`, { address: market_, abi: ABI.CoverMarket, functionName: "buyCover", args: [tuple, quote.signature] });
     if (r) setQuote(null);
   }
 
@@ -234,7 +234,7 @@ export default function ProtectPage() {
   const breakeven = prem !== null && N > 0 ? b / 10000 + prem / N : null;
   const walletBal = demo ? fromUnits(DEMO_BALANCE) : balance.data !== undefined ? fromUnits(balance.data) : null;
   const cantAfford = prem !== null && walletBal !== null && prem > walletBal;
-  const blockReason = cantAfford ? `The price is more than your ${stable} balance (${fmtMoney(walletBal, { sym: "" })}).` : null;
+  const blockReason = cantAfford ? `Not enough ${stable} in your wallet (you have ${fmtMoney(walletBal, { sym: "" })}).` : null;
 
   // auto-quote: only when the numbers are real and inside every limit, 600 ms after the last change
   useEffect(() => {
@@ -254,29 +254,30 @@ export default function ProtectPage() {
   }, [quote, fresh, busy]);
   const setShares = (x) => setSharesCover(x > 0 ? String(Math.floor(x * 1e6) / 1e6) : "");
 
+  const tick = symbol?.ticker || "shares";
+  const howLong = tenor === "10m" ? "10 minutes (test)" : { 7: "1 week", 14: "2 weeks", 28: "1 month" }[tenor] || `${tenor} days`;
+
   return (
     <>
       <PageHead
-        eyebrow="For stock holders"
-        title="Protect your stocks from a crash."
+        eyebrow="For stock owners"
+        title="Get paid if your stock crashes."
         art={<HolderArt />}
-        right={<HeroCtas items={[["Get a quote", "#quote"], ["How payouts work", "#how"]]} />}
+        right={<HeroCtas items={[["Get my price", "#quote"]]} />}
       >
-        Pay a small fee upfront. If your stock falls more than a set amount, you get paid the difference in {stable}. Keep your shares.
+        Pay a small fee. If your stock falls more than you choose, you are paid automatically. Keep your shares.
       </PageHead>
 
-      <HowItWorks title="Insurance for one stock, in three steps" steps={STEPS} aside={<PayoutExample />} />
-
-      <Section className="mt-20">
-        <SectionHead id="quote" eyebrow="Get a quote" title="Build your cover">Pick a stock, choose how much to protect, and see the price.</SectionHead>
+      <Section className="mt-6">
+        <SectionHead id="quote" eyebrow="Your price" title="Protect a stock" />
         <div className="space-y-4 mb-6">
           <DeployGate chainId={chainId}>{null}</DeployGate>
-          {offline && <Notice tone="warn">Live prices are offline right now, so new quotes are paused. Your existing policies below still work.</Notice>}
-          {isConnected && deployed && !kyc.verified && <Notice>Your wallet is not KYC-verified on this chain yet. Use “Verify identity” in the header; the issuer approves it on-chain.</Notice>}
+          {offline && <Notice tone="warn">Prices are offline right now. Try again in a few minutes. Your protection below still works.</Notice>}
+          {isConnected && deployed && !kyc.verified && <Notice>Verify your ID to buy. Tap “Verify ID” at the top of the page; it is instant in this test version.</Notice>}
         </div>
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-4 items-start">
           <div className="space-y-4 min-w-0">
-            <Step n="1" title="Choose the stock" done={Boolean(symbol)}>
+            <Step n="1" title="Pick your stock" done={Boolean(symbol)}>
               <StockPicker
                 marketId={marketId}
                 symbol={symbol}
@@ -293,18 +294,18 @@ export default function ProtectPage() {
               {symbol && <div className="mt-4"><PriceChart symbol={symbol.symbol} currency={symbol.currency} deductible={b / 10000} /></div>}
             </Step>
 
-            <Step n="2" title="How much and for how long" done={Boolean(quote?.ok)}>
+            <Step n="2" title="How much to protect" done={Boolean(quote?.ok)}>
               {/* what you own: verified (broker statement / tokenised balance) or typed for now */}
               {verifiedOwned !== null ? (
                 <div className="rounded-xl bg-sunk px-4 py-3 text-sm flex flex-wrap items-center justify-between gap-2">
-                  <span>You own <b className="tabular">{fmtNum(verifiedOwned, 4)}</b> {symbol?.ticker || "shares"}</span>
-                  <span className="chip text-good border-good/40">verified {tokenShares !== null ? "in your wallet" : "from your broker"}</span>
+                  <span>You own <b className="tabular">{fmtNum(verifiedOwned, 4)}</b> {tick}</span>
+                  <span className="chip text-good border-good/40">checked {tokenShares !== null ? "in your wallet" : "with your broker"}</span>
                 </div>
               ) : (
                 <label className="flex flex-wrap items-center gap-3 text-sm">
-                  <span className="text-ink2">How many {symbol?.ticker || "shares"} do you own?</span>
+                  <span className="text-ink2">How many {tick} do you own?</span>
                   <input className="input h-10 w-28" inputMode="decimal" value={sharesHeld} onChange={(e) => setSharesHeld(e.target.value)} aria-label="Shares you own" />
-                  <span className="text-xs text-muted">Step 3 checks this.</span>
+                  <span className="text-xs text-muted">We check this in step 3.</span>
                 </label>
               )}
 
@@ -312,15 +313,15 @@ export default function ProtectPage() {
                 <label className="label" htmlFor="shares-to-protect">How many do you want to protect?</label>
                 <div className="mt-1.5 flex flex-wrap items-center gap-3">
                   <input id="shares-to-protect" className="input h-12 w-40 text-lg tabular" inputMode="decimal" value={sharesCover} onChange={(e) => setSharesCover(e.target.value)} />
-                  <span className="text-sm text-ink2">{symbol?.ticker || "shares"}</span>
-                  {usdClose > 0 && S > 0 && <span className="text-sm">= <b className="tabular">{fmtMoney(N, { sym: "" })} {stable}</b> <span className="text-muted">at {fmtNum(symbol.lastClose, 2)} {symbol.currency || "USD"} a share</span></span>}
+                  <span className="text-sm text-ink2">{tick}</span>
+                  {usdClose > 0 && S > 0 && <span className="text-sm">= <b className="tabular">{fmtMoney(N, { sym: "" })} {stable}</b> <span className="text-muted">at {fmtNum(symbol.lastClose, 2)} {symbol.currency || "USD"} each</span></span>}
                 </div>
                 {symbol && (
                   <div className="flex flex-wrap gap-2 mt-3">
                     {[
                       ["Half of mine", owned / 2, owned > 0],
                       ["All I own", owned, owned > 0],
-                      ["Most the pool allows", maxShares === null ? 0 : Math.min(maxShares, owned || maxShares), !demo && maxShares !== null && maxShares > 0],
+                      ["Most we can protect", maxShares === null ? 0 : Math.min(maxShares, owned || maxShares), !demo && maxShares !== null && maxShares > 0],
                     ].filter(([, , ok]) => ok).map(([t, x]) => (
                       <button key={t} type="button" className="chip hover:bg-sunk" onClick={() => setShares(x)}>{t}</button>
                     ))}
@@ -328,7 +329,7 @@ export default function ProtectPage() {
                 )}
                 {!usdClose && symbol && (
                   <label className="flex flex-wrap items-center gap-3 mt-3 text-sm">
-                    <span className="text-ink2">No exchange rate for {symbol.currency} right now. Value to protect:</span>
+                    <span className="text-ink2">We can&apos;t convert {symbol.currency} right now. Value to protect:</span>
                     <input className="input h-10 w-32" inputMode="decimal" value={manualValue} onChange={(e) => setManualValue(e.target.value)} aria-label="Value to protect" />
                     <span>{stable}</span>
                   </label>
@@ -337,34 +338,34 @@ export default function ProtectPage() {
                 {symbol && overOwned && <p className="text-sm text-bad mt-3">You own {fmtNum(owned, 4)}. You can protect up to that many.</p>}
                 {symbol && !overOwned && tooBig && (
                   <p className="text-sm text-bad mt-3">
-                    The pool can protect up to <b>{fmtNum(maxShares, 4)}</b> {symbol?.ticker || "shares"} (≈ {fmtMoney(maxNotional, { sym: "" })} {stable}) right now.{" "}
+                    We can protect up to <b>{fmtNum(maxShares, 4)}</b> {tick} (about {fmtMoney(maxNotional, { sym: "" })} {stable}) right now.{" "}
                     <button type="button" className="underline underline-offset-2 text-ink" onClick={() => setShares(maxShares)}>Use that</button>
                   </p>
                 )}
                 {symbol && symbol.currency && symbol.currency !== "USD" && usdClose > 0 && (
-                  <p className="text-xs text-muted mt-2">Paid in {stable}, on the stock&apos;s fall in {symbol.currency}. 1 {symbol.ticker} ≈ {fmtMoney(usdClose, { sym: "" })} {stable} today.</p>
+                  <p className="text-xs text-muted mt-2">Paid in {stable}. 1 {symbol.ticker} is about {fmtMoney(usdClose, { sym: "" })} {stable} today.</p>
                 )}
               </div>
               <div className="grid gap-4 mt-5">
-                <div className="space-y-1.5"><div className="label">Length</div><Seg value={tenor} onChange={setTenor} options={[{ value: 7, label: "1 wk" }, { value: 14, label: "2 wk" }, { value: 28, label: "1 mo" }, { value: "10m", label: "10 min demo" }]} /></div>
+                <div className="space-y-1.5"><div className="label">How long</div><Seg value={tenor} onChange={setTenor} options={[{ value: 7, label: "1 week" }, { value: 14, label: "2 weeks" }, { value: 28, label: "1 month" }, { value: "10m", label: "10 min (test)" }]} /></div>
                 <div className="space-y-1.5"><div className="label">Starts paying after a drop of</div><div className="flex flex-wrap gap-2"><Seg value={b} onChange={setB} options={[300, 500, 750, 1000, 1500, 2000, 2500].map((v) => ({ value: v, label: `${v / 100}%` }))} /></div></div>
                 <div className="space-y-1.5"><div className="label">Pays up to</div><Seg value={c} onChange={setC} options={[{ value: 1000, label: "10%" }, { value: 2000, label: "20%" }, { value: 3000, label: "30%" }]} /></div>
               </div>
               <p className="mt-4 rounded-xl bg-sunk px-4 py-3 text-sm text-ink2">
-                If {symbol?.ticker || "the stock"} drops more than <b className="text-ink">{fmtPct(b / 10000, 0)}</b>, you are paid the extra drop, up to <b className="text-ink">{fmtPct(c / 10000, 0)}</b> of the value{N > 0 ? <> (<b className="text-ink">{fmtMoney(maxPayout, { sym: "" })} {stable}</b> at most)</> : null}.
+                If {symbol?.ticker || "the stock"} drops more than <b className="text-ink">{fmtPct(b / 10000, 0)}</b>, you get the extra drop, up to <b className="text-ink">{fmtPct(c / 10000, 0)}</b> of the value{N > 0 ? <> (<b className="text-ink">{fmtMoney(maxPayout, { sym: "" })} {stable}</b> at most)</> : null}.
               </p>
             </Step>
 
-            <Step n="3" title="Prove you hold it" done={Boolean(attest?.heldShares) || atsHeld > 0}>
-              <p className="text-sm text-ink2">You can only protect shares you actually own. Pick where they are.</p>
+            <Step n="3" title="Show you own it" done={Boolean(attest?.heldShares) || atsHeld > 0}>
+              <p className="text-sm text-ink2">You can only protect shares you own. Where are they?</p>
               <div className="grid sm:grid-cols-2 gap-3 mt-3">
                 <button onClick={() => setPath("broker")} className={`text-left rounded-xl border p-4 ${path === "broker" ? "border-accent bg-accentSoft" : "border-line hover:bg-sunk"}`}>
-                  <div className="text-sm font-semibold">Broker holdings</div>
-                  <div className="text-xs text-muted mt-1">Zerodha, IBKR, Robinhood or any broker. Upload a statement or connect.</div>
+                  <div className="text-sm font-semibold">At a broker</div>
+                  <div className="text-xs text-muted mt-1">Zerodha, IBKR, Robinhood or any other. Upload a statement or connect.</div>
                 </button>
                 <button onClick={() => setPath("token")} className={`text-left rounded-xl border p-4 ${path === "token" ? "border-accent bg-accentSoft" : "border-line hover:bg-sunk"}`}>
-                  <div className="text-sm font-semibold">Tokenised stock</div>
-                  <div className="text-xs text-muted mt-1">A tokenised share in your wallet. Checked on-chain.</div>
+                  <div className="text-sm font-semibold">In your wallet</div>
+                  <div className="text-xs text-muted mt-1">A tokenised share. We read your wallet balance.</div>
                 </button>
               </div>
               {path === "broker" ? (
@@ -376,18 +377,19 @@ export default function ProtectPage() {
                   </div>
                   <div className="flex flex-wrap items-center gap-3 mt-4">
                     <button className="btn-ghost" disabled={!symbol || !address || attesting} onClick={doAttest}>
-                      {attesting ? "Checking…" : source === "statement" ? "Attest holding" : `Connect and attest (demo)`}
+                      {attesting ? "Checking…" : source === "statement" ? "Check my shares" : "Connect and check (test)"}
                     </button>
-                    {attest?.heldShares && <span className="text-sm text-good">Attested {fmtNum(Number(attest.heldShares) / 1e18, 4)} shares · ref <span className="font-mono">{shortHash(String(attest.ref || ""))}</span></span>}
-                    {attest?.error && <span className="text-sm text-bad">{attest.error}</span>}
+                    {attest?.heldShares && <span className="text-sm text-good" title={attest.ref ? `Reference ${attest.ref}` : undefined}>Done: you own {fmtNum(Number(attest.heldShares) / 1e18, 4)} shares</span>}
+                    {attest?.error && <span className="text-sm text-bad" title={attest.error}>We couldn&apos;t check that. Try again or pick another option.</span>}
                   </div>
+                  {(!symbol || !address) && <p className="text-xs text-muted mt-2">{!symbol ? "Pick a stock first." : "Connect your wallet first."}</p>}
                 </>
               ) : (
                 <div className="mt-4 rounded-xl bg-sunk p-4 text-sm">
-                  {!symbol ? "Choose a stock first." : atsToken ? (
-                    <>On-chain token <span className="font-mono text-xs">{shortHash(atsToken)}</span> · your balance <span className="font-semibold">{fmtNum(atsHeld, 4)}</span> shares. The contract re-checks it when you buy.</>
+                  {!symbol ? "Pick a stock first." : atsToken ? (
+                    <span title={atsToken}>Your wallet holds <span className="font-semibold">{fmtNum(atsHeld, 4)}</span> {tick}. We check again when you buy.</span>
                   ) : (
-                    <>No tokenised share is registered for <span className="font-mono">{symbol.symbol}</span> on this chain. On Hedera, ATS-issued equities are registered with the cover market; use broker holdings for listed shares.</>
+                    <>There is no tokenised {symbol.ticker || symbol.symbol} on this network. Choose “At a broker” instead.</>
                   )}
                 </div>
               )}
@@ -397,7 +399,7 @@ export default function ProtectPage() {
           <div className="lg:sticky lg:top-20 space-y-4 min-w-0">
             <div className="card p-5 sm:p-6">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold">Your quote</h3>
+                <h3 className="font-semibold">Your price</h3>
                 {symbol && <span className="chip font-mono">{symbol.symbol}</span>}
               </div>
               <div className="mt-4 rounded-xl bg-sunk p-4">
@@ -406,29 +408,31 @@ export default function ProtectPage() {
                   {ready && <span className="text-xs text-muted flex items-center gap-1.5"><span className={`h-1.5 w-1.5 rounded-full ${quoting ? "bg-accent animate-pulse" : fresh && quote?.ok ? "bg-good" : "bg-muted"}`} />{quoting ? "Updating price…" : fresh && quote?.ok ? "Live price" : ""}</span>}
                 </div>
                 <div className="mt-1 text-3xl font-semibold tracking-tight tabular">{prem !== null ? `${fmtMoney(prem, { sym: "" })} ${stable}` : "—"}</div>
-                <div className="text-xs text-muted mt-1">{prem !== null ? `${fmtPct(prem / (N || 1), 2)} of the value, paid once` : !symbol ? "Pick a stock to see the price" : !ready ? "Fix the highlighted number to see the price" : fresh && quoteErr && !quoting ? "Not sold at these settings, see below" : "Pricing…"}</div>
+                <div className="text-xs text-muted mt-1">{prem !== null ? `${fmtPct(prem / (N || 1), 2)} of the value, paid once` : !symbol ? "Pick a stock to see your price" : !ready ? "Fix the number in red to see your price" : fresh && quoteErr && !quoting ? "Not available at this setting, see below" : "Getting your price…"}</div>
               </div>
+              {symbol && (<>
               <div className="mt-3">
-                <Row k="Value protected" v={fmtMoney(N, { sym: "" }) + ` ${stable}`} />
+                <Row k="Protected amount" v={fmtMoney(N, { sym: "" }) + ` ${stable}`} />
                 <Row k="Most you can be paid" v={`${fmtMoney(maxPayout, { sym: "" })} ${stable}`} strong />
-                <Row k="Length" v={tenor === "10m" ? "10 minutes (testnet demo)" : `${tenor} days`} />
+                <Row k="How long" v={howLong} />
               </div>
               <More label="More numbers" className="mt-3">
-                <Row k="Pays the fall beyond" v={fmtPct(b / 10000, 0)} />
-                <Row k="Chance of any payout" v={pPayout !== undefined ? fmtPct(pPayout, 1) : "—"} />
-                <Row k="Fair value" v={quote?.pricing ? fmtPct(quote.pricing.fairBps / 10000, 2) : "—"} />
-                <Row k="Break-even fall" v={breakeven !== null ? fmtPct(breakeven, 1) : "—"} />
+                <Row k="Starts paying after a drop of" v={fmtPct(b / 10000, 0)} />
+                <Row k="Chance it pays out" v={pPayout !== undefined ? fmtPct(pPayout, 1) : "—"} />
+                <Row k="Cost before our margin" v={quote?.pricing ? fmtPct(quote.pricing.fairBps / 10000, 2) : "—"} />
+                <Row k="You come out ahead if it falls more than" v={breakeven !== null ? fmtPct(breakeven, 1) : "—"} />
               </More>
               <div className="rounded-xl border border-line p-4 mt-4 text-sm">
-                If {symbol?.ticker || "the stock"} closes <span className="font-semibold">25% lower</span> at expiry, you receive{" "}
+                If {symbol?.ticker || "the stock"} closes <span className="font-semibold">25% lower</span> on the end date, you get{" "}
                 <span className="font-semibold text-good">{fmtMoney(pay25, { sym: "" })} {stable}</span>.
               </div>
+              </>)}
               {fresh && quoteErr && (
                 <div className="mt-3 rounded-xl border border-line bg-accentSoft/60 p-4 text-sm">
                   {suggestion ? (
                     <>
-                      <p className="text-ink">{symbol?.name || "This stock"} is moving a lot right now, so protection from a {b / 100}% drop is not sold.</p>
-                      <p className="text-ink2 mt-1">Protection that starts after a <b className="text-ink">{Number(suggestion.deductibleBps) / 100}% drop</b> costs {fmtPct(Number(suggestion.premiumBps) / 1e4, 2)} (about {fmtMoney((N * Number(suggestion.premiumBps)) / 1e4, { sym: "" })} {stable}).</p>
+                      <p className="text-ink">{symbol?.name || "This stock"} is moving a lot right now, so protection from a {b / 100}% drop is not available.</p>
+                      <p className="text-ink2 mt-1">Protection that starts after a <b className="text-ink">{Number(suggestion.deductibleBps) / 100}% drop</b> costs about {fmtMoney((N * Number(suggestion.premiumBps)) / 1e4, { sym: "" })} {stable} ({fmtPct(Number(suggestion.premiumBps) / 1e4, 2)}).</p>
                       <button type="button" className="btn-primary btn-sm mt-3" onClick={() => setB(Number(suggestion.deductibleBps))}>Switch to {Number(suggestion.deductibleBps) / 100}%</button>
                     </>
                   ) : (
@@ -437,22 +441,25 @@ export default function ProtectPage() {
                 </div>
               )}
               <button className="btn-primary w-full mt-4" disabled={!fresh || !quote?.ok || quote?.pricing?.refused || quoting || !isConnected || !deployed || !kyc.verified || Boolean(busy) || Boolean(blockReason)} onClick={buy}>
-                {busy || (prem !== null ? `Buy for ${fmtMoney(prem, { sym: "" })} ${stable}` : "Buy cover")}
+                {busy || (prem !== null ? `Protect ${fmtNum(S, 4)} ${tick} for ${fmtMoney(prem, { sym: "" })} ${stable}` : "Protect my stock")}
               </button>
               {(() => {
-                // say why Buy is greyed out, one reason at a time
+                // say why the button is greyed out, one reason at a time
                 if (!fresh || !quote?.ok || quoting || busy) return null;
                 const why = !isConnected ? "Connect your wallet to buy." : !deployed ? "Switch your wallet to a supported network to buy."
-                  : !kyc.verified ? "Verify your identity first (button at the top of the page)." : blockReason;
+                  : !kyc.verified ? "Verify your ID first (button at the top of the page)." : blockReason;
                 return why ? <p className="text-xs text-bad mt-3">{why}</p> : null;
               })()}
               {isConnected && walletBal !== null && (
-                <p className="text-xs text-muted mt-3">Wallet: {fmtMoney(walletBal, { sym: "" })} {stable}.{fresh && quote?.ok ? " The price refreshes by itself; you pay exactly what is shown." : ""}</p>
+                <p className="text-xs text-muted mt-3">In your wallet: {fmtMoney(walletBal, { sym: "" })} {stable}.{fresh && quote?.ok ? " The price updates by itself; you pay exactly what is shown." : ""}</p>
               )}
             </div>
           </div>
         </div>
       </Section>
+
+      <HowItWorks title="Three steps, no paperwork" steps={STEPS} aside={<PayoutExample />} />
+
       <Section className="mt-16">
         <MyPolicies />
       </Section>

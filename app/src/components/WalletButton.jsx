@@ -13,7 +13,7 @@ const Caret = () => (
 function Pill({ chainName, address, onChain, onAccount, icon }) {
   return (
     <div className="flex h-10 items-stretch rounded-xl border border-line bg-card text-sm font-medium text-ink shadow-[0_1px_2px_rgb(26_36_35/0.04)]">
-      <button type="button" onClick={onChain} title={`Network: ${chainName}`}
+      <button type="button" onClick={onChain} title={`Network: ${chainName}. Click to switch.`}
         className="flex items-center gap-2 rounded-l-xl pl-3 pr-2.5 hover:bg-sunk transition">
         {icon || <span className="h-2 w-2 rounded-full bg-good" />}
         <span className="hidden md:inline">{chainName}</span>
@@ -46,7 +46,7 @@ export default function WalletButton() {
         if (chain.unsupported) {
           return (
             <button type="button" onClick={openChainModal} className="btn h-10 border border-warn/50 bg-warn/10 text-ink hover:bg-warn/20">
-              <span className="h-2 w-2 rounded-full bg-warn" /> Wrong network <Caret />
+              <span className="h-2 w-2 rounded-full bg-warn" /> Switch network <Caret />
             </button>
           );
         }

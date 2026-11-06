@@ -45,7 +45,7 @@ export function ToastProvider({ children }) {
               {t.body && <div className="text-ink2 break-words mt-0.5">{t.body}</div>}
               {t.href && (
                 <a href={t.href} target="_blank" rel="noreferrer" className="text-accent underline underline-offset-2 mt-1 inline-block">
-                  View on explorer
+                  View receipt
                 </a>
               )}
             </div>
