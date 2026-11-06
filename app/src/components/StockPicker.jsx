@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { EXCHANGES, REGIONS } from "@/lib/exchanges";
 import { fmtNum, fmtPct } from "@/lib/format";
 import Flag from "./Flag";
+import StockLogo from "./StockLogo";
 
 /**
  * Stock picker for the Protect page: a command-palette dropdown under the trigger.
@@ -118,7 +119,7 @@ export default function StockPicker({ marketId, symbol, symbolsFor, loading, off
         aria-expanded={open}
         className={`group w-full flex items-center gap-4 rounded-2xl border bg-card px-4 py-3.5 text-left transition ${open ? "border-primary shadow-md" : "border-line shadow-sm hover:border-ink/25"}`}
       >
-        <Flag code={chosen.code} className="h-8 w-12 shrink-0 rounded-md ring-1 ring-black/10" />
+        {symbol ? <StockLogo key={symbol.symbol} symbol={symbol} className="h-10 w-10" selected /> : <Flag code={chosen.code} className="h-8 w-12 shrink-0 rounded-md ring-1 ring-black/10" />}
         <span className="min-w-0 flex-1">
           <span className="block text-[15px] font-semibold truncate">{symbol ? symbol.name || symbol.ticker : "Choose a stock"}</span>
           <span className="block text-xs text-muted truncate">
@@ -221,9 +222,7 @@ export default function StockPicker({ marketId, symbol, symbolsFor, loading, off
                     onClick={() => pick(e, s)}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${kb ? "bg-sunk" : ""}`}
                   >
-                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[10px] font-bold ${cur ? "bg-primary text-white" : "bg-sunk text-ink2"}`}>
-                      {(s.ticker || s.symbol.split(":").pop()).slice(0, 4)}
-                    </span>
+                    <StockLogo symbol={s} selected={cur} />
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm font-medium truncate">{s.name || s.ticker}</span>
                       <span className="flex items-center gap-1.5 text-[11px] text-muted truncate">
