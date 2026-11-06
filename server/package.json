@@ -7,7 +7,10 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "selftest": "node scripts/selftest.js"
+    "selftest": "node scripts/selftest.js",
+    "agent:setup": "node scripts/setup-agent-testnet.js",
+    "agent:plan": "node scripts/agent.js",
+    "agent:run": "node scripts/agent.js --execute"
   },
   "engines": {
     "node": ">=22.13"
