@@ -2,12 +2,14 @@
 import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
 
 /**
- * Isometric line-art scenes that explain InsureVEX, one idea each:
- *   HeroArt     the conveyor: shares go in, come out with a crash floor; premiums and savers' sleeves fill the pool
- *   SaveArt     a $1,000 note splits into a T-bill floor and a sleeve; coupons come back; $1,000 back at maturity
- *   ProtectArt  prove you own the stock, pay a premium, the pool locks the max payout, the floor goes on
- *   SettleArt   the official close is posted: a crash pays the extra fall, a calm month pays the saver a coupon
- * Each scene animates only while on screen and holds one finished frame for reduced motion.
+ * Isometric scenes that explain InsureVEX, one idea each. Numbers follow the contracts:
+ *   LayerArt    the product in one loop: Saver -> T-bills + vault units, Holder -> premium -> vault
+ *   SaverArt    ProtectedNote: floor = face / (1 + r t) to T-bills, the rest buys vault units; premiums lift the unit
+ *   HolderArt   CoverMarket: payout = notional x min(max(fall - deductible, 0), cap), i.e. the 10% -> 30% band
+ *   SettleArt   official close at expiry: crash pays out of the vault, calm leaves the premium with savers
+ *   PoolArt     UnderwritingPool: loss order premiums -> Pro LP -> savers' units; max payout locked per policy
+ *   SystemArt   every contract and who touches it
+ * Each scene animates only while on screen and holds one frame for reduced motion.
  */
 
 const C = Math.cos(Math.PI / 6);
@@ -149,26 +151,27 @@ function IsoSvg({ svgRef, vb, fit, children, ...rest }) {
   );
 }
 
-/** A pill label with a leader line, in screen space. */
-function Tag({ at, text, tone = "", dx = 0, dy = -34, opacity = 1 }) {
-  if (opacity <= 0.01) return null;
+/** A pill label with a leader line, in screen space. Clamped inside the scene's viewBox. */
+function Tag({ at, text, tone = "", dx = 0, dy = -34, opacity = 1, size = "md" }) {
   const vb = useContext(ViewBox);
-  const w = text.length * 6.3 + 20;
+  if (opacity <= 0.01) return null;
+  const fs = size === "lg" ? 14 : 12;
+  const ph = size === "lg" ? 30 : 26;
+  const w = text.length * fs * 0.55 + 24;
   const [x, y] = at;
-  // Keep the pill inside the scene: slide it sideways / vertically rather than letting it hang off the edge.
   let px = x + dx - w / 2;
-  let py = y + dy - 11;
+  let py = y + dy - ph / 2;
   if (vb) {
     px = clamp(px, vb[0] + 6, vb[0] + vb[2] - w - 6);
-    py = clamp(py, vb[1] + 6, vb[1] + vb[3] - 28);
+    py = clamp(py, vb[1] + 6, vb[1] + vb[3] - ph - 6);
   }
   return (
     <g className={`iso-tagpill ${tone ? `is-${tone}` : ""}`} style={{ opacity }}>
-      <line x1={x} y1={y} x2={clamp(x, px + 11, px + w - 11)} y2={py + (y > py ? 22 : 0)} className="iso-leader" />
-      <circle cx={x} cy={y} r="2.2" className="iso-pin" />
+      <line x1={x} y1={y} x2={clamp(x, px + 12, px + w - 12)} y2={py + (y > py ? ph : 0)} className="iso-leader" />
+      <circle cx={x} cy={y} r="2.4" className="iso-pin" />
       <g transform={`translate(${px} ${py})`}>
-        <rect width={w} height="22" rx="11" className="iso-pill" />
-        <text x={w / 2} y="14.8" textAnchor="middle" className="iso-pill-text">
+        <rect width={w} height={ph} rx={ph / 2} className="iso-pill" />
+        <text x={w / 2} y={ph / 2 + fs * 0.36} textAnchor="middle" className="iso-pill-text" style={{ fontSize: fs }}>
           {text}
         </text>
       </g>
@@ -187,8 +190,8 @@ export function Steps({ items, active }) {
   return (
     <ol className="iso-steps">
       {items.map((t, i) => (
-        <li key={t} className={i === active ? "is-active" : undefined}>
-          <span className="n">{String(i + 1).padStart(2, "0")}</span>
+        <li key={t} className={i === active ? "is-active" : i < active ? "is-done" : undefined}>
+          <span className="n">{i + 1}</span>
           {t}
         </li>
       ))}
@@ -197,15 +200,8 @@ export function Steps({ items, active }) {
 }
 
 /** The cream stage every scene sits on, with registration dots in the corners like the reference frames. */
-function Stage({ children, className = "", corners = true }) {
-  return (
-    <div className={`iso-stage ${className}`}>
-      {corners && [{ left: 9, top: 9 }, { right: 9, top: 9 }, { left: 9, bottom: 9 }, { right: 9, bottom: 9 }].map((pos, i) => (
-        <span key={i} className="iso-corner" style={pos} aria-hidden="true" />
-      ))}
-      {children}
-    </div>
-  );
+function Stage({ children, className = "" }) {
+  return <div className={`iso-stage ${className}`}>{children}</div>;
 }
 
 /** A shield glyph in screen space, centred on (x, y). */
@@ -223,303 +219,246 @@ function Shield({ x, y, s = 1, opacity = 1, label }) {
   );
 }
 
-/* ───────────────────────── Hero: the conveyor ───────────────────────── */
+/* ───────────────────────── Hero: the layer between two investors ───────────────────────── */
 
-const TICKERS = ["NVDA", "INFY", "7203", "SPY", "AAPL", "HDFC", "TSLA", "BABA", "SAP", "TCS"];
-
-/** Little flat squares scattered around the engine, like the reference's pixel marks. Screen space. */
-const PIXELS = [
-  [-128, 70, ""], [-118, 80, "is-ink"], [-136, 84, ""], [120, -28, ""], [130, -18, "is-accent"], [112, -16, ""],
-  [24, 128, ""], [34, 138, "is-ink"],
-];
-
-export function HeroArt() {
-  const [ref, phase] = usePhase(24000, 0.08);
+/**
+ * The whole product in one loop. Left: a Saver's $1,000 splits into T-bills ($952, grows back to $1,000) and the vault
+ * ($48, bought as vault units). Right: a Holder gets a price from the engine and pays a $90 premium into the vault.
+ * Centre: the vault, whose unit price rises when the premium lands. Numbers follow ProtectedNote.floorFor (5%, 1 year).
+ */
+export function LayerArt() {
+  const [ref, phase] = usePhase(14000, 0.78);
   const ids = useIds();
-  const L = 1200;
-  const items = TICKERS.map((t, i) => ({ t, x: -600 + ((phase * L + i * 120) % L) }));
-  const nearest = Math.min(...items.map((it) => Math.abs(it.x)));
-  const press = nearest < 24 ? smooth(1 - nearest / 24) : 0;
-  const pressAge = items.map((it) => span(it.x, 0, 30)).find((a) => a > 0 && a < 1) ?? 0;
+  const S = [-235, 95];
+  const T = [-265, -95];
+  const H = [95, -235];
+  const E = [190, 30];
+  const VTOP = [0, 0, 72];
+  const out = smooth(span(phase, 0.95, 1));
+  const unit = 1 + 0.009 * smooth(span(phase, 0.58, 0.66));
 
-  const POOL = [85, -240];
-  const SAVERS = [-215, -205];
-  const premiums = items.map((it) => span(it.x, 30, 190)).filter((t) => t > 0 && t < 1);
-  const sleeves = [0, 0.5].map((o) => span((phase * 7 + o) % 1, 0, 0.5)).filter((t) => t > 0 && t < 1);
-  const fade = (x) => clamp((570 - Math.abs(x)) / 50);
-  const poolFill = 0.6 + Math.sin(phase * Math.PI * 8) * 0.05;
-  // Tiles going in are drawn under the plinth, so the plinth hides them as they slide beneath it. Tiles coming out are
-  // drawn over it but clipped to the world half-space in front of the plinth's right face (x > 96).
-  const before = items.filter((it) => it.x < 0);
-  const after = items.filter((it) => it.x >= 0 && it.x > 64);
-  const exitClip = `${ids.hatch}x`;
-  const edge = [P(96, -900, 0), P(96, 900, 0)];
-
-  const Tile = ({ it, covered }) => (
-    <g style={{ opacity: fade(it.x) }}>
-      <Box x={it.x - 32} y={-32} z={2} w={64} d={64} h={7} shadow />
-      <Box
-        x={it.x - 22}
-        y={-22}
-        z={9}
-        w={44}
-        d={44}
-        h={9}
-        shadow={false}
-        top={
-          <>
-            <text x="22" y="19" textAnchor="middle" className="iso-text iso-bold">
-              {it.t}
-            </text>
-            <rect x="7" y="26" width="13" height="8" rx="1.5" className={covered ? "iso-pixel is-accent" : "iso-pixel"} />
-            <rect x="23" y="26" width="13" height="8" rx="1.5" className="iso-pixel" />
-          </>
-        }
-        front={<rect x="0" y="0" width="9" height="9" className="iso-pixel is-accent" />}
-      />
-      {covered && <Cyl x={it.x + 13} y={-13} z={18} r={9} h={5} className="iso-coin is-accent" shadow={false} />}
-    </g>
-  );
+  const coins = [];
+  for (let i = 0; i < 10; i++) {
+    const s0 = 0.05 + i * 0.012;
+    const t = span(phase, s0, s0 + 0.08);
+    const home = [S[0], S[1], 10 + (9 - i) * 4];
+    const dest = i === 9 ? VTOP : [T[0], T[1], 50 + i * 4];
+    if (i === 9 && t >= 1) continue;
+    coins.push({ at: t <= 0 ? home : t < 1 ? fly(home, dest, smooth(t), 70) : dest, tone: i === 9 && t > 0 ? "good" : "", o: (1 - out) * (i === 9 ? 1 - span(t, 0.85, 1) : 1) });
+  }
+  const chip = span(phase, 0.26, 0.36);
+  const chipAt = chip > 0 ? fly(VTOP, [S[0], S[1], 10], smooth(chip), 70) : null;
+  const quote = span(phase, 0.38, 0.48);
+  const prem = span(phase, 0.5, 0.6);
+  const shield = smooth(span(phase, 0.62, 0.7)) * (1 - out);
+  const active = phase < 0.37 ? 0 : phase < 0.58 ? 1 : 2;
+  const [sx, sy] = P(H[0], H[1], 100);
 
   return (
-    <Stage className="iso-bare hero-art" corners={false}>
-      <IsoSvg svgRef={ref} vb={[-640,-250,1120,640]} fit="slice" role="img" aria-label="Shares from any exchange ride a conveyor into InsureVEX and come out with a crash floor. Each premium, and the savers' sleeve, flows into the underwriting pool.">
+    <Stage className="iso-bare">
+      <IsoSvg svgRef={ref} vb={[-400, -330, 800, 480]} role="img" aria-label="A saver's $1,000 splits into $952 of T-bills and $48 of vault units. A holder pays a $90 premium into the vault for crash cover, which raises the price of every vault unit.">
         <Defs ids={ids} />
+        {/* back: T-bills and the holder */}
+        <Box x={T[0] - 40} y={T[1] - 40} w={80} d={80} h={50} topFill={`url(#${ids.dots})`} front={<text x="8" y="20" className="iso-text iso-bold">T-BILLS</text>} />
+        <Box x={H[0] - 50} y={H[1] - 50} w={100} d={100} h={10} className="iso-sage" />
+        <Box x={H[0] - 25} y={H[1] - 25} z={10} w={50} d={50} h={36} shadow={false} top={<text x="25" y="30" textAnchor="middle" className="iso-text iso-bold">NVDA</text>} />
 
-        {/* Back: savers' sleeve and the pool */}
-        <Box x={SAVERS[0] - 30} y={SAVERS[1] - 30} w={60} d={60} h={12} className="iso-sage" front={<text x="6" y="9" className="iso-mini">SAVERS</text>} />
-        <Box x={SAVERS[0] - 16} y={SAVERS[1] - 16} z={12} w={32} d={32} h={14} shadow={false} topFill={`url(#${ids.hatch})`} />
-        <Cyl x={POOL[0]} y={POOL[1]} r={46} h={56} />
-        <Cyl x={POOL[0]} y={POOL[1]} z={56} r={38} h={2} className="iso-liquid" style={{ opacity: poolFill }} />
-        {premiums.map((t, i) => (
-          <Coin key={`p${i}`} at={fly([0, -24, 96], [POOL[0], POOL[1], 58], smooth(t), 70)} tone="accent" opacity={clamp(t / 0.12) * clamp((1 - t) / 0.1)} />
+        {/* centre: the vault */}
+        <Cyl x={0} y={0} r={64} h={72} className="iso-vault" topFill={`url(#${ids.hatch})`} />
+        <Ripple at={P(...VTOP)} age={span(phase, 0.6, 0.7)} />
+
+        {/* front: the saver and the pricing engine */}
+        <Box x={S[0] - 50} y={S[1] - 50} w={100} d={100} h={10} className="iso-sage" />
+        <Box x={E[0] - 32} y={E[1] - 32} w={64} d={64} h={34} className="iso-teal" top={<polyline points="10,46 22,34 32,40 44,22 54,28" className="iso-key-glyph" />} />
+
+        {coins.map((c, i) => (
+          <Coin key={i} at={c.at} tone={c.tone} opacity={c.o} />
         ))}
-        {sleeves.map((t, i) => (
-          <Coin key={`s${i}`} at={fly([SAVERS[0], SAVERS[1], 28], [POOL[0], POOL[1], 58], smooth(t), 80)} tone="accent" opacity={clamp(t / 0.12) * clamp((1 - t) / 0.1)} />
-        ))}
+        {chipAt && <Box x={chipAt[0] - 10} y={chipAt[1] - 10} z={chipAt[2]} w={20} d={20} h={6} shadow={false} className="iso-unit" style={{ opacity: 1 - out }} />}
+        {quote > 0 && quote < 1 && <Box x={lerp(E[0], H[0], smooth(quote)) - 16} y={lerp(E[1], H[1], smooth(quote)) - 11} z={34 + Math.sin(Math.PI * quote) * 70} w={32} d={22} h={2} shadow={false} />}
+        {prem > 0 && prem < 1 && <Coin at={fly([H[0], H[1], 46], VTOP, smooth(prem), 80)} tone="accent" />}
+        {shield > 0.01 && <Shield x={sx} y={sy} s={1.5} opacity={shield} />}
 
-        {/* The lane */}
-        <Box x={-600} y={-46} w={1200} d={92} h={2} shadow={false} />
-
-        {before.map((it) => (
-          <Tile key={it.t} it={it} />
-        ))}
-
-        {/* The engine on its plinth */}
-        <Box x={-96} y={-96} w={192} d={192} h={16} className="iso-sage" />
-        <Box
-          x={-66}
-          y={-84}
-          z={16}
-          w={132}
-          d={112}
-          h={78}
-          front={
-            <>
-              <text x="12" y="20" className="iso-text iso-bold">INSUREVEX</text>
-              <text x="12" y="33" className="iso-mini">price · lock · cover</text>
-              <rect x="12" y="44" width="80" height="5" rx="2.5" className="iso-meter" />
-              <rect x="12" y="44" width={18 + press * 62} height="5" rx="2.5" className="iso-meter-fill" />
-            </>
-          }
-          top={
-            <>
-              {[22, 52, 82].map((v) => (
-                <rect key={v} x={v} y="40" width="26" height="14" rx="7" className="iso-line" />
-              ))}
-              <rect x="22" y="66" width="86" height="4" rx="2" className="iso-line iso-dashed" />
-            </>
-          }
-        />
-        {/* Keys on the plinth: two teal, one orange that presses as each share goes through */}
-        <Box x={-58} y={46} z={16} w={30} d={34} h={9} shadow={false} className="iso-teal" top={<path d="M9 17 H21 M15 11 L21 17 L15 23" className="iso-key-glyph" />} />
-        <Box x={-22} y={46} z={16} w={30} d={34} h={9} shadow={false} className="iso-teal" top={<path d="M15 10 V24 M9 18 L15 24 L21 18" className="iso-key-glyph" />} />
-        <Box x={14} y={46} z={16} w={46} d={34} h={10 - press * 5} shadow={false} className="iso-orange" top={<path d="M14 12 V22 H32 M27 17 L32 22 L27 27" className="iso-key-glyph" />} />
-        <Ripple at={P(37, 63, 26 - press * 5)} age={pressAge} />
-        {PIXELS.map(([x, y, c], i) => (
-          <rect key={i} x={x} y={y} width="9" height="9" className={`iso-pixel ${c}`} />
-        ))}
-
-        <clipPath id={exitClip}>
-          <polygon points={`${edge[0][0]},${edge[0][1] - 16} ${edge[1][0]},${edge[1][1] - 16} 2000,2000 2000,-2000`} />
-        </clipPath>
-        {after.map((it) => (
-          <g key={it.t} clipPath={`url(#${exitClip})`}>
-            <Tile it={it} covered />
-            <Shield x={P(it.x, 0, 54)[0]} y={P(it.x, 0, 54)[1]} s={0.9} opacity={fade(it.x) * clamp((it.x - 120) / 50)} label="−10% floor" />
-          </g>
-        ))}
-
-        <Tag at={P(-330, 0, 22)} text="shares, any exchange" dx={70} dy={-56} tone="ink" />
-        <Tag at={P(440, 0, 20)} text="crash floor on" dx={-110} dy={70} tone="accent" />
-        <Tag at={P(POOL[0], POOL[1], 64)} text="underwriting pool" dx={-150} dy={0} />
-        <Tag at={P(SAVERS[0], SAVERS[1], 28)} text="savers' sleeve" dx={-30} dy={-30} />
+        <Tag at={P(S[0], S[1], 12)} text="Saver" tone="ink" dx={-40} dy={50} />
+        <Tag at={P(H[0], H[1], 12)} text="Holder" tone="ink" dx={60} dy={-20} />
+        <Tag at={P(0, 0, 72)} text={`Vault · unit $${unit.toFixed(3)}`} tone="good" dy={-46} size="lg" />
+        <Tag at={P(T[0], T[1], 50)} text="$952 → $1,000 at maturity" dx={-30} dy={-40} opacity={span(phase, 0.2, 0.26) * (1 - out)} />
+        <Tag at={P(S[0], S[1], 18)} text="$48 = vault units" tone="good" dx={-10} dy={-50} opacity={span(phase, 0.34, 0.38) * (1 - out)} />
+        <Tag at={P(E[0], E[1], 34)} text="engine quotes $90 / month" dx={70} dy={40} opacity={span(phase, 0.38, 0.42) * (1 - span(phase, 0.6, 0.64))} />
+        <Tag at={[sx, sy - 18]} text="covered: 10% → 30% fall" tone="good" dx={50} dy={-30} opacity={shield} />
       </IsoSvg>
+      <Steps items={["Saver deposits $1,000", "Holder pays $90 for cover", "The premium raises every vault unit"]} active={active} />
     </Stage>
   );
 }
 
-/* ───────────────────────── 1. Save ───────────────────────── */
+/* ───────────────────────── Type 1: the Saver ───────────────────────── */
 
-export function SaveArt() {
-  const [ref, phase] = usePhase(12000);
+const FLOOR = 1000 / 1.05; // ProtectedNote.floorFor at a 5% T-bill rate for 1 year
+const SLEEVE = 1000 - FLOOR;
+
+export function SaverArt() {
+  const [ref, phase] = usePhase(14000);
   const ids = useIds();
-  const SAVER = [-150, 0];
-  const SPLIT = [-30, 0, 40];
-  const VAULT = { x: 50, y: -125, w: 90, d: 74, h: 60 };
-  const VTOP = [VAULT.x + 45, VAULT.y + 37, VAULT.h];
-  const POOL = [115, 70];
-  const stack = (k) => [SAVER[0], SAVER[1], 8 + k * 4];
-  const pile = (k) => [VTOP[0], VTOP[1], VTOP[2] + k * 4];
+  const S = [-170, 20];
+  const SPLIT = [-50, 0, 36];
+  const TB = { x: 50, y: -130, w: 90, d: 74, h: 60 };
+  const TTOP = [TB.x + 45, TB.y + 37, TB.h];
+  const V = [120, 85];
+  const VTOP = [V[0], V[1], 48];
+  const PR = [330, 60, 30];
   const out = smooth(span(phase, 0.95, 1));
-  const grow = smooth(span(phase, 0.42, 0.76));
-  const floor = 1000 / 1.12;
-  const vaultValue = floor + (1000 - floor) * grow;
+  const grow = smooth(span(phase, 0.46, 0.8));
+  const tb = FLOOR + (1000 - FLOOR) * grow;
+  const stack = (k) => [S[0], S[1], 10 + k * 4];
+  const pile = (k) => [TTOP[0], TTOP[1], TTOP[2] + k * 4];
+  const arrived = [0, 1, 2].map((c) => smooth(span(phase, 0.52 + c * 0.08, 0.6 + c * 0.08)));
+  const unit = 1 + 0.004 * arrived.reduce((a, b) => a + b, 0);
 
   const coins = [];
   for (let i = 0; i < 10; i++) {
-    const sDep = 0.03 + i * 0.012;
-    const dep = span(phase, sDep, sDep + 0.06);
-    const sSplit = 0.22 + i * 0.012;
-    const split = span(phase, sSplit, sSplit + 0.07);
-    const sRet = 0.8 + i * 0.01;
-    const ret = span(phase, sRet, sRet + 0.06);
+    const d0 = 0.03 + i * 0.012;
+    const dep = span(phase, d0, d0 + 0.06);
+    const s0 = 0.2 + i * 0.012;
+    const split = span(phase, s0, s0 + 0.07);
+    const r0 = 0.82 + i * 0.008;
+    const ret = span(phase, r0, r0 + 0.06);
     const home = stack(9 - i);
-    const dest = i === 9 ? [POOL[0], POOL[1], 42] : pile(i);
+    const dest = i === 9 ? VTOP : pile(i);
     let at = null;
-    let fadeIO = 1;
-    if (phase < sDep) at = home;
-    else if (dep < 1) (at = fly(home, SPLIT, smooth(dep), 50)), (fadeIO = 1 - span(dep, 0.8, 1));
+    let o = 1;
+    if (phase < d0) at = home;
+    else if (dep < 1) (at = fly(home, SPLIT, smooth(dep), 50)), (o = 1 - span(dep, 0.8, 1));
     else if (split <= 0) at = null;
-    else if (split < 1) (at = fly(SPLIT, dest, smooth(split), 60)), (fadeIO = span(split, 0, 0.2) * (i === 9 ? 1 - span(split, 0.8, 1) : 1));
+    else if (split < 1) (at = fly(SPLIT, dest, smooth(split), 60)), (o = span(split, 0, 0.2) * (i === 9 ? 1 - span(split, 0.8, 1) : 1));
     else if (i === 9) at = null;
     else if (ret <= 0) at = dest;
     else if (ret < 1) at = fly(dest, stack(i), smooth(ret), 70);
     else at = stack(i);
-    coins.push({ at, tone: i === 9 && split > 0 ? "accent" : "", o: (1 - out) * fadeIO });
+    coins.push({ at, tone: i === 9 && split > 0 ? "good" : "", o: o * (1 - out) });
   }
-  // The T-bill grows back the tenth coin by itself.
-  const gRet = span(phase, 0.89, 0.95);
+  const gRet = span(phase, 0.9, 0.95);
   const grown = grow <= 0 ? null : gRet <= 0 ? pile(9) : gRet < 1 ? fly(pile(9), stack(9), smooth(gRet), 70) : stack(9);
   coins.push({ at: grown, tone: "", o: (gRet > 0 ? 1 : grow) * (1 - out), ghost: gRet <= 0 });
-  for (let c = 0; c < 3; c++) {
-    const t = span(phase, 0.48 + c * 0.1, 0.56 + c * 0.1);
-    if (t <= 0) continue;
-    coins.push({ at: t < 1 ? fly([POOL[0], POOL[1], 42], [-128, 26, 8 + c * 4], smooth(t), 80) : [-128, 26, 8 + c * 4], tone: "good", o: 1 - out });
-  }
+  arrived.forEach((a, c) => {
+    const t = span(phase, 0.52 + c * 0.08, 0.6 + c * 0.08);
+    if (t > 0 && t < 1) coins.push({ at: fly(PR, VTOP, smooth(t), 60), tone: "accent", o: clamp(t / 0.15) * clamp((1 - t) / 0.1) });
+  });
   coins.sort((a, b) => (a.at && b.at ? a.at[0] + a.at[1] - (b.at[0] + b.at[1]) || a.at[2] - b.at[2] : 0));
-
-  const active = phase < 0.2 ? 0 : phase < 0.42 ? 1 : phase < 0.78 ? 2 : phase < 0.95 ? 3 : -1;
-  const vt = P(...VTOP);
+  const chip = span(phase, 0.34, 0.42);
+  const chipAt = chip > 0 ? (chip < 1 ? fly(VTOP, [S[0] + 26, S[1] + 26, 10], smooth(chip), 60) : [S[0] + 26, S[1] + 26, 10]) : null;
+  const active = phase < 0.18 ? 0 : phase < 0.44 ? 1 : phase < 0.8 ? 2 : phase < 0.95 ? 3 : -1;
+  const units = SLEEVE * unit;
 
   return (
-    <Stage className="grid gap-4">
-      <IsoSvg svgRef={ref} vb={[-250,-215,505,335]} role="img" aria-label="A saver deposits $1,000. $893 buys T-bills that grow back to $1,000; $107 joins the pool and pays coupons. At maturity the saver gets $1,000 back.">
+    <Stage className="grid gap-5">
+      <IsoSvg svgRef={ref} vb={[-260, -205, 520, 380]} role="img" aria-label="A saver deposits $1,000. $952 goes into T-bills that grow back to $1,000 by maturity; $48 buys vault units. Holders' premiums raise the unit price. At maturity the saver gets $1,000 plus the units.">
         <Defs ids={ids} />
-        <Box x={SAVER[0] - 35} y={SAVER[1] - 35} w={70} d={70} h={8} front={<text x="6" y="7" className="iso-mini">SAVER</text>} />
-        <Box x={VAULT.x} y={VAULT.y} w={VAULT.w} d={VAULT.d} h={VAULT.h} topFill={`url(#${ids.dots})`} front={
+        <Box x={S[0] - 40} y={S[1] - 40} w={80} d={80} h={10} className="iso-sage" />
+        <Box x={TB.x} y={TB.y} w={TB.w} d={TB.d} h={TB.h} topFill={`url(#${ids.dots})`} front={
           <>
-            <text x="8" y="16" className="iso-mini">TOKENISED T-BILL</text>
-            <text x="8" y="34" className="iso-text iso-bold">{money(vaultValue)}</text>
-            <rect x="8" y="42" width="74" height="6" rx="3" className="iso-meter" />
-            <rect x="8" y="42" width={74 * (vaultValue / 1000)} height="6" rx="3" className="iso-meter-fill" />
+            <text x="8" y="18" className="iso-text iso-bold">T-BILLS</text>
+            <text x="8" y="36" className="iso-text">{money(tb)}</text>
+            <rect x="8" y="44" width="74" height="6" rx="3" className="iso-meter" />
+            <rect x="8" y="44" width={74 * (tb / 1000)} height="6" rx="3" className="iso-meter-fill" />
           </>
         } />
-        <Box x={-60} y={-30} w={60} d={60} h={40} top={<path d="M14 30 H30 M30 30 L46 16 M30 30 L46 44" className="iso-line" />} front={<text x="6" y="14" className="iso-mini">SPLIT</text>} />
-        <Cyl x={POOL[0]} y={POOL[1]} r={36} h={40} topFill={`url(#${ids.hatch})`} />
+        <Box x={SPLIT[0] - 30} y={-30} w={60} d={60} h={36} top={<path d="M14 30 H30 M30 30 L46 16 M30 30 L46 44" className="iso-line" />} />
+        <Cyl x={V[0]} y={V[1]} r={44} h={48} className="iso-vault" topFill={`url(#${ids.hatch})`} />
 
         {coins.map((c, i) => (
           <g key={i} className={c.ghost ? "iso-ghost" : ""}>
             <Coin at={c.at} tone={c.tone} opacity={c.o} />
           </g>
         ))}
+        {chipAt && <Box x={chipAt[0] - 10} y={chipAt[1] - 10} z={chipAt[2]} w={20} d={20} h={6} shadow={false} className="iso-unit" style={{ opacity: 1 - out }} />}
 
-        <Tag at={vt} text={`T-bill floor ${money(floor)}`} dx={-10} dy={-62} opacity={span(phase, 0.3, 0.36) * (1 - span(phase, 0.42, 0.46))} />
-        <Tag at={vt} text="grows back to $1,000" dx={-10} dy={-62} tone="accent" opacity={span(phase, 0.46, 0.5) * (1 - span(phase, 0.78, 0.8))} />
-        <Tag at={P(POOL[0], POOL[1], 44)} text={`sleeve ${money(1000 - floor)} → pool`} dx={40} dy={50} tone="accent" opacity={span(phase, 0.32, 0.36) * (1 - span(phase, 0.94, 0.96))} />
-        <Tag at={P(-128, 26, 18)} text="+ coupons" dx={-30} dy={40} tone="good" opacity={span(phase, 0.55, 0.58) * (1 - out)} />
-        <Tag at={P(SAVER[0], SAVER[1], 52)} text="$1,000 back" dx={0} dy={-36} tone="ink" opacity={span(phase, 0.9, 0.93) * (1 - out)} />
-        <Tag at={P(SAVER[0], SAVER[1], 52)} text="deposit $1,000" dx={0} dy={-36} tone="ink" opacity={1 - span(phase, 0.12, 0.16)} />
+        <Tag at={P(S[0], S[1], 52)} text="Saver deposits $1,000" tone="ink" dy={-30} opacity={1 - span(phase, 0.14, 0.18)} />
+        <Tag at={P(...TTOP)} text={`${money(FLOOR)} → T-bills`} dy={-48} opacity={span(phase, 0.3, 0.34) * (1 - span(phase, 0.44, 0.46))} />
+        <Tag at={P(...TTOP)} text="grows back to $1,000 by itself" tone="good" dy={-48} opacity={span(phase, 0.46, 0.5) * (1 - span(phase, 0.8, 0.82))} />
+        <Tag at={P(...VTOP)} text={`${money(SLEEVE)} → vault units`} tone="good" dx={20} dy={48} opacity={span(phase, 0.3, 0.34) * (1 - span(phase, 0.48, 0.5))} />
+        <Tag at={P(...VTOP)} text={`unit price $${unit.toFixed(3)}`} tone="good" dx={20} dy={48} opacity={span(phase, 0.5, 0.52) * (1 - out)} />
+        <Tag at={P(PR[0], PR[1], PR[2])} text="holders' premiums" tone="accent" dx={10} dy={-80} opacity={span(phase, 0.52, 0.56) * (1 - span(phase, 0.8, 0.84))} />
+        <Tag at={P(S[0], S[1], 52)} text={`$1,000 + units worth $${units.toFixed(2)}`} tone="ink" dy={-30} opacity={span(phase, 0.9, 0.93) * (1 - out)} />
       </IsoSvg>
-      <Steps items={["deposit", "split: T-bill floor + sleeve", "sleeve earns coupons", "$1,000 back at maturity"]} active={active} />
+      <Steps items={["Deposit $1,000", "$952 to T-bills, $48 to vault units", "Premiums raise the unit price", "$1,000 back, plus the units"]} active={active} />
     </Stage>
   );
 }
 
-/* ───────────────────────── 2. Protect ───────────────────────── */
+/* ───────────────────────── Type 2: the Holder ───────────────────────── */
 
-export function ProtectArt() {
-  const [ref, phase] = usePhase(11000);
+/** The fall over the loop: hold at 5%, 25%, 40%, then recover. */
+function fallAt(p) {
+  if (p < 0.16) return 0;
+  if (p < 0.34) return 0.05 * smooth(span(p, 0.16, 0.24));
+  if (p < 0.58) return lerp(0.05, 0.25, smooth(span(p, 0.34, 0.44)));
+  if (p < 0.84) return lerp(0.25, 0.4, smooth(span(p, 0.58, 0.68)));
+  return 0.4 * (1 - smooth(span(p, 0.84, 0.94)));
+}
+
+export function HolderArt() {
+  const [ref, phase] = usePhase(15000, 0.5);
   const ids = useIds();
-  const STOCK = [-155, 0];
-  const POOL = [105, -70];
-  const CAGE = { x: 85, y: 45, w: 64, d: 64 };
-  const out = smooth(span(phase, 0.94, 1));
-  const drop = smooth(span(phase, 0.03, 0.14));
-  const proofOk = span(phase, 0.15, 0.2);
-  const prem = span(phase, 0.24, 0.4);
-  const lock = smooth(span(phase, 0.44, 0.6));
-  const dome = smooth(span(phase, 0.62, 0.74)) * (1 - out);
-  const active = phase < 0.22 ? 0 : phase < 0.42 ? 1 : phase < 0.62 ? 2 : phase < 0.94 ? 3 : -1;
-
-  const blockAt = fly([POOL[0], POOL[1], 56], [CAGE.x + CAGE.w / 2, CAGE.y + CAGE.d / 2, 4], lock, 50);
-  const [dx, dy] = P(STOCK[0], STOCK[1], 8);
-  const rx = 66 * Math.SQRT2 * C;
-  const ry = 66 * Math.SQRT2 * S;
-  const dh = 92 * dome;
-  const domePath = `M${dx - rx} ${dy} C${dx - rx} ${dy - dh * 1.33}, ${dx + rx} ${dy - dh * 1.33}, ${dx + rx} ${dy} A${rx} ${ry} 0 0 1 ${dx - rx} ${dy} Z`;
-  const cageTop = 44;
+  const H = [-195, 0];
+  const RULER = { x: -40, y: -80, w: 130, d: 12, h: 172 };
+  const V = [130, -165];
+  const PAY = [150, 50];
+  const fall = fallAt(phase);
+  const payout = 10000 * Math.min(Math.max(fall - 0.1, 0), 0.2);
+  const blockH = 70 * (1 - fall);
+  const covered = smooth(span(phase, 0.12, 0.16));
+  const prem = span(phase, 0.02, 0.12);
+  const fade = 1 - smooth(span(phase, 0.86, 0.92));
+  const nCoins = Math.round(payout / 250);
+  const V0 = 16;
+  const K = 3.6; // px per 1% fall on the ruler face
+  const vAt = (pct) => V0 + pct * K;
+  const marker = vAt(fall * 100);
+  const active = phase < 0.16 ? 0 : phase < 0.34 ? 1 : phase < 0.58 ? 2 : phase < 0.86 ? 3 : -1;
+  const state = fall < 0.1 ? `−${Math.round(fall * 100)}%: inside the first 10%, no payout` : fall < 0.3 ? `−${Math.round(fall * 100)}%: pays the ${Math.round(fall * 100) - 10}% past 10%` : `−${Math.round(fall * 100)}%: capped at 20% of $10,000`;
+  const markerPt = P(RULER.x + 66, RULER.y + RULER.d, RULER.h - marker);
 
   return (
-    <Stage className="grid gap-4">
-      <IsoSvg svgRef={ref} vb={[-275,-235,515,345]} role="img" aria-label="A holder proves they own NVDA, pays a premium into the pool, the pool locks the maximum payout, and a crash floor covers the stock.">
+    <Stage className="grid gap-5">
+      <IsoSvg svgRef={ref} vb={[-300, -290, 600, 410]} role="img" aria-label="A holder pays a $90 premium for cover on $10,000 of NVDA that pays the part of a fall between 10% and 30%. A 5% fall pays nothing, a 25% fall pays $1,500, a 40% fall pays the $2,000 maximum.">
         <Defs ids={ids} />
-        <Box x={-225} y={-55} w={140} d={110} h={8} front={<text x="6" y="7" className="iso-mini">HOLDER</text>} />
-        <Box x={STOCK[0] - 30} y={STOCK[1] - 30} z={8} w={60} d={60} h={26} top={<text x="30" y="34" textAnchor="middle" className="iso-text iso-bold">NVDA</text>} front={<text x="6" y="16" className="iso-mini">$10,000</text>} />
-        {drop > 0 && (
-          <Box x={-112} y={-20} z={8 + (1 - drop) * 90} w={22} d={36} h={3} style={{ opacity: 1 - out }} top={
-            <>
-              {[8, 14, 20].map((v) => (
-                <line key={v} x1="4" x2="18" y1={v} y2={v} className="iso-line" />
-              ))}
-              {proofOk > 0 && <path d="M5 28 L9 32 L17 24" className="iso-tick" />}
-            </>
-          } />
-        )}
+        <Cyl x={V[0]} y={V[1]} r={36} h={40} className="iso-vault" topFill={`url(#${ids.hatch})`} />
+        <Box x={RULER.x} y={RULER.y} w={RULER.w} d={RULER.d} h={RULER.h} front={
+          <>
+            <rect x="46" y={vAt(0)} width="30" height={vAt(10) - vAt(0)} className="iso-band" />
+            <rect x="46" y={vAt(10)} width="30" height={vAt(30) - vAt(10)} className="iso-band is-covered" />
+            <rect x="46" y={vAt(30)} width="30" height={vAt(40) - vAt(30)} className="iso-band" />
+            {[0, 10, 30, 40].map((p) => (
+              <text key={p} x="40" y={vAt(p) + 4} textAnchor="end" className="iso-text">{p}%</text>
+            ))}
+            <text x="82" y={vAt(5) + 4} className="iso-text">you</text>
+            <text x="82" y={vAt(20) + 4} className="iso-text iso-bold iso-good-text">covered</text>
+            <text x="82" y={vAt(35) + 4} className="iso-text">you</text>
+            <line x1="40" x2="80" y1={marker} y2={marker} className="iso-marker" />
+          </>
+        } />
+        <Box x={H[0] - 55} y={H[1] - 55} w={110} d={110} h={10} className="iso-sage" />
+        <Box x={H[0] - 25} y={H[1] - 25} z={10} w={50} d={50} h={blockH} shadow={false} top={<text x="25" y="30" textAnchor="middle" className="iso-text iso-bold">NVDA</text>} />
+        {prem > 0 && prem < 1 && <Coin at={fly([H[0], H[1], 10 + blockH], [V[0], V[1], 40], smooth(prem), 90)} tone="accent" />}
+        {covered > 0.01 && <Shield x={P(H[0], H[1], 10 + blockH + 34)[0]} y={P(H[0], H[1], 10 + blockH + 34)[1]} s={1.3} opacity={covered * fade + (1 - fade) * 0} />}
 
-        <Cyl x={POOL[0]} y={POOL[1]} r={44} h={56} topFill={`url(#${ids.hatch})`} />
-        <Box x={CAGE.x} y={CAGE.y} w={CAGE.w} d={CAGE.d} h={4} />
-        {lock > 0 && <Box x={blockAt[0] - 16} y={blockAt[1] - 16} z={blockAt[2]} w={32} d={32} h={22} className="iso-collateral" style={{ opacity: 1 - out }} />}
-        <polygon points={pts([CAGE.x, CAGE.y, cageTop], [CAGE.x + CAGE.w, CAGE.y, cageTop], [CAGE.x + CAGE.w, CAGE.y + CAGE.d, cageTop], [CAGE.x, CAGE.y + CAGE.d, cageTop])} className="iso-cage" />
-        {[
-          [CAGE.x + CAGE.w, CAGE.y],
-          [CAGE.x + CAGE.w, CAGE.y + CAGE.d],
-          [CAGE.x, CAGE.y + CAGE.d],
-        ].map(([x, y]) => (
-          <polyline key={`${x}${y}`} points={pts([x, y, 4], [x, y, cageTop])} className="iso-cage" />
+        <Box x={PAY[0] - 40} y={PAY[1] - 40} w={80} d={80} h={6} />
+        {Array.from({ length: nCoins }, (_, k) => (
+          <Coin key={k} at={[PAY[0], PAY[1], 6 + k * 4]} tone="good" opacity={fade} />
         ))}
 
-        {prem > 0 && prem < 1 && <Coin at={fly([STOCK[0], STOCK[1], 36], [POOL[0], POOL[1], 58], smooth(prem), 90)} tone="accent" />}
-        <Ripple at={P(POOL[0], POOL[1], 56)} age={span(phase, 0.4, 0.5)} />
-
-        {dome > 0.01 && (
-          <g>
-            <path d={domePath} fill={`url(#${ids.hatch})`} className="iso-dome" />
-            <ellipse cx={dx} cy={dy} rx={rx} ry={ry} className="iso-dome-ring" />
-          </g>
-        )}
-
-        <Tag at={P(-101, -2, 14)} text="proof: owns 60 NVDA" dx={-10} dy={60} tone="good" opacity={proofOk * (1 - span(phase, 0.6, 0.64))} />
-        <Tag at={P(POOL[0], POOL[1], 60)} text="premium $90 → pool" dx={-50} dy={-44} tone="accent" opacity={span(phase, 0.38, 0.42) * (1 - out)} />
-        <Tag at={P(CAGE.x + CAGE.w / 2, CAGE.y + CAGE.d / 2, 30)} text="max payout $2,000 locked" dx={-120} dy={6} opacity={span(phase, 0.58, 0.62) * (1 - out)} />
-        <Tag at={[dx, dy - dh]} text="pays the fall beyond 10%, up to 20%" dx={0} dy={-26} tone="accent" opacity={span(phase, 0.72, 0.76) * (1 - out)} />
+        <Tag at={P(H[0], H[1], 10)} text={`$10,000 → ${money(10000 * (1 - fall))}`} tone="ink" dx={-20} dy={70} />
+        <Tag at={P(V[0], V[1], 40)} text="$90 premium → vault" tone="accent" dx={20} dy={-36} opacity={span(phase, 0.04, 0.08) * (1 - span(phase, 0.2, 0.24))} />
+        {phase > 0.16 && phase < 0.86 && <Tag at={markerPt} text={state} tone={payout > 0 ? "good" : ""} dx={150} dy={-10} />}
+        <Tag at={P(PAY[0], PAY[1], 6 + Math.max(1, nCoins) * 4)} text={`payout ${money(payout)}`} tone="good" dy={-40} size="lg" opacity={fade} />
       </IsoSvg>
-      <Steps items={["prove you own it", "pay a premium", "pool locks the max payout", "floor is on"]} active={active} />
+      <Steps items={["Pay $90 to cover a 10–30% fall", "Falls 5%: $0", "Falls 25%: $1,500", "Falls 40%: $2,000 max"]} active={active} />
     </Stage>
   );
 }
 
-/* ───────────────────────── 3. Settle ───────────────────────── */
+/* ───────────────────────── Expiry: crash or calm ───────────────────────── */
 
 const CRASH = [0, 0.012, -0.008, 0.004, -0.02, -0.014, -0.04, -0.03, -0.062, -0.082, -0.07, -0.112, -0.14, -0.122, -0.172, -0.2, -0.188, -0.226, -0.25];
 const CALM = [0, 0.01, -0.006, 0.014, 0.02, 0.008, 0.024, 0.014, 0.004, 0.018, 0.03, 0.024, 0.01, 0.02, 0.014, 0.03, 0.024, 0.018, 0.02];
@@ -567,46 +506,49 @@ export function SettleArt() {
 
   return (
     <Stage className="grid gap-4">
-      <IsoSvg svgRef={ref} vb={[-262,-272,500,400]} role="img" aria-label="The official close is posted on-chain. In a crash the pool pays the holder the fall beyond the deductible; in a calm month the premium becomes the saver's coupon.">
+      <IsoSvg svgRef={ref} vb={[-262,-272,500,400]} role="img" aria-label="At expiry the official close is posted on-chain. After a 25% fall the vault pays the holder $1,500. After a calm month nothing is paid and the premium stays with savers.">
         <Defs ids={ids} />
-        <Box x={SAVER[0] - 30} y={SAVER[1] - 30} w={60} d={60} h={8} front={<text x="6" y="7" className="iso-mini">SAVER</text>} />
+        <Box x={SAVER[0] - 30} y={SAVER[1] - 30} w={60} d={60} h={8} className="iso-sage" />
         <Box x={ORACLE.x - 10} y={ORACLE.y - 10} w={ORACLE.w + 20} d={30} h={6} />
         <Box x={ORACLE.x} y={ORACLE.y} z={6} w={ORACLE.w} d={ORACLE.d} h={ORACLE.h} front={
           <>
             <rect x="4" y="4" width={ORACLE.w - 8} height={ORACLE.h - 8} rx="3" className="iso-screen" />
-            <text x="10" y="16" className="iso-mini">NVDA · OFFICIAL CLOSE</text>
+            <text x="10" y="18" className="iso-text iso-bold">OFFICIAL CLOSE</text>
             <line x1={X0} x2={X1} y1={yOf(-0.1)} y2={yOf(-0.1)} className="iso-guide" />
-            <text x={X1} y={yOf(-0.1) - 3} textAnchor="end" className="iso-mini">deductible −10%</text>
+            <text x={X1} y={yOf(-0.1) - 3} textAnchor="end" className="iso-text">−10%</text>
             {crash && closed > 0 && <rect x={X0} y={yOf(-0.1)} width={X1 - X0} height={yOf(last) - yOf(-0.1)} fill={`url(#${ids.hatchBad})`} style={{ opacity: closed }} />}
             <polyline points={line.map((p) => p.join(",")).join(" ")} className={`iso-chart ${crash ? "is-bad" : "is-good"}`} />
             {tip && <circle cx={tip[0]} cy={tip[1]} r={closed > 0 ? 3.5 : 2.2} className={`iso-chart-dot ${crash ? "is-bad" : "is-good"}`} />}
           </>
         } />
 
-        <Cyl x={POOL[0]} y={POOL[1]} r={38} h={46} topFill={`url(#${ids.hatch})`} />
-        <Box x={HOLDER[0] - 45} y={HOLDER[1] - 40} w={90} d={80} h={8} front={<text x="6" y="7" className="iso-mini">HOLDER</text>} />
+        <Cyl x={POOL[0]} y={POOL[1]} r={38} h={46} className="iso-vault" topFill={`url(#${ids.hatch})`} />
+        <Box x={HOLDER[0] - 45} y={HOLDER[1] - 40} w={90} d={80} h={8} className="iso-sage" />
         <Box x={HOLDER[0] - 35} y={HOLDER[1] - 30} z={8} w={44} d={44} h={20 - holderMood * 6} topFill={holderMood > 0.5 ? `url(#${ids.hatchBad})` : undefined} top={<text x="22" y="26" textAnchor="middle" className="iso-text iso-bold">NVDA</text>} />
 
         {coins.map((c, i) => (
           <Coin key={i} at={c.at} tone={c.tone} opacity={1 - out} />
         ))}
 
-        <Tag at={P(ORACLE.x + ORACLE.w / 2, ORACLE.y, ORACLE.h + 6)} text={crash ? "close −25% · posted on-chain" : "close +2% · posted on-chain"} dx={0} dy={-26} tone={crash ? "bad" : ""} opacity={closed * (1 - out)} />
+        <Tag at={P(ORACLE.x + ORACLE.w / 2, ORACLE.y, ORACLE.h + 6)} text={crash ? "NVDA closed −25%" : "NVDA closed +2%"} dx={0} dy={-26} tone={crash ? "bad" : ""} opacity={closed * (1 - out)} />
         {crash ? (
-          <Tag at={P(HOLDER[0], HOLDER[1], 30)} text="+$1,500 paid: 25% fall − 10%" dx={10} dy={-50} tone="good" opacity={span(h, 0.72, 0.76) * (1 - out)} />
+          <Tag at={P(HOLDER[0], HOLDER[1], 30)} text="vault pays $1,500" dx={10} dy={-50} tone="good" size="lg" opacity={span(h, 0.72, 0.76) * (1 - out)} />
         ) : (
           <>
-            <Tag at={P(HOLDER[0], HOLDER[1], 30)} text="no claim · collateral freed" dx={10} dy={-50} opacity={span(h, 0.5, 0.54) * (1 - out)} />
-            <Tag at={P(SAVER[0], SAVER[1], 14)} text="premium → saver's coupon" dx={-10} dy={60} tone="good" opacity={span(h, 0.7, 0.74) * (1 - out)} />
+            <Tag at={P(HOLDER[0], HOLDER[1], 30)} text="no payout · $2,000 released" dx={10} dy={-50} opacity={span(h, 0.5, 0.54) * (1 - out)} />
+            <Tag at={P(SAVER[0], SAVER[1], 14)} text="the $90 goes to savers" dx={130} dy={20} tone="good" opacity={span(h, 0.7, 0.74) * (1 - out)} />
           </>
         )}
+        <Tag at={P(SAVER[0], SAVER[1], 8)} text="Saver" tone="ink" dx={-30} dy={-34} />
+        <Tag at={P(HOLDER[0], HOLDER[1], 8)} text="Holder" tone="ink" dx={60} dy={40} />
+        <Tag at={P(POOL[0], POOL[1], 46)} text="Vault" tone="good" dx={-40} dy={-40} />
       </IsoSvg>
-      <Steps items={["official close posted", "crash: pool pays the extra fall", "calm: premium becomes a coupon"]} active={active} />
+      <Steps items={["Official close posted on-chain", "Crash: the vault pays $1,500", "Calm: the $90 goes to savers"]} active={active} />
     </Stage>
   );
 }
 
-/* ───────────────────────── Money map: where every dollar goes ───────────────────────── */
+/* ───────────────────────── How it all fits together ───────────────────────── */
 
 /** Point at fraction t (by length) along a ground path of [x, y] points. */
 function along(path, t) {
@@ -619,57 +561,159 @@ function along(path, t) {
   return path[path.length - 1];
 }
 
-const ROUTES = [
-  { id: "floor", path: [[-250, -40], [-250, -195], [-92, -195]], tone: "", n: 3, label: "floor $893", at: 0.35 },
-  { id: "sleeve", path: [[-250, 40], [-250, 150], [-97, 150]], tone: "accent", n: 2, label: "sleeve $107", at: 0.45 },
-  { id: "premium", path: [[198, 128], [14, 128]], tone: "accent", n: 2, label: "premium", at: 0.5 },
-  { id: "payout", path: [[14, 172], [198, 172]], tone: "good", n: 1, label: "crash payout", at: 0.5 },
-  { id: "redeem", path: [[12, -195], [245, -195], [245, -162]], tone: "", n: 2, label: "redeem T-bills", at: 0.4 },
-  { id: "coupon", path: [[-40, 93], [-40, -100], [198, -100]], tone: "accent", n: 2, label: "coupons + sleeve", at: 0.6 },
+/** One piece of the system, as a flat card on the ground with a drawing on its top. */
+function Card({ x, y, w, d, children, dark }) {
+  return <Box x={x} y={y} w={w} d={d} h={3} className={dark ? "iso-black" : ""} top={children} />;
+}
+
+/** Plates of the exploded stack, bottom to top: what each contract does, in plain words. */
+const PLATES = [
+  { key: "kyc", name: "KYC registry", cls: "iso-teal" },
+  { key: "price", name: "Oracle: official closes", cls: "" },
+  { key: "vault", name: "T-bill vault: savers' floor", cls: "" },
+  { key: "pool", name: "Underwriting vault", cls: "iso-sage" },
+  { key: "cover", name: "Cover market", cls: "iso-black" },
 ];
 
-export function MoneyMapArt() {
-  const [ref, phase] = usePhase(9000, 0.3);
+/** Wires on the ground between a card and the stack. `step` is when it lights up; tone says what moves on it. */
+const WIRES = [
+  { path: [[-160, 238], [-160, 120], [-60, 120], [-60, 82]], step: 0, tone: "good", label: "Saver deposits $1,000", below: true },
+  { path: [[-40, -82], [-40, -200], [-120, -200], [-120, -268]], step: 0, tone: "good", label: "$952 → T-bills" },
+  { path: [[0, 278], [0, 82]], step: 1, tone: "accent", label: "$90 premium" },
+  { path: [[257, -20], [82, -20]], step: 1, tone: "ink", label: "proof of shares" },
+  { path: [[120, -307], [120, -150], [40, -150], [40, -82]], step: 1, tone: "ink", label: "signed quote" },
+  { path: [[160, 118], [118, 118], [118, 40], [82, 40]], step: 2, tone: "ink", label: "official close" },
+  { path: [[40, 82], [40, 278]], step: 3, tone: "good", label: "crash payout $1,500" },
+  { path: [[-40, 82], [-40, 160], [-125, 160], [-125, 238]], step: 3, tone: "good", label: "coupons + $1,000 at maturity", below: true },
+];
+
+const LIT = [["vault", "pool"], ["cover", "kyc"], ["price"], ["pool", "cover"]];
+
+export function SystemArt() {
+  const [ref, phase] = usePhase(16000, 0.3);
   const ids = useIds();
+  const step = Math.min(3, Math.floor(phase * 4));
+  const local = phase * 4 - step;
+  const gap = 30 + 9 * (0.5 - 0.5 * Math.cos(phase * Math.PI * 8));
+  const zOf = (k) => k * (6 + gap);
+  const PILLARS = [[-72, -72], [72, -72], [72, 72], [-72, 72]];
+  const grid = [];
+  for (let v = -440; v <= 440; v += 40) grid.push([[v, -440, 0], [v, 440, 0]], [[-440, v, 0], [440, v, 0]]);
+
   return (
-    <Stage>
-      <IsoSvg svgRef={ref} vb={[-372,-285,782,545]} role="img" aria-label="Money map: the saver's deposit splits into T-bills and the pool sleeve; holders pay premiums into the pool and receive crash payouts; at maturity T-bills are redeemed and the sleeve's coupons paid.">
+    <Stage className="grid gap-4">
+      <IsoSvg svgRef={ref} vb={[-500, -350, 1000, 600]} role="img" aria-label="The InsureVEX contracts as a stack: KYC registry, oracle, T-bill vault, underwriting vault and cover market, wired to the saver, the holder, T-bills, the pricing engine, broker proof and the official close.">
         <Defs ids={ids} />
-        {/* Lanes on the ground */}
-        {ROUTES.map((r) => (
-          <g key={r.id}>
-            <polyline points={pts(...r.path.map(([x, y]) => [x, y, 0]))} className="iso-lane" />
-            <polyline points={pts(...r.path.map(([x, y]) => [x, y, 0]))} className={`iso-lane-dash ${r.tone ? `is-${r.tone}` : ""}`} style={{ strokeDashoffset: -phase * 60 }} />
-          </g>
+        {grid.map(([a, b], i) => (
+          <line key={i} x1={P(...a)[0]} y1={P(...a)[1]} x2={P(...b)[0]} y2={P(...b)[1]} className="iso-grid" />
         ))}
-        {ROUTES.flatMap((r) =>
-          Array.from({ length: r.n }, (_, k) => {
-            const t = (phase * (r.id === "payout" ? 1 : 2) + k / r.n) % 1;
-            const [x, y] = along(r.path, t);
-            const o = clamp(t / 0.08) * clamp((1 - t) / 0.08);
-            return <Coin key={`${r.id}${k}`} at={[x, y, 1]} tone={r.tone} opacity={o} />;
+
+        {/* Wires first, so cards and the stack sit on top of their ends */}
+        {WIRES.map((w, i) => {
+          const on = w.step === step;
+          const d = pts(...w.path.map(([x, y]) => [x, y, 0]));
+          const [s0, s1] = [P(...w.path[0], 0), P(...w.path[w.path.length - 1], 0)];
+          return (
+            <g key={i}>
+              <polyline points={d} className={`iso-wire ${on ? `is-${w.tone}` : "is-dim"}`} />
+              <circle cx={s0[0]} cy={s0[1]} r="3" className="iso-node" />
+              <circle cx={s1[0]} cy={s1[1]} r="3" className="iso-node" />
+            </g>
+          );
+        })}
+
+        {/* Cards around the stack, back to front */}
+        <Card x={65} y={-373} w={110} d={66}>
+          <text x="8" y="18" className="iso-text iso-bold">PRICING ENGINE</text>
+          <polyline points="10,52 26,40 40,46 58,28 74,34 96,20" className="iso-chart is-good" />
+        </Card>
+        {[0, 1, 2, 3].map((k) => (
+          <Box key={k} x={-150} y={-330} z={k * 22} w={60} d={60} h={22} shadow={k === 0} className={k === 3 ? "iso-sage" : ""} front={k === 0 ? <text x="6" y="15" className="iso-text iso-bold">T-BILLS</text> : null} />
+        ))}
+        <Card x={257} y={-62} w={86} d={84}>
+          <text x="8" y="15" className="iso-text iso-bold">PROOF</text>
+          {[0, 1, 2].map((i) => (
+            <g key={i}>
+              <rect x="8" y={24 + i * 18} width="10" height="10" className="iso-line" />
+              <line x1="24" x2="76" y1={29 + i * 18} y2={29 + i * 18} className="iso-line" />
+            </g>
+          ))}
+          <path d="M9.5 29 L13 33 L18 25" className="iso-tick" />
+        </Card>
+        <Card x={-235} y={238} w={110} d={84}>
+          <circle cx="18" cy="20" r="9" className="iso-green-fill" />
+          <text x="34" y="24" className="iso-text iso-bold">SAVER</text>
+          <text x="10" y="58" className="iso-text iso-bold">$1,000</text>
+        </Card>
+
+        {/* The stack: plates on pillars, gently opening and closing */}
+        {PLATES.map((pl, k) => {
+          const z = zOf(k);
+          const lit = LIT[step].includes(pl.key);
+          const top = {
+            kyc: <>{[30, 62, 94].map((x) => <circle key={x} cx={x} cy="40" r="9" className="iso-node" />)}<rect x="22" y="70" width="80" height="8" rx="4" className="iso-node" /></>,
+            price: <polyline points="16,110 40,96 58,104 80,70 100,82 128,40" className="iso-chart is-good" />,
+            vault: <>{[0, 1, 2, 3].flatMap((r) => [0, 1, 2].map((c) => <rect key={`${r}${c}`} x={22 + c * 38} y={18 + r * 30} width="30" height="20" rx="2" className="iso-line" />))}</>,
+            pool: <circle cx="72" cy="72" r="42" fill={`url(#${ids.hatch})`} className="iso-line" />,
+            cover: <><rect x="18" y="20" width="54" height="40" rx="4" className="iso-cut" /><circle cx="108" cy="46" r="20" className="iso-cut" /><rect x="22" y="96" width="100" height="12" rx="6" className="iso-cut" /></>,
+          }[pl.key];
+          return (
+            <g key={pl.key}>
+              <Box x={-80} y={-80} z={z} w={160} d={160} h={6} shadow={k === 0} className={`${pl.cls} ${lit && !pl.cls.includes("black") && !pl.cls.includes("teal") ? "iso-plate-lit" : ""}`} top={<g transform="translate(8 8)">{top}</g>} />
+              {k < PLATES.length - 1 &&
+                PILLARS.map(([x, y]) => {
+                  const a = P(x, y, z + 6);
+                  const b = P(x, y, zOf(k + 1));
+                  return (
+                    <g key={`${x}${y}`}>
+                      <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} className="iso-pillar" />
+                      <ellipse cx={a[0]} cy={a[1]} rx="3" ry="1.6" className="iso-node" />
+                    </g>
+                  );
+                })}
+            </g>
+          );
+        })}
+
+        <Card x={160} y={60} w={150} d={110}>
+          <rect x="0" y="0" width="150" height="14" className="iso-ink-fill" />
+          {[8, 16, 24].map((x) => <circle key={x} cx={x} cy="7" r="2.2" fill="#fff" />)}
+          <text x="10" y="32" className="iso-text iso-bold">OFFICIAL CLOSE</text>
+          <polyline points="12,48 34,52 52,46 74,62 96,70 118,86 140,92" className={`iso-chart ${step >= 2 ? "is-bad" : "is-good"}`} />
+          <line x1="12" x2="140" y1="66" y2="66" className="iso-guide" />
+        </Card>
+        <Card x={-35} y={278} w={110} d={84}>
+          <circle cx="18" cy="20" r="9" className="iso-green-fill" />
+          <text x="34" y="24" className="iso-text iso-bold">HOLDER</text>
+          <text x="10" y="58" className="iso-text iso-bold">$10,000 NVDA</text>
+        </Card>
+
+        {/* What is moving right now: coins for money, white blocks for information */}
+        {WIRES.filter((w) => w.step === step).flatMap((w, i) =>
+          [0, 1].map((k) => {
+            const t = local * 1.5 - k * 0.4;
+            if (t <= 0 || t >= 1) return null;
+            const [x, y] = along(w.path, t);
+            const o = clamp(t / 0.1) * clamp((1 - t) / 0.1);
+            return w.tone === "ink" ? (
+              <Box key={`${i}${k}`} x={x - 6} y={y - 6} z={0} w={12} d={12} h={8} shadow={false} className="iso-packet" style={{ opacity: o }} />
+            ) : (
+              <Coin key={`${i}${k}`} at={[x, y, 1]} tone={w.tone} opacity={o} />
+            );
           }),
         )}
 
-        {/* The places, back to front */}
-        <Box x={-90} y={-240} w={100} d={90} h={62} topFill={`url(#${ids.dots})`} front={<><text x="8" y="16" className="iso-mini">TOKENISED T-BILLS</text><text x="8" y="34" className="iso-text iso-bold">$893 → $1,000</text></>} />
-        <Box x={200} y={-160} w={90} d={60} h={40} className="iso-sage" front={<text x="8" y="16" className="iso-mini">AT MATURITY</text>} />
-        <Box x={-290} y={-40} w={80} d={80} h={10} front={<text x="6" y="8" className="iso-mini">SAVER</text>} />
-        {[0, 1, 2, 3, 4].map((k) => (
-          <Cyl key={k} x={-250} y={0} z={10 + k * 4} r={13} h={4} className="iso-coin" shadow={false} />
+        {PLATES.map((pl, k) => (
+          <Tag key={pl.key} at={P(-80, 80, zOf(k) + 3)} text={pl.name} dx={-120} dy={-4} tone={LIT[step].includes(pl.key) ? "good" : ""} />
         ))}
-        <Cyl x={-40} y={150} r={55} h={50} topFill={`url(#${ids.hatch})`} />
-        <Box x={200} y={100} w={90} d={90} h={10} front={<text x="6" y="8" className="iso-mini">HOLDER</text>} />
-        <Box x={222} y={122} z={10} w={46} d={46} h={22} shadow={false} top={<text x="23" y="27" textAnchor="middle" className="iso-text iso-bold">NVDA</text>} />
-
-        {ROUTES.map((r) => {
-          const [x, y] = along(r.path, r.at);
-          return <Tag key={r.id} at={P(x, y, 0)} text={r.label} dx={0} dy={-22} tone={r.tone === "good" ? "good" : r.tone === "accent" ? "accent" : ""} />;
+        {WIRES.filter((w) => w.step === step).map((w, i) => {
+          // Label near the card end of the wire, away from the plate labels by the stack.
+          const fromStack = Math.abs(w.path[0][0]) <= 82 && Math.abs(w.path[0][1]) <= 82;
+          const [x, y] = along(w.path, fromStack ? 0.82 : 0.18);
+          return <Tag key={`w${i}`} at={P(x, y, 0)} text={w.label} dx={0} dy={w.below ? 34 : -26} tone={w.tone === "accent" ? "accent" : w.tone === "good" ? "good" : "ink"} opacity={span(local, 0.05, 0.15)} />;
         })}
-        <Tag at={P(-250, 0, 32)} text="deposits $1,000" dy={-40} tone="ink" />
-        <Tag at={P(-40, 150, 50)} text="underwriting pool" dx={-30} dy={-50} tone="ink" />
-        <Tag at={P(245, -130, 40)} text="$1,000 + sleeve value" dx={-50} dy={-40} tone="ink" />
       </IsoSvg>
+      <Steps items={["Saver deposits", "Holder buys cover", "Close is posted", "Payouts and coupons"]} active={step} />
     </Stage>
   );
 }
@@ -700,12 +744,12 @@ export function PoolArt() {
 
   return (
     <Stage className="grid gap-4">
-      <IsoSvg svgRef={ref} vb={[-305,-262,580,395]} role="img" aria-label="The pool is a stack: reserve at the bottom, savers' sleeves in the middle, Pro first-loss on top. Premiums come in, each policy's max payout is locked, a claim is paid from the first-loss layer first, and unused collateral comes back.">
+      <IsoSvg svgRef={ref} vb={[-305,-262,580,395]} role="img" aria-label="The underwriting vault is a stack: reserve, savers' units, and Pro LP first-loss capital on top. Premiums come in, each policy's max payout is locked, a claim is paid by Pro LP first, and unused collateral is released.">
         <Defs ids={ids} />
         {HOLDERS.map(([x, y], i) => (
           <g key={i}>
-            <Box x={x - 30} y={y - 30} w={60} d={60} h={8} front={<text x="5" y="7" className="iso-mini">HOLDER</text>} />
-            <Box x={x - 16} y={y - 16} z={8} w={32} d={32} h={14} shadow={false} top={<text x="16" y="20" textAnchor="middle" className="iso-mini">{i ? "INFY" : "NVDA"}</text>} />
+            <Box x={x - 30} y={y - 30} w={60} d={60} h={8} className="iso-sage" />
+            <Box x={x - 16} y={y - 16} z={8} w={32} d={32} h={14} shadow={false} top={<text x="16" y="21" textAnchor="middle" className="iso-text iso-bold">{i ? "INFY" : "NVDA"}</text>} />
           </g>
         ))}
         {HOLDERS.map(([x, y], i) => {
@@ -714,9 +758,9 @@ export function PoolArt() {
         })}
 
         {/* The tower: reserve, senior sleeves, Pro first-loss */}
-        <Box x={-50} y={-50} w={100} d={100} h={20} className="iso-sage" front={<text x="6" y="13" className="iso-mini">RESERVE</text>} />
-        <Box x={-50} y={-50} z={20} w={100} d={100} h={60} shadow={false} front={<><text x="6" y="16" className="iso-mini">SAVERS&apos; SLEEVES</text><text x="6" y="28" className="iso-mini">SENIOR</text></>} />
-        <Box x={-50} y={-50} z={80} w={100} d={100} h={proH} shadow={false} className="iso-orange" topFill={`url(#${ids.hatch})`} front={proH > 16 ? <text x="6" y="12" className="iso-mini iso-on-dark">PRO FIRST-LOSS</text> : null} />
+        <Box x={-50} y={-50} w={100} d={100} h={20} className="iso-sage" front={<text x="6" y="14" className="iso-text iso-bold">RESERVE</text>} />
+        <Box x={-50} y={-50} z={20} w={100} d={100} h={60} shadow={false} front={<text x="6" y="20" className="iso-text iso-bold">SAVERS&apos; UNITS</text>} />
+        <Box x={-50} y={-50} z={80} w={100} d={100} h={proH} shadow={false} className="iso-orange" front={proH > 16 ? <text x="6" y="14" className="iso-text iso-bold iso-on-dark">PRO LP</text> : null} />
 
         {CAGES.map((c, i) => (
           <g key={i}>
@@ -733,11 +777,11 @@ export function PoolArt() {
         {payA > 0 && payA < 1 && <Coin at={fly(cageC(CAGES[0]), [HOLDERS[0][0], HOLDERS[0][1], 22], smooth(payA), 110)} tone="good" />}
 
         <Tag at={P(-20, -20, TOP)} text="premiums in" dy={-36} tone="accent" opacity={span(phase, 0.08, 0.12) * (1 - span(phase, 0.28, 0.32))} />
-        <Tag at={P(137, -93, 40)} text="max payout locked per policy" dx={-20} dy={-40} tone="ink" opacity={span(phase, 0.42, 0.46) * (1 - span(phase, 0.56, 0.6))} />
-        <Tag at={P(-20, -20, TOP)} text="claim paid: Pro first-loss shrinks first" dx={60} dy={-44} tone="accent" opacity={span(phase, 0.62, 0.66) * (1 - span(phase, 0.8, 0.82))} />
-        <Tag at={P(137, 47, 40)} text="no claim: collateral back" dx={70} dy={40} opacity={span(phase, 0.82, 0.86) * (1 - out)} />
+        <Tag at={P(137, -93, 40)} text="max payout locked" dx={-20} dy={-40} tone="good" opacity={span(phase, 0.42, 0.46) * (1 - span(phase, 0.56, 0.6))} />
+        <Tag at={P(-20, -20, TOP)} text="crash: Pro LP pays first" dx={60} dy={-44} tone="accent" opacity={span(phase, 0.62, 0.66) * (1 - span(phase, 0.8, 0.82))} />
+        <Tag at={P(137, 47, 40)} text="calm: collateral released" dx={70} dy={40} tone="good" opacity={span(phase, 0.82, 0.86) * (1 - out)} />
       </IsoSvg>
-      <Steps items={["premiums in", "max payout locked", "claims hit first-loss first", "unused collateral back"]} active={active} />
+      <Steps items={["Premiums in", "Max payout locked", "Crash: Pro LP loses first", "Calm: collateral released"]} active={active} />
     </Stage>
   );
 }

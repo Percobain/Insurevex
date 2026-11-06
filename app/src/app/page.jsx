@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { useData } from "@/lib/api";
 import { usePoolState } from "@/lib/usePoolState";
@@ -7,38 +8,22 @@ import { isDeployed, addr } from "@/lib/contracts";
 import { EXCHANGES, REGIONS, flag } from "@/lib/exchanges";
 import { fmtPct, fmtUnits, fmtNum, fromUnits } from "@/lib/format";
 import { Section, Stat } from "@/components/ui";
-import { HeroArt, SaveArt, ProtectArt, SettleArt, MoneyMapArt } from "@/components/IsoArt";
+import { LayerArt, SaverArt, HolderArt, SettleArt, PoolArt, SystemArt } from "@/components/IsoArt";
+
+// Same split as ProtectedNote.floorFor: floor = face / (1 + r * t). A 1-year note at a 5% T-bill rate.
+const FACE = 1000;
+const FLOOR = FACE / (1 + 0.05 * 1);
+const SLEEVE = FACE - FLOOR;
 
 function NoteExample() {
-  // 3-year note at a 4% locked T-bill rate (simple accrual, same formula as ProtectedNote.floorFor)
-  const face = 1000;
-  const floor = face / (1 + 0.04 * 3);
-  const sleeve = face - floor;
   return (
-    <div className="card p-5 sm:p-6">
-      <div className="flex items-baseline justify-between">
-        <div className="label">A $1,000 three-year note</div>
-        <div className="text-xs text-muted">T-bill rate 4.0%</div>
+    <div className="card p-5">
+      <div className="text-sm font-medium">$1,000 note · 1 year · T-bills at 5%</div>
+      <div className="mt-4 h-11 rounded-lg overflow-hidden flex border border-line text-sm" aria-hidden="true">
+        <div className="bg-sunk grid place-items-center text-ink2" style={{ width: `${(FLOOR / FACE) * 100}%` }}>T-bills ${fmtNum(FLOOR, 2)}</div>
+        <div className="bg-accent text-white grid place-items-center font-medium" style={{ width: `${(SLEEVE / FACE) * 100}%`, minWidth: 64 }}>${fmtNum(SLEEVE, 2)}</div>
       </div>
-      <div className="mt-5 h-12 rounded-xl overflow-hidden flex border border-line" aria-hidden="true">
-        <div className="bg-sunk grid place-items-center text-xs text-ink2" style={{ width: `${(floor / face) * 100}%` }}>
-          T-bill floor
-        </div>
-        <div className="bg-accent text-accentInk grid place-items-center text-xs font-medium" style={{ width: `${(sleeve / face) * 100}%` }}>
-          Sleeve
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4 mt-5 text-sm">
-        <div>
-          <div className="text-2xl font-semibold tabular">${fmtNum(floor, 2)}</div>
-          <div className="text-ink2 mt-1">buys tokenised T-bills that grow back to exactly $1,000 at maturity.</div>
-        </div>
-        <div>
-          <div className="text-2xl font-semibold tabular text-accent">${fmtNum(sleeve, 2)}</div>
-          <div className="text-ink2 mt-1">underwrites crash floors and pays you the premiums as coupons.</div>
-        </div>
-      </div>
-      <div className="mt-5 pt-4 border-t border-line text-sm flex items-center justify-between">
+      <div className="mt-4 flex items-center justify-between text-sm">
         <span className="text-ink2">Worst case at maturity</span>
         <span className="font-semibold tabular">$1,000.00</span>
       </div>
@@ -47,21 +32,115 @@ function NoteExample() {
 }
 
 function HolderExample() {
-  const value = 10000, b = 0.1, c = 0.2, fall = 0.25, premium = 0.009;
+  const value = 10000, b = 0.1, c = 0.2, fall = 0.25, premium = 90;
   const payout = value * Math.min(Math.max(fall - b, 0), c);
   return (
-    <div className="card p-5 sm:p-6">
-      <div className="flex items-baseline justify-between">
-        <div className="label">$10,000 of NVDA, one month</div>
-        <div className="text-xs text-muted">deductible 10% · cap 20%</div>
+    <div className="card p-5">
+      <div className="text-sm font-medium">$10,000 NVDA · 1 month · covers a 10–30% fall</div>
+      <div className="mt-4 space-y-2 text-sm tabular">
+        <div className="flex justify-between"><span className="text-ink2">Premium</span><span>−${fmtNum(premium)}</span></div>
+        <div className="flex justify-between"><span className="text-ink2">NVDA falls 25%</span><span className="text-bad">−${fmtNum(value * fall)}</span></div>
+        <div className="flex justify-between"><span className="text-ink2">Vault pays 25% − 10%</span><span className="text-good">+${fmtNum(payout)}</span></div>
+        <div className="flex justify-between pt-2 border-t border-line font-semibold"><span>Net loss</span><span>−${fmtNum(value * fall - payout + premium)}</span></div>
       </div>
-      <div className="mt-5 space-y-2.5 text-sm tabular">
-        <div className="flex justify-between"><span className="text-ink2">Premium paid upfront</span><span>−${fmtNum(value * premium)}</span></div>
-        <div className="flex justify-between"><span className="text-ink2">Stock falls 25%</span><span className="text-bad">−${fmtNum(value * fall)}</span></div>
-        <div className="flex justify-between"><span className="text-ink2">InsureVEX pays the fall beyond 10%</span><span className="text-good">+${fmtNum(payout)}</span></div>
-        <div className="flex justify-between pt-2.5 border-t border-line font-semibold"><span>Net loss</span><span>−${fmtNum(value * fall - payout + value * premium)}</span></div>
+    </div>
+  );
+}
+
+/** Numbered facts, one line each. */
+function Facts({ items }) {
+  return (
+    <ol className="space-y-4">
+      {items.map((t, i) => (
+        <li key={i} className="flex gap-3">
+          <span className="mt-0.5 h-6 w-6 shrink-0 rounded-full bg-primary text-white grid place-items-center text-xs font-semibold">{i + 1}</span>
+          <span className="text-[15px] leading-relaxed text-ink">{t}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+const INVESTORS = [
+  {
+    key: "saver",
+    kicker: "Type 1",
+    label: "Saver",
+    title: "Can't afford to lose principal.",
+    art: <SaverArt />,
+    facts: [
+      <>$952 buys T-bills that grow back to <b>$1,000</b> by maturity.</>,
+      <>$48 buys <b>vault units</b> at today&apos;s unit price.</>,
+      <>Every holder&apos;s premium raises the unit price. At maturity: <b>$1,000 + the units</b>.</>,
+    ],
+    example: <NoteExample />,
+    href: "/save",
+    cta: "Buy a protected note",
+  },
+  {
+    key: "holder",
+    kicker: "Type 2",
+    label: "Holder",
+    title: "Wants yield, fears a crash.",
+    art: <HolderArt />,
+    facts: [
+      <>Owns a stock on any exchange. The <b>pricing engine</b>, backtested over 25 years, quotes the premium.</>,
+      <>The first <b>10%</b> of a fall is the holder&apos;s. The next <b>20%</b> is covered.</>,
+      <>The $2,000 max payout is <b>locked in the vault</b> before the cover is sold. Settled on the official close.</>,
+    ],
+    example: <HolderExample />,
+    href: "/protect",
+    cta: "Protect a stock",
+  },
+  {
+    key: "pro",
+    kicker: "Optional",
+    label: "Pro LP",
+    title: "Takes the first loss for a bigger share.",
+    art: <PoolArt />,
+    facts: [
+      <>Deposits <b>first-loss</b> capital into the vault.</>,
+      <>Earns a <b>bigger share of premiums</b> for taking that risk.</>,
+      <>Losses hit premiums, then Pro LP, then savers&apos; units. The <b>T-bill floor is never touched</b>.</>,
+    ],
+    example: null,
+    href: "/pool",
+    cta: "See the vault",
+  },
+];
+
+/** shadcn-style tabs: a segmented list and one panel. */
+function InvestorTabs() {
+  const [i, setI] = useState(0);
+  const t = INVESTORS[i];
+  return (
+    <div>
+      <div role="tablist" aria-label="Investor type" className="inline-flex flex-wrap rounded-xl border border-line bg-sunk p-1 gap-1">
+        {INVESTORS.map((x, k) => (
+          <button
+            key={x.key}
+            role="tab"
+            aria-selected={i === k}
+            onClick={() => setI(k)}
+            className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors ${i === k ? "bg-card text-ink shadow-sm border border-line" : "text-ink2 hover:text-ink border border-transparent"}`}
+          >
+            <span className={i === k ? "text-accent" : "text-muted"}>{x.kicker}</span>
+            <span className="mx-1.5 text-line">/</span>
+            {x.label}
+          </button>
+        ))}
       </div>
-      <p className="text-xs text-muted mt-4">Illustrative premium. Live quotes come from the pricing engine and the official close settles every policy.</p>
+      <div role="tabpanel" className="mt-8 grid lg:grid-cols-[1.35fr_1fr] gap-8 lg:gap-12 items-start">
+        <div key={t.key}>{t.art}</div>
+        <div className="lg:pt-4">
+          <h3 className="font-display text-3xl tracking-tight">{t.title}</h3>
+          <div className="mt-6">
+            <Facts items={t.facts} />
+          </div>
+          {t.example && <div className="mt-6">{t.example}</div>}
+          <Link href={t.href} className="btn-primary h-11 px-5 mt-6">{t.cta} →</Link>
+        </div>
+      </div>
     </div>
   );
 }
@@ -75,31 +154,27 @@ export default function Landing() {
   const oos = s?.walkforward_policyB?.["0.125"] || s?.walkforward_oos;
   return (
     <>
-      <section className="relative border-b border-line overflow-hidden">
-        <div className="relative mx-auto max-w-[1440px] min-h-[640px] lg:h-[min(780px,calc(100vh-64px))] border-x border-line">
-          <div className="absolute inset-x-0 top-0 h-[300px] lg:h-full">
-            <HeroArt />
-          </div>
-          <div className="relative h-full flex flex-col justify-end px-5 sm:px-10 lg:px-14 pt-[300px] lg:pt-0 pb-12 lg:pb-16 pointer-events-none">
-            <div className="max-w-[560px] pointer-events-auto">
-              <div className="eyebrow">
-                <span className="text-ink">InsureVEX</span> crash floors
-              </div>
-              <h1 className="font-display uppercase text-[40px] leading-[0.98] sm:text-[54px] lg:text-[58px] mt-4">
-                Two scared people
-                <br />
-                protect each other
-              </h1>
-              <p className="text-ink2 text-[15px] sm:text-base mt-5 max-w-md leading-relaxed">
-                Savers fear losing money. Shareholders fear a crash. One pool: the saver&apos;s spare yield insures the stock, and the saver always gets their deposit back.
-              </p>
-              <div className="flex flex-wrap gap-3 mt-7">
-                <Link href="/protect" className="btn-primary h-12 px-6 uppercase tracking-[0.06em] text-[13px]">
-                  <span className="opacity-60">|</span>▸ Protect a stock
-                </Link>
-                <Link href="/save" className="btn h-12 px-6 bg-card border border-line uppercase tracking-[0.06em] text-[13px] hover:bg-sunk">Buy a protected note</Link>
-              </div>
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-[1440px] border-x border-line grid lg:grid-cols-[0.85fr_1.15fr] items-center gap-6 px-5 sm:px-10 lg:px-14 py-12 lg:py-16">
+          <div>
+            <div className="eyebrow">
+              <span className="text-ink">InsureVEX</span> the layer between two investors
             </div>
+            <h1 className="font-display uppercase text-[40px] leading-[0.98] sm:text-[52px] lg:text-[56px] mt-4">
+              Principal safety for savers.
+              <br />
+              <span className="text-accent">Crash cover</span> for holders.
+            </h1>
+            <p className="text-ink2 text-base sm:text-lg mt-6 max-w-lg leading-relaxed">
+              Savers get their principal back from T-bills and put the rest in a vault. Holders pay that vault to cover a crash. Every premium makes each saver&apos;s vault unit worth more.
+            </p>
+            <div className="flex flex-wrap gap-3 mt-8">
+              <Link href="/save" className="btn-primary h-12 px-6">Save with a guarantee</Link>
+              <Link href="/protect" className="btn h-12 px-6 bg-card border border-line hover:bg-sunk">Protect a stock</Link>
+            </div>
+          </div>
+          <div className="min-w-0">
+            <LayerArt />
           </div>
         </div>
       </section>
@@ -134,35 +209,41 @@ export default function Landing() {
         </div>
       </section>
 
-      <Section className="py-14">
+      <section id="how" className="mx-auto max-w-page px-4 py-16 scroll-mt-28">
         <div className="max-w-2xl">
-          <div className="eyebrow">How it works</div>
-          <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Save, protect, settle.</h2>
+          <div className="eyebrow">Two investors, one layer</div>
+          <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Each side pays for what the other wants.</h2>
         </div>
-        <div className="mt-12 space-y-20">
-          {[
-            ["1 · Save", "A saver deposits stablecoins. Most of it buys tokenised T-bills sized to grow back to the full deposit by maturity. The rest, the sleeve, joins the underwriting pool and earns the premiums as coupons.", <SaveArt key="a" />, <NoteExample key="b" />],
-            ["2 · Protect", "A shareholder proves they own the stock, at a broker or as an ATS token, and pays a premium. The pool locks the maximum payout up front, so every floor is fully collateralised.", <ProtectArt key="a" />, <HolderExample key="b" />],
-            ["3 · Settle", "At expiry the exchange's official close is posted on-chain. If the stock fell more than the deductible, the pool pays the extra fall, up to the cap. If not, the collateral is freed and the premium becomes the saver's coupon.", <SettleArt key="a" />, null],
-          ].map(([t, d, art, ex], i) => (
-            <div key={t} className="grid lg:grid-cols-[1.25fr_1fr] gap-8 lg:gap-14 items-center">
-              <div className={i % 2 ? "lg:order-2" : ""}>{art}</div>
-              <div>
-                <div className="font-display text-3xl tracking-tight">{t}</div>
-                <p className="text-ink2 mt-3 leading-relaxed">{d}</p>
-                {ex && <div className="mt-6">{ex}</div>}
-              </div>
+        <div className="mt-10">
+          <InvestorTabs />
+        </div>
+      </section>
+
+      <Section className="py-16">
+        <div className="grid lg:grid-cols-[1fr_1.35fr] gap-8 lg:gap-12 items-center">
+          <div>
+            <div className="eyebrow">At expiry</div>
+            <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Settled on the official close.</h2>
+            <div className="mt-8">
+              <Facts
+                items={[
+                  <>The exchange&apos;s official closing price is posted on-chain.</>,
+                  <>NVDA fell 25%: the vault pays <b>$1,500</b>, the part between 10% and 25%.</>,
+                  <>No crash: nothing is paid, the $2,000 is released and the <b>$90 stays with savers</b>.</>,
+                ]}
+              />
             </div>
-          ))}
+          </div>
+          <SettleArt />
         </div>
       </Section>
 
-      <Section className="py-14">
+      <Section className="py-16">
         <div className="max-w-2xl">
-          <div className="eyebrow">How the money moves</div>
-          <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Premiums in, crash payouts out, principal untouched.</h2>
+          <div className="eyebrow">Under the hood</div>
+          <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Five contracts. Every rule on-chain.</h2>
         </div>
-        <div className="mt-10"><MoneyMapArt /></div>
+        <div className="mt-10"><SystemArt /></div>
       </Section>
 
       <Section className="py-14">

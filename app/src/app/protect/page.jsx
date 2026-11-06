@@ -8,7 +8,7 @@ import { EXCHANGES, flag } from "@/lib/exchanges";
 import { fmtMoney, fmtNum, fmtPct, fromUnits, shortHash, symbolId } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
 import { PageHead, Section, Seg, Notice, Row, useActiveChain, DeployGate } from "@/components/ui";
-import { ProtectArt } from "@/components/IsoArt";
+import { HolderArt } from "@/components/IsoArt";
 import { useKyc } from "@/components/KycBadge";
 import PriceChart from "@/components/PriceChart";
 import MyPolicies from "@/components/MyPolicies";
@@ -157,7 +157,7 @@ export default function ProtectPage() {
       </PageHead>
       <Section className="pb-10">
         <div className="max-w-3xl">
-          <ProtectArt />
+          <HolderArt />
         </div>
       </Section>
       <Section>

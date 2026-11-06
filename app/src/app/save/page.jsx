@@ -5,7 +5,7 @@ import { ABI, ERC20_ABI, addr, notesOf, stableSymbol } from "@/lib/contracts";
 import { fmtDate, fmtDuration, fmtMoney, fmtPct, fromUnits, toUnits } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
 import { PageHead, Section, Notice, Row, useActiveChain, DeployGate, AddrLink, Placeholder } from "@/components/ui";
-import { SaveArt } from "@/components/IsoArt";
+import { SaverArt } from "@/components/IsoArt";
 import { useKyc } from "@/components/KycBadge";
 import SaverCalculator from "@/components/SaverCalculator";
 
@@ -137,7 +137,7 @@ export default function SavePage() {
       </PageHead>
       <Section className="pb-10">
         <div className="max-w-3xl">
-          <SaveArt />
+          <SaverArt />
         </div>
       </Section>
       <Section>
