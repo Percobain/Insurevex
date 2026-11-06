@@ -5,9 +5,9 @@ import { useData } from "@/lib/api";
 import { usePoolState } from "@/lib/usePoolState";
 import { CHAINS, CHAIN_META, DEFAULT_CHAIN_ID } from "@/lib/chains";
 import { isDeployed, addr } from "@/lib/contracts";
-import { EXCHANGES, REGIONS, flag } from "@/lib/exchanges";
 import { fmtPct, fmtUnits, fmtNum, fromUnits } from "@/lib/format";
 import { Section, Stat } from "@/components/ui";
+import ExchangeGlobe from "@/components/ExchangeGlobe";
 import { LayerArt, SaverArt, HolderArt, SettleArt, PoolArt, SystemArt } from "@/components/IsoArt";
 
 // Same split as ProtectedNote.floorFor: floor = face / (1 + r * t). A 1-year note at a 5% T-bill rate.
@@ -255,20 +255,8 @@ export default function Landing() {
           </div>
           <Link href="/protect" className="btn-ghost shrink-0">Find your stock</Link>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-          {REGIONS.map((r) => (
-            <div key={r} className="card p-5">
-              <div className="label">{r}</div>
-              <ul className="mt-3 space-y-2 text-sm">
-                {EXCHANGES.filter((e) => e.region === r).map((e) => (
-                  <li key={e.id} className="flex items-center justify-between gap-2">
-                    <span className="truncate"><span className="mr-2" aria-hidden="true">{flag(e.code)}</span>{e.country}</span>
-                    <span className="text-muted text-xs shrink-0">{e.exchange}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        <div className="mt-10">
+          <ExchangeGlobe />
         </div>
       </Section>
 

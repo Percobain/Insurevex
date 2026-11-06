@@ -19,7 +19,18 @@ module.exports = {
         good: "rgb(var(--good-rgb) / <alpha-value>)",
         bad: "rgb(var(--bad-rgb) / <alpha-value>)",
         warn: "rgb(var(--warn-rgb) / <alpha-value>)",
+        // shadcn token names (components/ui/*), mapped onto the site palette
+        background: "rgb(var(--paper-rgb) / <alpha-value>)",
+        foreground: "rgb(var(--ink-rgb) / <alpha-value>)",
+        border: "rgb(var(--line-rgb) / <alpha-value>)",
+        secondary: "rgb(var(--sunk-rgb) / <alpha-value>)",
+        "muted-foreground": "rgb(var(--muted-rgb) / <alpha-value>)",
+        "accent-foreground": "rgb(var(--accent-ink-rgb) / <alpha-value>)",
+        "card-foreground": "rgb(var(--ink-rgb) / <alpha-value>)",
       },
+      // Tailwind 4 sizes used by shadcn components
+      boxShadow: { xs: "0 1px 2px 0 rgb(0 0 0 / 0.05)" },
+      borderRadius: { xs: "2px" },
       fontFamily: {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui"],
         display: ["var(--font-display)", "ui-serif", "Georgia"],
