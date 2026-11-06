@@ -1,13 +1,14 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { useData } from "@/lib/api";
 import { usePoolState } from "@/lib/usePoolState";
 import { CHAINS, CHAIN_META, DEFAULT_CHAIN_ID } from "@/lib/chains";
 import { isDeployed, addr } from "@/lib/contracts";
-import { fmtPct, fmtUnits } from "@/lib/format";
+import { fmtPct, fmtUnits, fmtNum } from "@/lib/format";
 import { Section } from "@/components/ui";
 import ExchangeGlobe from "@/components/ExchangeGlobe";
-import { LayerArt, SettleArt } from "@/components/IsoArt";
+import { LayerArt, SaverArt, HolderArt, PoolArt } from "@/components/IsoArt";
 import BrandLogo from "@/components/BrandLogo";
 
 const CHOICES = [
@@ -34,11 +35,140 @@ const CHOICES = [
   },
 ];
 
-const STEPS = [
-  "Savers put most of their money in safe government bonds.",
-  "Stock owners pay a small fee to protect their stock.",
-  "Stock crashes: owners get paid. No crash: savers keep the fee.",
+// Same split as ProtectedNote.floorFor: floor = face / (1 + r * t). A 1-year note at a 5% T-bill rate.
+const FACE = 1000;
+const FLOOR = FACE / (1 + 0.05 * 1);
+const SLEEVE = FACE - FLOOR;
+
+function NoteExample() {
+  return (
+    <div className="card p-5">
+      <div className="text-sm font-medium">$1,000 note · 1 year · T-bills at 5%</div>
+      <div className="mt-4 h-11 rounded-lg overflow-hidden flex border border-line text-sm" aria-hidden="true">
+        <div className="bg-sunk grid place-items-center text-ink2" style={{ width: `${(FLOOR / FACE) * 100}%` }}>T-bills ${fmtNum(FLOOR, 2)}</div>
+        <div className="bg-accent text-white grid place-items-center font-medium" style={{ width: `${(SLEEVE / FACE) * 100}%`, minWidth: 64 }}>${fmtNum(SLEEVE, 2)}</div>
+      </div>
+      <div className="mt-4 flex items-center justify-between text-sm">
+        <span className="text-ink2">Worst case at maturity</span>
+        <span className="font-semibold tabular">$1,000.00</span>
+      </div>
+    </div>
+  );
+}
+
+function HolderExample() {
+  const value = 10000, b = 0.1, c = 0.2, fall = 0.25, premium = 90;
+  const payout = value * Math.min(Math.max(fall - b, 0), c);
+  return (
+    <div className="card p-5">
+      <div className="text-sm font-medium">$10,000 NVDA · 1 month · covers a 10–30% fall</div>
+      <div className="mt-4 space-y-2 text-sm tabular">
+        <div className="flex justify-between"><span className="text-ink2">Premium</span><span>−${fmtNum(premium)}</span></div>
+        <div className="flex justify-between"><span className="text-ink2">NVDA falls 25%</span><span className="text-bad">−${fmtNum(value * fall)}</span></div>
+        <div className="flex justify-between"><span className="text-ink2">Vault pays 25% − 10%</span><span className="text-good">+${fmtNum(payout)}</span></div>
+        <div className="flex justify-between pt-2 border-t border-line font-semibold"><span>Net loss</span><span>−${fmtNum(value * fall - payout + premium)}</span></div>
+      </div>
+    </div>
+  );
+}
+
+/** Numbered facts, one line each. */
+function Facts({ items }) {
+  return (
+    <ol className="space-y-4">
+      {items.map((t, i) => (
+        <li key={i} className="flex gap-3">
+          <span className="mt-0.5 h-6 w-6 shrink-0 rounded-full bg-primary text-white grid place-items-center text-xs font-semibold">{i + 1}</span>
+          <span className="text-[15px] leading-relaxed text-ink">{t}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+const INVESTORS = [
+  {
+    key: "saver",
+    kicker: "Type 1",
+    label: "Saver",
+    title: "Can't afford to lose principal.",
+    art: <SaverArt />,
+    facts: [
+      <>$952 buys T-bills that grow back to <b>$1,000</b> by maturity.</>,
+      <>$48 buys <b>vault units</b> at today&apos;s unit price.</>,
+      <>Every holder&apos;s premium raises the unit price. At maturity: <b>$1,000 + the units</b>.</>,
+    ],
+    example: <NoteExample />,
+    href: "/save",
+    cta: "Buy a protected note",
+  },
+  {
+    key: "holder",
+    kicker: "Type 2",
+    label: "Holder",
+    title: "Owns a stock, fears a crash.",
+    art: <HolderArt />,
+    facts: [
+      <>Owns a stock on any exchange. The <b>pricing engine</b>, backtested over 25 years, quotes the premium.</>,
+      <>The first <b>10%</b> of a fall is the holder&apos;s. The next <b>20%</b> is covered.</>,
+      <>The $2,000 max payout is <b>locked in the vault</b> before the cover is sold. Settled on the official close.</>,
+    ],
+    example: <HolderExample />,
+    href: "/protect",
+    cta: "Protect a stock",
+  },
+  {
+    key: "pro",
+    kicker: "Type 3",
+    label: "Pro LP",
+    title: "Takes the first loss for a bigger share.",
+    art: <PoolArt />,
+    facts: [
+      <>Deposits <b>first-loss</b> capital into the vault.</>,
+      <>Earns a <b>bigger share of premiums</b> for taking that risk.</>,
+      <>Losses hit premiums, then Pro LP, then savers&apos; units. The <b>T-bill floor is never touched</b>.</>,
+    ],
+    example: null,
+    href: "/pool",
+    cta: "See the vault",
+  },
 ];
+
+/** Segmented tabs: one panel per investor type. */
+function InvestorTabs() {
+  const [i, setI] = useState(0);
+  const t = INVESTORS[i];
+  return (
+    <div>
+      <div role="tablist" aria-label="Investor type" className="inline-flex flex-wrap rounded-xl border border-line bg-sunk p-1 gap-1">
+        {INVESTORS.map((x, k) => (
+          <button
+            key={x.key}
+            role="tab"
+            aria-selected={i === k}
+            onClick={() => setI(k)}
+            className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors ${i === k ? "bg-card text-ink shadow-sm border border-line" : "text-ink2 hover:text-ink border border-transparent"}`}
+          >
+            <span className={i === k ? "text-accent" : "text-muted"}>{x.kicker}</span>
+            <span className="mx-1.5 text-line">/</span>
+            {x.label}
+          </button>
+        ))}
+      </div>
+      <div role="tabpanel" className="mt-8 grid lg:grid-cols-[1.35fr_1fr] gap-8 lg:gap-12 items-start">
+        <div key={t.key} className="min-w-0">{t.art}</div>
+        <div className="lg:pt-4">
+          <h3 className="font-display text-3xl tracking-tight">{t.title}</h3>
+          <div className="mt-6">
+            <Facts items={t.facts} />
+          </div>
+          {t.example && <div className="mt-6">{t.example}</div>}
+          <Link href={t.href} className="btn-primary h-11 px-5 mt-6">{t.cta} →</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Plain one-liners per network, keyed by chain id (CHAIN_META.role is written for developers).
 const CHAIN_LINE = {
@@ -125,21 +255,7 @@ export default function Landing() {
 
       {/* How it works */}
       <Section className="py-16">
-        <div className="grid lg:grid-cols-[1fr_1.35fr] gap-8 lg:gap-12 items-center">
-          <div>
-            <div className="eyebrow">How it works</div>
-            <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Two people protect each other.</h2>
-            <ol className="mt-8 space-y-4">
-              {STEPS.map((t, i) => (
-                <li key={i} className="flex gap-3">
-                  <span className="mt-0.5 h-6 w-6 shrink-0 rounded-full bg-primary text-white grid place-items-center text-xs font-semibold">{i + 1}</span>
-                  <span className="text-[15px] leading-relaxed text-ink">{t}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
-          <SettleArt />
-        </div>
+        <InvestorTabs />
       </Section>
 
       {/* Countries */}

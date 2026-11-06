@@ -342,6 +342,7 @@ body {
 .iso-screw { fill: #fff; stroke: var(--iso-ink); stroke-width: 0.7; opacity: 0.6; }
 .iso-floor line { stroke: var(--iso-ink); stroke-width: 0.6; opacity: 0.09; }
 .iso-teal .iso-rside { fill: #182c2b; }
+.iso-orange .iso-rside { fill: var(--iso-accent-dk); }
 .iso-pig-leg .iso-side { fill: #eeab96; }
 .iso-pig-leg .iso-face { fill: #f6cdbf; }
 .iso-pig-ear-back { fill: #eeab96; }

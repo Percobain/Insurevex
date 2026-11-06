@@ -628,9 +628,10 @@ export function LayerArt() {
   const T = [-265, -95];
   const H = [95, -235];
   const E = [190, 30];
+  const PRO = [-170, -230];
   const VTOP = [0, 0, 40];
   const out = smooth(span(phase, 0.95, 1));
-  const grew = smooth(span(phase, 0.58, 0.66));
+  const grew = smooth(span(phase, 0.64, 0.72));
   const unit = 1 + 0.009 * grew;
   const STACK = [S[0] + 28, S[1] + 26];
   const DOOR = [T[0], T[1] + 40, 22];
@@ -649,19 +650,21 @@ export function LayerArt() {
   const chipAt = chip > 0 ? fly(VTOP, [STACK[0], STACK[1], 10], smooth(chip), 70) : null;
   const LINKS = [
     { path: [[-250, 45], [-250, -45]], tone: "good", steps: [0] },
-    { path: [[-185, 95], [-100, 95], [-100, 0], [-70, 0]], tone: "good", steps: [0, 2] },
-    { path: [[190, 18], [190, -235], [145, -235]], tone: "ink", steps: [1] },
-    { path: [[95, -185], [95, -110], [0, -110], [0, -70]], tone: "accent", steps: [1] },
+    { path: [[-185, 95], [-100, 95], [-100, 0], [-70, 0]], tone: "good", steps: [0, 3] },
+    { path: [[190, 18], [190, -235], [145, -235]], tone: "ink", steps: [2] },
+    { path: [[95, -185], [95, -110], [0, -110], [0, -70]], tone: "accent", steps: [2] },
+    { path: [[-150, -185], [-150, -120], [-40, -120], [-40, -58]], tone: "accent", steps: [1, 3] },
   ];
-  const quote = span(phase, 0.38, 0.48);
-  const prem = span(phase, 0.5, 0.6);
-  const shield = smooth(span(phase, 0.62, 0.7)) * (1 - out);
-  const active = phase < 0.37 ? 0 : phase < 0.58 ? 1 : 2;
+  const backup = span(phase, 0.37, 0.45);
+  const quote = span(phase, 0.46, 0.55);
+  const prem = span(phase, 0.56, 0.64);
+  const shield = smooth(span(phase, 0.68, 0.76)) * (1 - out);
+  const active = phase < 0.36 ? 0 : phase < 0.46 ? 1 : phase < 0.64 ? 2 : 3;
   const [sx, sy] = P(H[0], H[1], 100);
 
   return (
     <Stage className="iso-bare">
-      <IsoSvg svgRef={ref} vb={[-400, -330, 800, 480]} role="img" aria-label="A saver puts in $1,000: $952 goes into US government bonds and $48 into the pool's earning part. A stock owner pays a $90 fee into the pool for crash protection, which grows the earning part.">
+      <IsoSvg svgRef={ref} vb={[-400, -330, 800, 480]} role="img" aria-label="A saver puts in $1,000: $952 goes into US government bonds and $48 into the pool's earning part. A stock owner pays a $90 fee into the pool for crash protection, which grows the earning part. A Pro adds backup money that takes any crash loss first, for a bigger share of the fees.">
         <Defs ids={ids} />
         <Floor id={ids.floor} />
         {/* lines on the ground between the pieces; the step's own lines light up */}
@@ -673,10 +676,15 @@ export function LayerArt() {
         <Bank x={T[0]} y={T[1]} w={80} d={70} value={banked ? money((FLOOR * banked) / 9) : undefined} />
         <Tray x={H[0] - 50} y={H[1] - 50} w={100} d={100} h={10} />
         <StockCerts x={H[0]} y={H[1]} z={10} sheets={12} />
+        {/* back: the Pro, whose first-loss money sits on top of the savers' */}
+        <Tray x={PRO[0] - 45} y={PRO[1] - 45} w={90} d={90} h={10} />
+        <RBox r={5} x={PRO[0] - 26} y={PRO[1] - 26} z={10} w={52} d={52} h={30} shadow={false} className="iso-orange" front={<text x="9" y="19" className="iso-text iso-bold iso-on-dark">PRO</text>} />
+        <CoinRoll at={[PRO[0] - 8, PRO[1] - 8, 40]} />
+        <CoinRoll at={[PRO[0] + 10, PRO[1] + 8, 40]} />
 
         {/* centre: the pool */}
         <CoinPool x={0} y={0} r={70} h={40} level={0.5 + 0.4 * grew} />
-        <Ripple at={P(...VTOP)} age={span(phase, 0.6, 0.7)} />
+        <Ripple at={P(...VTOP)} age={span(phase, 0.64, 0.74)} />
 
         {/* front: the saver and the price calculator */}
         <Tray x={S[0] - 50} y={S[1] - 50} w={100} d={100} h={10} />
@@ -688,18 +696,21 @@ export function LayerArt() {
         ))}
         {chipAt && <Box x={chipAt[0] - 10} y={chipAt[1] - 10} z={chipAt[2]} w={20} d={20} h={6} shadow={false} className="iso-unit" style={{ opacity: 1 - out }} />}
         {quote > 0 && quote < 1 && <Box x={lerp(E[0], H[0], smooth(quote)) - 16} y={lerp(E[1], H[1], smooth(quote)) - 11} z={34 + Math.sin(Math.PI * quote) * 70} w={32} d={22} h={2} shadow={false} />}
+        {backup > 0 && backup < 1 && <Coin at={fly([PRO[0], PRO[1], 60], VTOP, smooth(backup), 70)} tone="accent" />}
         {prem > 0 && prem < 1 && <Coin at={fly([H[0], H[1], 46], VTOP, smooth(prem), 80)} tone="accent" />}
         {shield > 0.01 && <Shield x={sx} y={sy} s={1.5} opacity={shield} />}
 
         <Tag at={P(S[0] - 12, S[1] - 14, 60)} text="Saver" tone="ink" dx={-40} dy={-30} />
         <Tag at={P(H[0] + 50, H[1] + 50, 10)} text="Stock owner" tone="ink" dx={50} dy={40} />
-        <Tag at={P(0, 0, 40)} text={`Pool · part worth $${unit.toFixed(3)}`} tone="good" dy={-96} size="lg" />
+        <Tag at={P(PRO[0] + 45, PRO[1] - 45, 10)} text="Pro" tone="ink" dx={40} dy={24} />
+        <Tag at={P(PRO[0], PRO[1], 60)} text="backup money · takes losses first" tone="accent" dx={70} dy={-36} opacity={span(phase, 0.37, 0.41) * (1 - out)} />
+        <Tag at={P(70, 70, 0)} text={`Pool · each part worth $${unit.toFixed(3)}`} tone="good" dx={-50} dy={34} size="lg" />
         <Tag at={P(T[0], T[1], 78)} text="$952 → $1,000 at the end" dx={-30} dy={-34} opacity={span(phase, 0.2, 0.26) * (1 - out)} />
         <Tag at={P(STACK[0], STACK[1], 12)} text="$48 = earning part" tone="good" dx={60} dy={56} opacity={span(phase, 0.34, 0.38) * (1 - out)} />
-        <Tag at={P(E[0], E[1] + 8, 60)} text="price: $90 a month" dx={80} dy={-20} opacity={span(phase, 0.38, 0.42) * (1 - span(phase, 0.6, 0.64))} />
+        <Tag at={P(E[0], E[1] + 8, 60)} text="price: $90 a month" dx={80} dy={-20} opacity={span(phase, 0.46, 0.5) * (1 - span(phase, 0.66, 0.7))} />
         <Tag at={[sx, sy - 18]} text="protected: 10% → 30% drop" tone="good" dx={50} dy={-30} opacity={shield} />
       </IsoSvg>
-      <Steps items={["A saver puts in $1,000", "A stock owner pays a $90 fee", "The fee grows the saver's earning part"]} active={active} starts={[0, 0.37, 0.58]} onSeek={seek} />
+      <Steps items={["Saver puts in $1,000", "Pro adds backup money", "Stock owner pays a $90 fee", "The fee grows the pool"]} active={active} starts={[0, 0.36, 0.46, 0.64]} onSeek={seek} />
     </Stage>
   );
 }
