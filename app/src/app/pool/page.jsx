@@ -5,7 +5,8 @@ import { usePoolState } from "@/lib/usePoolState";
 import { useSymbolNames } from "@/lib/useSymbolNames";
 import { usePolicies } from "@/components/MyPolicies";
 import { fmtMoney, fmtNum, fmtPct, fromUnits } from "@/lib/format";
-import { PageHead, Section, Stat, Row, useActiveChain, DeployGate, AddrLink, Placeholder } from "@/components/ui";
+import { PageHead, Section, SectionHead, Panel, Stat, Row, useActiveChain, DeployGate, AddrLink, Placeholder } from "@/components/ui";
+import { PoolArt } from "@/components/IsoArt";
 import ProPanel from "@/components/ProPanel";
 
 function Meter({ label, value, max, sub }) {
@@ -55,12 +56,18 @@ export default function PoolPage() {
 
   return (
     <>
-      <PageHead eyebrow="Underwriting pool" title="Every policy is paid for before it is sold.">
-        The pool is the savers' sleeves. A reserve never backs policies, no stock can use more than its cap, and the maximum payout of
-        every open policy is locked until it settles. Idle cash sits in tokenised T-bills.
+      <PageHead
+        eyebrow="Underwriting vault"
+        title="Every policy is paid for before it is sold."
+        art={<PoolArt />}
+        facts={[["Locked", "max payout of every policy, up front"], ["Pro LP", "takes the first loss"], ["Never", "the savers' T-bill floor pays a claim"]]}
+      >
+        Savers&apos; vault units and Pro LP capital back every policy. A reserve never backs policies, no stock can use more than its
+        cap, and idle cash sits in tokenised T-bills.
       </PageHead>
       <Section>
         <DeployGate chainId={chainId}>
+          <SectionHead eyebrow="Live on-chain" title="The vault right now" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <Stat label="Pool assets" value={s.ok ? fmtMoney(total, { sym: "" }) : "—"} sub={pro.available ? `Savers ${fmtMoney(senior, { sym: "" })} · Pro ${fmtMoney(junior, { sym: "" })}` : stable} />
             <Stat label="Locked collateral" value={s.ok ? fmtMoney(locked, { sym: "" }) : "—"} sub="max payout of open cover" />
@@ -68,18 +75,18 @@ export default function PoolPage() {
             <Stat label="Saver unit price" value={s.ok && p.sharePrice ? fmtNum(fromUnits(p.sharePrice), 4) : "—"} sub="vxUW per share, starts at 1.0000" />
           </div>
           <div className="grid lg:grid-cols-3 gap-4 mt-4">
-            <div className="card p-5 sm:p-6 space-y-5">
-              <h3 className="font-semibold">Risk limits (on-chain)</h3>
+            <Panel title="Risk limits" desc="Enforced by the contract, not the website.">
+              <div className="space-y-5">
               <Meter label="Utilisation of working capital" value={locked} max={working} sub={`${fmtMoney(working, { sym: "" })} working capital = ${pro.available ? "Pro + " : ""}sleeves × (1 − reserve)`} />
               <Row k="Reserve R (never backs policies)" v={fmtPct(Number(p.reserveBps || 0) / 1e4, 0)} />
               <Row k="Per-stock cap m" v={fmtPct(Number(p.symbolCapBps || 0) / 1e4, 0)} />
               <Row k="Per-market cap" v={fmtPct(Number(p.marketCapBps || 0) / 1e4, 0)} />
               <Row k="Cash / T-bills" v={`${fmtMoney(fromUnits(p.cash), { sym: "" })} / ${fmtMoney(fromUnits(p.tbillAssets), { sym: "" })}`} />
               <div className="text-xs text-muted">Pool <AddrLink address={addr(chainId, "UnderwritingPool")} chainId={chainId} /></div>
-            </div>
-            <div className="card p-5 sm:p-6">
-              <h3 className="font-semibold">Underwriting result</h3>
-              <div className="mt-4">
+              </div>
+            </Panel>
+            <Panel title="Underwriting result" desc="Premiums in, claims out.">
+              <div>
                 <Row k="Premiums earned" v={`${fmtMoney(prem, { sym: "" })} ${stable}`} />
                 <Row k="Claims paid" v={`${fmtMoney(paid, { sym: "" })} ${stable}`} />
                 <Row k="Loss ratio" v={prem > 0 ? fmtPct(paid / prem, 1) : "—"} strong />
@@ -87,22 +94,23 @@ export default function PoolPage() {
                 <Row k="Settled / paid out" v={`${settled.length} / ${settled.filter((x) => Number(x.payout) > 0).length}`} />
               </div>
               <p className="text-xs text-muted mt-3">The backtest's long-run loss ratio is about 0.57–0.61: savers keep roughly 40 cents of every premium dollar.</p>
-            </div>
-            <div className="card p-5 sm:p-6">
-              <h3 className="font-semibold">Tokenised T-bill (vxTBILL)</h3>
-              <div className="mt-4">
+            </Panel>
+            <Panel title="Tokenised T-bill" desc="vxTBILL: where idle cash and savers' floors sit.">
+              <div>
                 <Row k="NAV per share" v={nav ? fmtNum(nav, 6) : "—"} strong />
                 <Row k="Fund yield" v={s.tbill.apyBps !== undefined ? fmtPct(Number(s.tbill.apyBps) / 1e4, 2) : "—"} />
                 <Row k="Fund assets" v={fmtMoney(fromUnits(s.tbill.totalAssets), { sym: "" })} />
                 <Row k="Attested reserve" v={fmtMoney(fromUnits(s.tbill.attestedReserve), { sym: "" })} />
               </div>
               <div className="text-xs text-muted mt-3">Vault <AddrLink address={addr(chainId, "TBillVault")} chainId={chainId} /></div>
-            </div>
+            </Panel>
           </div>
-          <div className="mt-8"><ProPanel chainId={chainId} account={address} pro={pro} /></div>
-          <div className="mt-8">
-            <h3 className="font-display text-3xl tracking-tight">Open cover by stock</h3>
-            <div className="mt-4">
+          <div className="mt-16">
+            <ProPanel chainId={chainId} account={address} pro={pro} />
+          </div>
+          <div className="mt-16">
+            <SectionHead eyebrow="Exposure" title="Open cover by stock">Every open policy&apos;s maximum payout is locked in the vault until it settles.</SectionHead>
+            <div>
               {bySymbol.length === 0 ? (
                 <Placeholder title="No open cover right now">Policies appear here as soon as they are bought.</Placeholder>
               ) : (

@@ -7,7 +7,8 @@ import { apiGet, apiPost, useApi } from "@/lib/api";
 import { EXCHANGES, flag } from "@/lib/exchanges";
 import { fmtMoney, fmtNum, fmtPct, fromUnits, shortHash, symbolId } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
-import { PageHead, Section, Seg, Notice, Row, useActiveChain, DeployGate } from "@/components/ui";
+import { PageHead, Section, SectionHead, Seg, Notice, Row, useActiveChain, DeployGate } from "@/components/ui";
+import { HolderArt } from "@/components/IsoArt";
 import { useKyc } from "@/components/KycBadge";
 import PriceChart from "@/components/PriceChart";
 import MyPolicies from "@/components/MyPolicies";
@@ -150,11 +151,17 @@ export default function ProtectPage() {
 
   return (
     <>
-      <PageHead eyebrow="For shareholders · brokerage or tokenised" title="Put a floor under any stock you own.">
-        Shares at your broker (Zerodha on NSE, Robinhood or IBKR on Nasdaq, LSE, TSE, HKEX…) or tokenised stock on-chain: pick it on any of 23 exchanges. If its official close falls more than your deductible by expiry, the pool pays the
-        extra fall, up to the cap. Premium upfront, settled in {stable}, fully collateralised before you pay.
+      <PageHead
+        eyebrow="For holders · type 2"
+        title="Put a floor under any stock you own."
+        art={<HolderArt />}
+        facts={[["23", "exchanges, at your broker or tokenised"], ["10 → 30%", "default band of a fall that is covered"], [stable, "payout on the official close"]]}
+      >
+        If the official close falls more than your deductible by expiry, the vault pays the extra fall, up to the cap. You pay the
+        premium upfront and the maximum payout is locked before you buy.
       </PageHead>
       <Section>
+        <SectionHead eyebrow="Get a quote" title="Three steps to cover">Choose the stock, size the cover, prove you hold it. The quote updates as you go.</SectionHead>
         <div className="space-y-4 mb-6">
           <DeployGate chainId={chainId}>{null}</DeployGate>
           {offline && <Notice tone="warn">The pricing server is offline, so live symbols and quotes are unavailable. Policies and settlement below still read straight from the chain.</Notice>}

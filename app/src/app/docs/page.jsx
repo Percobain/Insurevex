@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useData } from "@/lib/api";
 import { fmtNum, fmtPct, marketLabel } from "@/lib/format";
 import { PageHead, Section, Stat, Placeholder, Seg } from "@/components/ui";
@@ -11,12 +11,14 @@ const TOC = [
   ["configs", "Walk-forward"], ["savers", "Savers"], ["holders", "Holders"], ["stress", "Stress"], ["honest", "Limits"],
 ];
 
+const TOC_IDS = TOC.map(([id]) => id);
+
 function H2({ id, eyebrow, children, sub }) {
   return (
-    <div id={id} className="scroll-mt-24 mb-5">
+    <div id={id} className="scroll-mt-24 mb-6">
       {eyebrow && <div className="eyebrow">{eyebrow}</div>}
-      <h2 className="font-display text-3xl sm:text-4xl tracking-tight mt-2">{children}</h2>
-      {sub && <p className="text-ink2 text-sm mt-2 max-w-3xl leading-relaxed">{sub}</p>}
+      <h2 className="font-display text-3xl sm:text-[34px] leading-tight tracking-tight mt-2">{children}</h2>
+      {sub && <p className="text-ink2 text-[15px] mt-2 max-w-3xl leading-relaxed">{sub}</p>}
     </div>
   );
 }
@@ -25,8 +27,60 @@ function Missing({ file }) {
   return <Placeholder title="Still computing">This section renders <span className="font-mono">{file}</span> from the research run.</Placeholder>;
 }
 
-function Formula({ children }) {
-  return <div className="font-mono text-[13px] bg-sunk rounded-xl px-4 py-3 overflow-x-auto whitespace-pre text-ink">{children}</div>;
+function Formula({ label, children }) {
+  return (
+    <div className="card overflow-hidden">
+      {label && <div className="border-b border-line px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-ink2">{label}</div>}
+      <div className="font-mono text-[13px] leading-relaxed bg-sunk/50 px-4 py-3 overflow-x-auto whitespace-pre text-ink">{children}</div>
+    </div>
+  );
+}
+
+/** Which section is in view, for the sidebar. */
+function useScrollSpy(ids) {
+  const [active, setActive] = useState(ids[0]);
+  useEffect(() => {
+    const els = ids.map((id) => document.getElementById(id)).filter(Boolean);
+    const io = new IntersectionObserver(
+      (entries) => {
+        const vis = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (vis[0]) setActive(vis[0].target.id);
+      },
+      { rootMargin: "-15% 0px -70% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [ids]);
+  return active;
+}
+
+/** Sticky contents list on large screens; a scrollable chip row on small ones. */
+function Contents({ active }) {
+  return (
+    <>
+      <nav className="lg:hidden flex gap-2 overflow-x-auto -mx-4 px-4 pb-2" aria-label="Sections">
+        {TOC.map(([id, l]) => (
+          <a key={id} href={`#${id}`} className={`chip shrink-0 ${active === id ? "bg-primary text-white border-primary" : "hover:bg-sunk"}`}>{l}</a>
+        ))}
+      </nav>
+      <nav className="hidden lg:block sticky top-24 self-start" aria-label="Sections">
+        <div className="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-3">On this page</div>
+        <ol className="border-l border-line">
+          {TOC.map(([id, l], i) => (
+            <li key={id}>
+              <a
+                href={`#${id}`}
+                className={`-ml-px flex items-center gap-2.5 border-l-2 py-1.5 pl-4 text-sm transition-colors ${active === id ? "border-accent text-ink font-medium" : "border-transparent text-ink2 hover:text-ink hover:border-line"}`}
+              >
+                <span className={`font-mono text-[11px] ${active === id ? "text-accent" : "text-muted"}`}>{String(i + 1).padStart(2, "0")}</span>
+                {l}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </>
+  );
 }
 
 function cfgLabel(c) {
@@ -154,6 +208,7 @@ export default function DocsPage() {
   // (s.walkforward_oos) is shown in the research as the cautionary case: it chased APY in calm years and lost 24% in 2008.
   const oos = s?.walkforward_policyB?.["0.125"] || s?.walkforward_oos;
   const boot = stress.data?.bootstrap || s?.bootstrap;
+  const active = useScrollSpy(TOC_IDS);
 
   return (
     <>
@@ -161,12 +216,10 @@ export default function DocsPage() {
         Every number here comes from a walk-forward backtest: each price and each parameter choice uses only data that existed at the
         time. Pool results are in USD; cover on foreign stocks pays in USD on the stock's local-currency fall.
       </PageHead>
-      <Section>
-        <nav className="flex gap-2 overflow-x-auto pb-2 sticky top-16 z-30 bg-paper/90 backdrop-blur -mx-4 px-4 py-2 border-b border-line">
-          {TOC.map(([id, l]) => <a key={id} href={`#${id}`} className="chip shrink-0 hover:bg-sunk">{l}</a>)}
-        </nav>
-
-        <div className="mt-10" id="summary">
+      <Section className="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12 pb-10">
+        <Contents active={active} />
+        <div className="min-w-0">
+        <div className="mt-2 scroll-mt-24" id="summary">
           {!s ? <Missing file="global_summary.json" /> : (
             <>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -223,15 +276,15 @@ export default function DocsPage() {
               <p><span className="text-ink font-medium">The pool.</span> A reserve never backs policies, every policy's maximum payout is locked when it is sold, and no single stock can use more than its cap.</p>
             </div>
             <div className="space-y-3">
-              <Formula>{`floor  = deposit / (1 + r·T)        r = T-bill rate locked at issue
+              <Formula label="The note: principal floor">{`floor  = deposit / (1 + r·T)        r = T-bill rate locked at issue
 sleeve = deposit − floor            the only money at risk`}</Formula>
-              <Formula>{`payout per $1 = min( max(−b − g, 0), c )
+              <Formula label="The cover: payout">{`payout per $1 = min( max(−b − g, 0), c )
 g = close(expiry) / close(start) − 1`}</Formula>
-              <Formula>{`σ_period = σ_daily(20d) · √(trading days)
+              <Formula label="The price: standardised falls">{`σ_period = σ_daily(20d) · √(trading days)
 z_i      = g_i / σ_period,i           (all prior periods, all markets)
 fair     = mean_i  min( max(−b − σ_today·z_i, 0), c )
 premium  = max(markup × fair, 1bp)   refuse if premium > cap`}</Formula>
-              <Formula>{`capacity = (1 − R) · pool assets − locked
+              <Formula label="The vault: capacity">{`capacity = (1 − R) · pool assets − locked
 per stock ≤ m · (1 − R) · pool assets`}</Formula>
             </div>
           </div>
@@ -360,6 +413,7 @@ per stock ≤ m · (1 − R) · pool assets`}</Formula>
             <div className="card p-5"><div className="text-ink font-medium mb-1">Demand</div>Markup and utilisation are assumptions. A backtest cannot know whether holders will pay 1.5× fair value, or whether buyers know something the price does not.</div>
             <div className="card p-5"><div className="text-ink font-medium mb-1">Rates</div>The saver's upside depends on the T-bill rate. When rates were near zero, the sleeve was tiny and the note had little to work with.</div>
           </div>
+        </div>
         </div>
       </Section>
     </>

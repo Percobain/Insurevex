@@ -1,73 +1,53 @@
 "use client";
-import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { ThemeToggle } from "./Theme";
+import Navbar from "@/components/ui/navbar";
 import KycBadge from "./KycBadge";
 
 const NAV = [
-  { href: "/protect", label: "Protect" },
-  { href: "/save", label: "Save" },
-  { href: "/pool", label: "Pool" },
-  { href: "/agent", label: "Agent" },
-  { href: "/docs", label: "Research" },
-  { href: "/activity", label: "Activity" },
-  { href: "/issuer", label: "Issuer" },
+  { label: "Protect", href: "/protect" },
+  { label: "Save", href: "/save" },
+  { label: "Pool", href: "/pool" },
+  { label: "Agent", href: "/agent" },
+  { label: "Research", href: "/docs" },
+  { label: "Activity", href: "/activity" },
+  { label: "Issuer", href: "/issuer" },
 ];
-
-export function Logo() {
-  return (
-    <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="InsureVEX home">
-      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
-        <rect x="1" y="1" width="30" height="30" rx="9" fill="var(--ink)" />
-        <path d="M8 19.5 L13 14 L17 17.5 L24 10" stroke="var(--paper)" strokeWidth="2.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M7 23.5 H25" stroke="var(--accent)" strokeWidth="2.4" strokeLinecap="round" />
-      </svg>
-      <span className="font-semibold tracking-tight text-[17px]">
-        Insure<span className="text-accent">VEX</span>
-      </span>
-    </Link>
-  );
-}
 
 export default function Header() {
   const path = usePathname();
-  const [open, setOpen] = useState(false);
+  // Hide while scrolling down, come back on any scroll up (and always at the top of the page).
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
+  useEffect(() => {
+    const on = () => {
+      const y = window.scrollY;
+      const dy = y - lastY.current;
+      if (y < 80) setHidden(false);
+      else if (dy > 6) setHidden(true);
+      else if (dy < -6) setHidden(false);
+      if (Math.abs(dy) > 6) lastY.current = y;
+    };
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
+  useEffect(() => setHidden(false), [path]);
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-paper/85 backdrop-blur">
-      <div className="mx-auto max-w-page px-4 h-16 flex items-center gap-4">
-        <Logo />
-        <nav className="hidden lg:flex items-center gap-1 ml-4">
-          {NAV.map((n) => (
-            <Link
-              key={n.href}
-              href={n.href}
-              className={`px-3 h-9 grid place-items-center rounded-lg text-sm ${path?.startsWith(n.href) ? "text-ink bg-sunk" : "text-ink2 hover:text-ink"}`}
-            >
-              {n.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="ml-auto flex items-center gap-2">
-          <div className="hidden sm:block"><KycBadge /></div>
-          <ThemeToggle />
-          <ConnectButton chainStatus={{ smallScreen: "icon", largeScreen: "full" }} accountStatus={{ smallScreen: "avatar", largeScreen: "address" }} showBalance={false} />
-          <button className="lg:hidden h-9 w-9 grid place-items-center rounded-lg border border-line" onClick={() => setOpen((v) => !v)} aria-label="Menu">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
-          </button>
-        </div>
-      </div>
-      {open && (
-        <nav className="lg:hidden border-t border-line px-4 py-2 grid grid-cols-2 gap-1 bg-paper">
-          {NAV.map((n) => (
-            <Link key={n.href} href={n.href} onClick={() => setOpen(false)} className={`px-3 h-10 flex items-center rounded-lg text-sm ${path?.startsWith(n.href) ? "bg-sunk text-ink" : "text-ink2"}`}>
-              {n.label}
-            </Link>
-          ))}
-          <div className="col-span-2 py-2"><KycBadge /></div>
-        </nav>
-      )}
-    </header>
+    <Navbar
+      brand="InsureVEX"
+      className={`sticky top-0 z-40 transition-transform duration-300 ease-out ${hidden ? "-translate-y-full" : "translate-y-0"}`}
+      items={NAV.map((n) => ({ ...n, active: Boolean(path?.startsWith(n.href)) }))}
+      action={
+        <>
+          <div className="hidden sm:block font-sans">
+            <KycBadge />
+          </div>
+          <div className="font-sans">
+            <ConnectButton chainStatus="icon" accountStatus={{ smallScreen: "avatar", largeScreen: "address" }} showBalance={false} label="Connect wallet" />
+          </div>
+        </>
+      }
+    />
   );
 }

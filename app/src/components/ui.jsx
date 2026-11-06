@@ -4,7 +4,35 @@ import { chainMeta } from "@/lib/chains";
 import { isDeployed } from "@/lib/contracts";
 import { shortHash, shortAddr } from "@/lib/format";
 
-export function PageHead({ eyebrow, title, children, right }) {
+/**
+ * Page header. With `art`, the scene sits beside the title (two columns on large screens) and `facts` show as a short
+ * row of big numbers under the description. Without it, the classic single-column header.
+ */
+export function PageHead({ eyebrow, title, children, right, art, facts }) {
+  if (art) {
+    return (
+      <div className="mx-auto max-w-page px-4 pt-10 sm:pt-14 pb-10 grid lg:grid-cols-[1fr_1.15fr] gap-8 lg:gap-12 items-center">
+        <div className="min-w-0">
+          {eyebrow && <div className="eyebrow mb-3">{eyebrow}</div>}
+          <h1 className="font-display text-4xl sm:text-5xl leading-[1.03] tracking-tight">{title}</h1>
+          {children && <p className="text-ink2 mt-5 text-base leading-relaxed max-w-xl">{children}</p>}
+          {facts && (
+            <dl className="mt-8 grid grid-cols-3 divide-x divide-line rounded-2xl border border-line bg-card">
+              {facts.map(([v, k]) => (
+                <div key={k} className="px-4 py-4">
+                  <dt className="sr-only">{k}</dt>
+                  <dd className="text-2xl font-semibold tracking-tight tabular">{v}</dd>
+                  <dd className="mt-1 text-xs leading-snug text-ink2">{k}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {right && <div className="mt-6">{right}</div>}
+        </div>
+        <div className="min-w-0">{art}</div>
+      </div>
+    );
+  }
   return (
     <div className="mx-auto max-w-page px-4 pt-10 sm:pt-14 pb-6 flex flex-col sm:flex-row sm:items-end gap-4 justify-between">
       <div className="max-w-2xl">
@@ -13,6 +41,38 @@ export function PageHead({ eyebrow, title, children, right }) {
         {children && <p className="text-ink2 mt-4 text-[15px] leading-relaxed">{children}</p>}
       </div>
       {right}
+    </div>
+  );
+}
+
+/** Section heading used across pages: eyebrow, title, one-line description, optional action on the right. */
+export function SectionHead({ eyebrow, title, children, right, id }) {
+  return (
+    <div id={id} className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4 scroll-mt-28">
+      <div className="max-w-2xl">
+        {eyebrow && <div className="eyebrow">{eyebrow}</div>}
+        <h2 className="font-display text-3xl sm:text-[34px] leading-tight tracking-tight mt-2">{title}</h2>
+        {children && <p className="text-ink2 mt-2 text-[15px] leading-relaxed">{children}</p>}
+      </div>
+      {right && <div className="shrink-0">{right}</div>}
+    </div>
+  );
+}
+
+/** shadcn-style card with a header (title, description, action) and a body. */
+export function Panel({ title, desc, right, children, className = "" }) {
+  return (
+    <div className={`card overflow-hidden ${className}`}>
+      {(title || right) && (
+        <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
+          <div className="min-w-0">
+            {title && <h3 className="text-[15px] font-semibold tracking-tight">{title}</h3>}
+            {desc && <p className="mt-0.5 text-[13px] text-ink2 leading-snug">{desc}</p>}
+          </div>
+          {right && <div className="shrink-0">{right}</div>}
+        </div>
+      )}
+      <div className="px-5 py-4">{children}</div>
     </div>
   );
 }

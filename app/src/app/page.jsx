@@ -1,44 +1,29 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { useData } from "@/lib/api";
 import { usePoolState } from "@/lib/usePoolState";
 import { CHAINS, CHAIN_META, DEFAULT_CHAIN_ID } from "@/lib/chains";
 import { isDeployed, addr } from "@/lib/contracts";
-import { EXCHANGES, REGIONS, flag } from "@/lib/exchanges";
 import { fmtPct, fmtUnits, fmtNum, fromUnits } from "@/lib/format";
 import { Section, Stat } from "@/components/ui";
-import MoneyFlow from "@/components/MoneyFlow";
+import ExchangeGlobe from "@/components/ExchangeGlobe";
+import { LayerArt, SaverArt, HolderArt, SettleArt, PoolArt, SystemArt } from "@/components/IsoArt";
+
+// Same split as ProtectedNote.floorFor: floor = face / (1 + r * t). A 1-year note at a 5% T-bill rate.
+const FACE = 1000;
+const FLOOR = FACE / (1 + 0.05 * 1);
+const SLEEVE = FACE - FLOOR;
 
 function NoteExample() {
-  // 3-year note at a 4% locked T-bill rate (simple accrual, same formula as ProtectedNote.floorFor)
-  const face = 1000;
-  const floor = face / (1 + 0.04 * 3);
-  const sleeve = face - floor;
   return (
-    <div className="card p-5 sm:p-6">
-      <div className="flex items-baseline justify-between">
-        <div className="label">A $1,000 three-year note</div>
-        <div className="text-xs text-muted">T-bill rate 4.0%</div>
+    <div className="card p-5">
+      <div className="text-sm font-medium">$1,000 note · 1 year · T-bills at 5%</div>
+      <div className="mt-4 h-11 rounded-lg overflow-hidden flex border border-line text-sm" aria-hidden="true">
+        <div className="bg-sunk grid place-items-center text-ink2" style={{ width: `${(FLOOR / FACE) * 100}%` }}>T-bills ${fmtNum(FLOOR, 2)}</div>
+        <div className="bg-accent text-white grid place-items-center font-medium" style={{ width: `${(SLEEVE / FACE) * 100}%`, minWidth: 64 }}>${fmtNum(SLEEVE, 2)}</div>
       </div>
-      <div className="mt-5 h-12 rounded-xl overflow-hidden flex border border-line" aria-hidden="true">
-        <div className="bg-sunk grid place-items-center text-xs text-ink2" style={{ width: `${(floor / face) * 100}%` }}>
-          T-bill floor
-        </div>
-        <div className="bg-accent text-accentInk grid place-items-center text-xs font-medium" style={{ width: `${(sleeve / face) * 100}%` }}>
-          Sleeve
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4 mt-5 text-sm">
-        <div>
-          <div className="text-2xl font-semibold tabular">${fmtNum(floor, 2)}</div>
-          <div className="text-ink2 mt-1">buys tokenised T-bills that grow back to exactly $1,000 at maturity.</div>
-        </div>
-        <div>
-          <div className="text-2xl font-semibold tabular text-accent">${fmtNum(sleeve, 2)}</div>
-          <div className="text-ink2 mt-1">underwrites crash floors and pays you the premiums as coupons.</div>
-        </div>
-      </div>
-      <div className="mt-5 pt-4 border-t border-line text-sm flex items-center justify-between">
+      <div className="mt-4 flex items-center justify-between text-sm">
         <span className="text-ink2">Worst case at maturity</span>
         <span className="font-semibold tabular">$1,000.00</span>
       </div>
@@ -47,21 +32,115 @@ function NoteExample() {
 }
 
 function HolderExample() {
-  const value = 10000, b = 0.1, c = 0.2, fall = 0.25, premium = 0.009;
+  const value = 10000, b = 0.1, c = 0.2, fall = 0.25, premium = 90;
   const payout = value * Math.min(Math.max(fall - b, 0), c);
   return (
-    <div className="card p-5 sm:p-6">
-      <div className="flex items-baseline justify-between">
-        <div className="label">$10,000 of NVDA, one month</div>
-        <div className="text-xs text-muted">deductible 10% · cap 20%</div>
+    <div className="card p-5">
+      <div className="text-sm font-medium">$10,000 NVDA · 1 month · covers a 10–30% fall</div>
+      <div className="mt-4 space-y-2 text-sm tabular">
+        <div className="flex justify-between"><span className="text-ink2">Premium</span><span>−${fmtNum(premium)}</span></div>
+        <div className="flex justify-between"><span className="text-ink2">NVDA falls 25%</span><span className="text-bad">−${fmtNum(value * fall)}</span></div>
+        <div className="flex justify-between"><span className="text-ink2">Vault pays 25% − 10%</span><span className="text-good">+${fmtNum(payout)}</span></div>
+        <div className="flex justify-between pt-2 border-t border-line font-semibold"><span>Net loss</span><span>−${fmtNum(value * fall - payout + premium)}</span></div>
       </div>
-      <div className="mt-5 space-y-2.5 text-sm tabular">
-        <div className="flex justify-between"><span className="text-ink2">Premium paid upfront</span><span>−${fmtNum(value * premium)}</span></div>
-        <div className="flex justify-between"><span className="text-ink2">Stock falls 25%</span><span className="text-bad">−${fmtNum(value * fall)}</span></div>
-        <div className="flex justify-between"><span className="text-ink2">InsureVEX pays the fall beyond 10%</span><span className="text-good">+${fmtNum(payout)}</span></div>
-        <div className="flex justify-between pt-2.5 border-t border-line font-semibold"><span>Net loss</span><span>−${fmtNum(value * fall - payout + value * premium)}</span></div>
+    </div>
+  );
+}
+
+/** Numbered facts, one line each. */
+function Facts({ items }) {
+  return (
+    <ol className="space-y-4">
+      {items.map((t, i) => (
+        <li key={i} className="flex gap-3">
+          <span className="mt-0.5 h-6 w-6 shrink-0 rounded-full bg-primary text-white grid place-items-center text-xs font-semibold">{i + 1}</span>
+          <span className="text-[15px] leading-relaxed text-ink">{t}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+const INVESTORS = [
+  {
+    key: "saver",
+    kicker: "Type 1",
+    label: "Saver",
+    title: "Can't afford to lose principal.",
+    art: <SaverArt />,
+    facts: [
+      <>$952 buys T-bills that grow back to <b>$1,000</b> by maturity.</>,
+      <>$48 buys <b>vault units</b> at today&apos;s unit price.</>,
+      <>Every holder&apos;s premium raises the unit price. At maturity: <b>$1,000 + the units</b>.</>,
+    ],
+    example: <NoteExample />,
+    href: "/save",
+    cta: "Buy a protected note",
+  },
+  {
+    key: "holder",
+    kicker: "Type 2",
+    label: "Holder",
+    title: "Wants yield, fears a crash.",
+    art: <HolderArt />,
+    facts: [
+      <>Owns a stock on any exchange. The <b>pricing engine</b>, backtested over 25 years, quotes the premium.</>,
+      <>The first <b>10%</b> of a fall is the holder&apos;s. The next <b>20%</b> is covered.</>,
+      <>The $2,000 max payout is <b>locked in the vault</b> before the cover is sold. Settled on the official close.</>,
+    ],
+    example: <HolderExample />,
+    href: "/protect",
+    cta: "Protect a stock",
+  },
+  {
+    key: "pro",
+    kicker: "Optional",
+    label: "Pro LP",
+    title: "Takes the first loss for a bigger share.",
+    art: <PoolArt />,
+    facts: [
+      <>Deposits <b>first-loss</b> capital into the vault.</>,
+      <>Earns a <b>bigger share of premiums</b> for taking that risk.</>,
+      <>Losses hit premiums, then Pro LP, then savers&apos; units. The <b>T-bill floor is never touched</b>.</>,
+    ],
+    example: null,
+    href: "/pool",
+    cta: "See the vault",
+  },
+];
+
+/** shadcn-style tabs: a segmented list and one panel. */
+function InvestorTabs() {
+  const [i, setI] = useState(0);
+  const t = INVESTORS[i];
+  return (
+    <div>
+      <div role="tablist" aria-label="Investor type" className="inline-flex flex-wrap rounded-xl border border-line bg-sunk p-1 gap-1">
+        {INVESTORS.map((x, k) => (
+          <button
+            key={x.key}
+            role="tab"
+            aria-selected={i === k}
+            onClick={() => setI(k)}
+            className={`h-10 px-4 rounded-lg text-sm font-medium transition-colors ${i === k ? "bg-card text-ink shadow-sm border border-line" : "text-ink2 hover:text-ink border border-transparent"}`}
+          >
+            <span className={i === k ? "text-accent" : "text-muted"}>{x.kicker}</span>
+            <span className="mx-1.5 text-line">/</span>
+            {x.label}
+          </button>
+        ))}
       </div>
-      <p className="text-xs text-muted mt-4">Illustrative premium. Live quotes come from the pricing engine and the official close settles every policy.</p>
+      <div role="tabpanel" className="mt-8 grid lg:grid-cols-[1.35fr_1fr] gap-8 lg:gap-12 items-start">
+        <div key={t.key}>{t.art}</div>
+        <div className="lg:pt-4">
+          <h3 className="font-display text-3xl tracking-tight">{t.title}</h3>
+          <div className="mt-6">
+            <Facts items={t.facts} />
+          </div>
+          {t.example && <div className="mt-6">{t.example}</div>}
+          <Link href={t.href} className="btn-primary h-11 px-5 mt-6">{t.cta} →</Link>
+        </div>
+      </div>
     </div>
   );
 }
@@ -75,78 +154,96 @@ export default function Landing() {
   const oos = s?.walkforward_policyB?.["0.125"] || s?.walkforward_oos;
   return (
     <>
-      <Section className="pt-12 sm:pt-20 pb-10">
-        <div className="grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-start">
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-[1440px] border-x border-line grid lg:grid-cols-[0.85fr_1.15fr] items-center gap-6 px-5 sm:px-10 lg:px-14 py-12 lg:py-16">
           <div>
-            <div className="eyebrow">Principal-protected notes · crash floors on any stock</div>
-            <h1 className="font-display text-[44px] leading-[1.02] sm:text-6xl lg:text-[76px] tracking-tight mt-4">
-              Two scared people
+            <div className="eyebrow">
+              <span className="text-ink">InsureVEX</span> the layer between two investors
+            </div>
+            <h1 className="font-display uppercase text-[40px] leading-[0.98] sm:text-[52px] lg:text-[56px] mt-4">
+              Principal safety for savers.
               <br />
-              protect each other.
+              <span className="text-accent">Crash cover</span> for holders.
             </h1>
-            <p className="text-ink2 text-lg mt-6 max-w-xl leading-relaxed">
-              Savers are scared of losing money. Shareholders are scared of a crash. InsureVEX puts them in one pool: the saver's
-              spare yield insures the shareholder's stock, and the saver always gets their deposit back.
+            <p className="text-ink2 text-base sm:text-lg mt-6 max-w-lg leading-relaxed">
+              Savers get their principal back from T-bills and put the rest in a vault. Holders pay that vault to cover a crash. Every premium makes each saver&apos;s vault unit worth more.
             </p>
-            <div className="grid sm:grid-cols-2 gap-3 mt-6 max-w-xl">
-              <div className="rounded-xl border border-line p-3.5">
-                <div className="text-sm font-semibold">Shares at your broker</div>
-                <div className="text-xs text-ink2 mt-1">Zerodha on NSE, Robinhood or IBKR on Nasdaq, LSE, TSE, HKEX. Holdings attested from a statement or the broker API.</div>
-              </div>
-              <div className="rounded-xl border border-line p-3.5">
-                <div className="text-sm font-semibold">Tokenised stocks</div>
-                <div className="text-xs text-ink2 mt-1">ATS equities on Hedera and other RWA tokens. The contract reads your balance on-chain.</div>
-              </div>
-            </div>
-            <p className="text-xs text-muted mt-3 max-w-xl">Either way the cover pays in stablecoin, settled against the exchange's official close.</p>
             <div className="flex flex-wrap gap-3 mt-8">
-              <Link href="/protect" className="btn-primary h-12 px-6">Protect a stock</Link>
-              <Link href="/save" className="btn-ghost h-12 px-6">Buy a protected note</Link>
-              <Link href="/docs" className="btn h-12 px-4 text-ink2 hover:text-ink">Read the research →</Link>
+              <Link href="/save" className="btn-primary h-12 px-6">Save with a guarantee</Link>
+              <Link href="/protect" className="btn h-12 px-6 bg-card border border-line hover:bg-sunk">Protect a stock</Link>
             </div>
-            <div className="flex flex-wrap gap-2 mt-8">
-              {CHAINS.map((c) => (
-                <span key={c.id} className="chip">
-                  <span className={`h-1.5 w-1.5 rounded-full ${isDeployed(c.id) ? "bg-good" : "bg-muted"}`} />
-                  {CHAIN_META[c.id].short} · {CHAIN_META[c.id].stable}
+          </div>
+          <div className="min-w-0">
+            <LayerArt />
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-[1440px] border-x border-line grid lg:grid-cols-[1.1fr_1fr]">
+          <div className="px-5 sm:px-10 lg:px-14 py-8 lg:border-r border-line">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink"><span className="mr-0.5">//</span>Settles on</div>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-4">
+              {CHAINS.map((c, i) => (
+                <span key={c.id} className="flex items-center gap-6">
+                  {i > 0 && <span className="h-1 w-1 rounded-full bg-muted" />}
+                  <span className="text-2xl font-semibold tracking-tight text-muted">{CHAIN_META[c.id].short}</span>
+                  <span className="text-xs text-muted -ml-4">{CHAIN_META[c.id].stable}</span>
                 </span>
               ))}
             </div>
           </div>
-          <div className="space-y-4">
-            <NoteExample />
-            <HolderExample />
+          <div className="px-5 sm:px-10 lg:px-14 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6">
+            {[
+              ["Pool APY", oos ? fmtPct(oos.total_apy) : "8.8%"],
+              ["Worst year", oos ? fmtPct(oos.worst_year) : "−11%"],
+              ["Markets", s ? fmtNum(s.markets) : "23"],
+              ["Principal lost", "$0"],
+            ].map(([k, v]) => (
+              <div key={k}>
+                <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted"><span className="mr-0.5">//</span>{k}</div>
+                <div className="text-2xl font-semibold tracking-tight mt-3 tabular">{v}</div>
+              </div>
+            ))}
           </div>
         </div>
-      </Section>
+      </section>
 
-      <Section className="py-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Stat label="Markets backtested" value={s ? fmtNum(s.markets) : "23"} sub={s ? `${fmtNum(s.names)} stocks, ${s.data_range?.[0]?.slice(0, 4)}–${s.data_range?.[1]?.slice(0, 4)}` : "2001–2026"} />
-          <Stat label="Pool APY, out of sample" value={oos ? fmtPct(oos.total_apy) : "—"} sub={oos ? `${fmtPct(oos.uw_apy)} above T-bills · walk-forward, R50/u25` : "loading backtest"} />
-          <Stat label="Worst year for the pool" value={oos ? fmtPct(oos.worst_year) : "—"} sub={oos ? `${oos.worst_year_label} · max drawdown ${fmtPct(oos.maxdd)}` : ""} tone="bad" />
-          <Stat label="Saver principal lost" value="$0" sub="in every simulated note, every market" tone="good" />
-        </div>
-      </Section>
-
-      <Section className="py-14">
+      <section id="how" className="mx-auto max-w-page px-4 py-16 scroll-mt-28">
         <div className="max-w-2xl">
-          <div className="eyebrow">How the money moves</div>
-          <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Premiums in, crash payouts out, principal untouched.</h2>
+          <div className="eyebrow">Two investors, one layer</div>
+          <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Each side pays for what the other wants.</h2>
         </div>
-        <div className="mt-10"><MoneyFlow /></div>
-        <div className="grid md:grid-cols-3 gap-4 mt-10">
-          {[
-            ["1 · Save", "A saver deposits stablecoins. Most of it buys tokenised T-bills sized to grow back to the full deposit by maturity. The rest, the sleeve, joins the underwriting pool."],
-            ["2 · Protect", "A shareholder proves they own the stock and buys a floor for a week or a month. If the official close falls more than the deductible, the pool pays the extra fall, up to the cap."],
-            ["3 · Settle", "Every policy is fully collateralised and settles from the official close. Quiet months turn premiums into coupons for savers. At maturity savers get their deposit back plus what the sleeve earned."],
-          ].map(([t, d]) => (
-            <div key={t} className="card p-5">
-              <div className="font-semibold">{t}</div>
-              <p className="text-sm text-ink2 mt-2 leading-relaxed">{d}</p>
+        <div className="mt-10">
+          <InvestorTabs />
+        </div>
+      </section>
+
+      <Section className="py-16">
+        <div className="grid lg:grid-cols-[1fr_1.35fr] gap-8 lg:gap-12 items-center">
+          <div>
+            <div className="eyebrow">At expiry</div>
+            <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Settled on the official close.</h2>
+            <div className="mt-8">
+              <Facts
+                items={[
+                  <>The exchange&apos;s official closing price is posted on-chain.</>,
+                  <>NVDA fell 25%: the vault pays <b>$1,500</b>, the part between 10% and 25%.</>,
+                  <>No crash: nothing is paid, the $2,000 is released and the <b>$90 stays with savers</b>.</>,
+                ]}
+              />
             </div>
-          ))}
+          </div>
+          <SettleArt />
         </div>
+      </Section>
+
+      <Section className="py-16">
+        <div className="max-w-2xl">
+          <div className="eyebrow">Under the hood</div>
+          <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Five contracts. Every rule on-chain.</h2>
+        </div>
+        <div className="mt-10"><SystemArt /></div>
       </Section>
 
       <Section className="py-14">
@@ -154,24 +251,12 @@ export default function Landing() {
           <div className="max-w-2xl">
             <div className="eyebrow">Any listed stock</div>
             <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">23 exchanges, one pool.</h2>
-            <p className="text-ink2 mt-3">No tokenised share needed: holders prove ownership with a broker statement or demat API, or hold an ATS-tokenised share on Hedera.</p>
+            <p className="text-ink2 mt-3">No tokenised share needed: holders prove ownership with a broker statement or demat API, or hold an ATS-tokenised share on Hedera. Either way the cover pays in stablecoin, settled against the exchange&apos;s official close.</p>
           </div>
           <Link href="/protect" className="btn-ghost shrink-0">Find your stock</Link>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-          {REGIONS.map((r) => (
-            <div key={r} className="card p-5">
-              <div className="label">{r}</div>
-              <ul className="mt-3 space-y-2 text-sm">
-                {EXCHANGES.filter((e) => e.region === r).map((e) => (
-                  <li key={e.id} className="flex items-center justify-between gap-2">
-                    <span className="truncate"><span className="mr-2" aria-hidden="true">{flag(e.code)}</span>{e.country}</span>
-                    <span className="text-muted text-xs shrink-0">{e.exchange}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        <div className="mt-10">
+          <ExchangeGlobe />
         </div>
       </Section>
 
