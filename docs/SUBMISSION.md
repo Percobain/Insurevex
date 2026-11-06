@@ -2,6 +2,24 @@
 
 Live app: **https://insurevex-app.vercel.app** · API: **https://insurevex-api.vercel.app/api/health** · Repo: https://github.com/Percobain/ethgmum
 
+The x402 integration below is implemented and demonstrated locally with a persistent merchant. It is not deployed to the existing Vercel API: payment mode requires durable SQLite state and deliberately rejects serverless deployment. The repository is currently private; public submission requires publishing the reviewed source and evidence.
+
+## Hedera: AI Agents That Pay — x402
+
+| Requirement | Evidence |
+|---|---|
+| x402-protected endpoint with Hedera settlement | `POST /api/agent/underwrite`, official facilitator, `hedera:testnet` |
+| Autonomous discovery and paid request | `server/scripts/agent.js`: discovery → 402 → signed transfer → settled quote → insurance purchase, without per-payment approval |
+| Settled transaction ID in README | `0.0.9185802@1793930226.658562707`, [HashScan](https://hashscan.io/testnet/transaction/0.0.9185802%401793930226.658562707) |
+| Demo video <= 5 minutes | [42.5-second recording of the actual autonomous run](evidence/hedera-x402-demo.mp4) |
+| Insurance payment and policy issuance | [Policy #4, premium 0.002091 test USD](https://hashscan.io/testnet/transaction/0x55a420aa99da3be5f0296ec3ff7bec6de018aa9ca79a297baff3cb4674085b49) |
+| Spending controls | Durable budgets, exact premium allowance, pinned merchant/contracts, position limits, on-chain holdings, stop switch, no retry of uncertain payments |
+| HCS audit | Restricted topic `0.0.11332661`, [spending-log digest anchor](https://hashscan.io/testnet/transaction/0.0.11332658%401793930247.715859731) |
+| Setup, architecture and payment flow | [Integration guide](HEDERA_X402.md), root README, sanitised receipts and independent Mirror Node verification |
+| Public repository | Pending: the existing repository is private; do not expose its history without owner approval |
+
+New work: autonomous policy client, paid underwriting merchant, x402 settlement, durable safety controls, HCS spending anchor and Agent dashboard. Existing work: note/pool/cover contracts, pricing engine, ATS securities and scheduled bond coupons. The runtime is a deterministic agent/client; no language model has key access. HTS USDC, HCS-14/ERC-8004, multi-agent negotiation and recurring x402 subscriptions are not claimed.
+
 ## The product in one line
 
 Savers buy principal-protected notes. The notes' spare yield insures stock holders (any listed stock, at any broker, or tokenised) against crashes. Everything settles in stablecoins with compliance enforced on-chain.
@@ -57,5 +75,5 @@ Arc Studio prompt to paste: *"Build InsureVEX: a principal-protected note (floor
 ## Still to do
 
 1. **Arc Studio**: sign in at studio.arc.io (accept the terms, Google or email). Claude can then drive Studio from Chrome to build the project and copy the shareable URL into the README.
-2. **Push to GitHub**: the last commits are local because GitHub rejects every push to this repo with `fatal error in commit_refs_rules` (even an empty commit). Run `git push` once GitHub accepts it again.
+2. **Publish reviewed source**: the repository is currently private. Publish a sanitised public copy, or change visibility only with owner approval. The x402 changes and demo evidence are local and have not been pushed.
 3. Record the three videos with the scripts above. For a payout on camera, post a crash price from `/issuer` on testnet and label it as simulated.

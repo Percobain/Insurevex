@@ -10,10 +10,12 @@ import { priceFloor, PARAMS, ENGINE_INFO, RECOMMENDED } from "./pricing.js";
 import { chain, activeChains, CHAINS, symbolId, signQuote, quoterKey } from "./chain.js";
 import { startKeeper, rememberSymbol, tick } from "./keeper.js";
 import { store } from "./store.js";
+import { mountAgentRoutes } from "./agent/merchant.js";
 
 const app = express();
 app.use(cors({ origin: process.env.CLIENT_ORIGIN?.split(",") || true }));
 app.use(express.json({ limit: "100kb" }));
+mountAgentRoutes(app);
 const wrap = (fn) => (req, res) => fn(req, res).catch((e) => res.status(e.status || 500).json({ ok: false, error: e.message }));
 const bad = (msg) => Object.assign(new Error(msg), { status: 400 });
 const fmt6 = (x) => Number(ethers.formatUnits(x, 6));
