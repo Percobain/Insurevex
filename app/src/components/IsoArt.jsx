@@ -655,7 +655,7 @@ export function LayerArt() {
 
   return (
     <Stage className="iso-bare">
-      <IsoSvg svgRef={ref} vb={[-400, -330, 800, 480]} role="img" aria-label="You save $1,000: $952 goes into US government bonds and $48 into the pool's earning part. A stock owner pays a $90 fee into the pool for crash protection, which grows the earning part.">
+      <IsoSvg svgRef={ref} vb={[-400, -330, 800, 480]} role="img" aria-label="A saver puts in $1,000: $952 goes into US government bonds and $48 into the pool's earning part. A stock owner pays a $90 fee into the pool for crash protection, which grows the earning part.">
         <Defs ids={ids} />
         <Floor id={ids.floor} />
         {/* lines on the ground between the pieces; the step's own lines light up */}
@@ -685,7 +685,7 @@ export function LayerArt() {
         {prem > 0 && prem < 1 && <Coin at={fly([H[0], H[1], 46], VTOP, smooth(prem), 80)} tone="accent" />}
         {shield > 0.01 && <Shield x={sx} y={sy} s={1.5} opacity={shield} />}
 
-        <Tag at={P(S[0] - 12, S[1] - 14, 60)} text="You save" tone="ink" dx={-40} dy={-30} />
+        <Tag at={P(S[0] - 12, S[1] - 14, 60)} text="Saver" tone="ink" dx={-40} dy={-30} />
         <Tag at={P(H[0] + 50, H[1] + 50, 10)} text="Stock owner" tone="ink" dx={50} dy={40} />
         <Tag at={P(0, 0, 40)} text={`Pool · part worth $${unit.toFixed(3)}`} tone="good" dy={-96} size="lg" />
         <Tag at={P(T[0], T[1], 78)} text="$952 → $1,000 at the end" dx={-30} dy={-34} opacity={span(phase, 0.2, 0.26) * (1 - out)} />
@@ -693,7 +693,7 @@ export function LayerArt() {
         <Tag at={P(E[0], E[1] + 8, 60)} text="price: $90 a month" dx={80} dy={-20} opacity={span(phase, 0.38, 0.42) * (1 - span(phase, 0.6, 0.64))} />
         <Tag at={[sx, sy - 18]} text="protected: 10% → 30% drop" tone="good" dx={50} dy={-30} opacity={shield} />
       </IsoSvg>
-      <Steps items={["You save $1,000", "A stock owner pays a $90 fee", "The fee grows your earning part"]} active={active} starts={[0, 0.37, 0.58]} onSeek={seek} />
+      <Steps items={["A saver puts in $1,000", "A stock owner pays a $90 fee", "The fee grows the saver's earning part"]} active={active} starts={[0, 0.37, 0.58]} onSeek={seek} />
     </Stage>
   );
 }
