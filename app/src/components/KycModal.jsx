@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useAccount } from "wagmi";
 import { apiPost } from "@/lib/api";
 import { useToasts } from "./Toasts";
+import BrandLogo from "./BrandLogo";
 
 export const COUNTRIES = [
   { code: 840, name: "United States" }, { code: 356, name: "India" }, { code: 826, name: "United Kingdom" },
@@ -38,7 +39,7 @@ export default function KycModal({ onClose }) {
     <div className="fixed inset-0 z-50 bg-black/40 grid place-items-center p-4" role="dialog" aria-modal="true" onClick={onClose}>
       <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="card w-full max-w-md p-6 space-y-4">
         <div>
-          <div className="eyebrow">ID check</div>
+          <div className="eyebrow flex items-center gap-2"><BrandLogo variant="icon" className="w-5" alt="" />ID check</div>
           <h2 className="text-xl font-semibold mt-1">Verify your ID</h2>
           <p className="text-sm text-ink2 mt-2">
             Needed once before you buy. This is a test version: no documents, and the issuer approves it quickly.

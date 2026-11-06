@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Navbar from "@/components/ui/navbar";
 import KycBadge from "./KycBadge";
 import WalletButton from "./WalletButton";
+import BrandLogo from "./BrandLogo";
 
 const NAV = [
   { label: "Protect", href: "/protect" },
@@ -41,6 +42,7 @@ export default function Header() {
   return (
     <Navbar
       brand="InsureVEX"
+      brandLogo={<BrandLogo className="w-[104px] sm:w-[118px]" priority />}
       className={`sticky top-0 z-40 transition-transform duration-300 ease-out ${hidden ? "-translate-y-full" : "translate-y-0"}`}
       items={NAV.map((n) => ({ ...n, active: Boolean(path?.startsWith(n.href)) }))}
       more={MORE.map((n) => ({ ...n, active: Boolean(path?.startsWith(n.href)) }))}

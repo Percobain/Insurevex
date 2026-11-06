@@ -9,11 +9,33 @@ const display = Inter_Tight({ subsets: ["latin"], weight: ["600", "700"], variab
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://insurevex-app.vercel.app"),
+  applicationName: "InsureVEX",
   title: "InsureVEX: protect your stocks, save safely",
   description: "Get paid if your stock crashes. Or save with your money back guaranteed, plus extra from the fees.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48 64x64", type: "image/x-icon" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/brand/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  openGraph: {
+    type: "website",
+    siteName: "InsureVEX",
+    title: "InsureVEX: protect your stocks, save safely",
+    description: "Protect your stocks. Grow your savings safely.",
+    images: [{ url: "/brand/social-card.png", width: 1200, height: 630, alt: "InsureVEX — protect your stocks, grow your savings safely" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "InsureVEX: protect your stocks, save safely",
+    description: "Protect your stocks. Grow your savings safely.",
+    images: ["/brand/social-card.png"],
+  },
 };
 
-export const viewport = { width: "device-width", initialScale: 1 };
+export const viewport = { width: "device-width", initialScale: 1, themeColor: "#f4f4f0" };
 
 export default function RootLayout({ children }) {
   return (

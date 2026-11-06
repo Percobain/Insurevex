@@ -94,16 +94,9 @@ export default function ProPanel({ chainId, account, pro }) {
               <Row k="Crash losses taken so far" v={usd(fromUnits(pro.totalProLosses))} />
               {account && <Row k="Your Pro money" v={myValue !== null ? usd(myValue) : "—"} />}
               <label className="label block mt-4" htmlFor="pro-amount">How much</label>
-              <div className="flex gap-2 mt-1.5">
-                <div className="relative flex-1 min-w-0">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted">$</span>
-                  <input id="pro-amount" className="input pl-7" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
-                </div>
-                <button className="btn-primary shrink-0" disabled={Boolean(addWhy) || Boolean(busy) || overBalance} onClick={deposit}>Add {usd(amt)}</button>
-                <button className="btn-ghost shrink-0" disabled={!account || Boolean(busy) || units <= 0n || overMax}
-                  onClick={() => run(`Withdraw ${usd(amt)} from Pro`, { address: pool, abi: PRO_ABI, functionName: "withdrawPro", args: [units] })}>
-                  Withdraw
-                </button>
+              <div className="relative mt-1.5">
+                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">$</span>
+                <input id="pro-amount" className="input h-12 w-full pl-8 text-lg tabular" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
               </div>
               {account && wallet.data !== undefined && (
                 <p className={`text-xs mt-2 ${overBalance ? "text-bad" : "text-muted"}`}>
@@ -112,7 +105,14 @@ export default function ProPanel({ chainId, account, pro }) {
                   {maxW !== undefined && maxW > 0n && <> · <button type="button" className="underline underline-offset-2" onClick={() => setAmount(String(fromUnits(maxW)))}>Withdraw max</button></>}
                 </p>
               )}
-              {addWhy && <p className="text-xs text-muted mt-1">{addWhy}</p>}
+              <div className="grid grid-cols-2 gap-2 mt-3">
+                <button className="btn-primary h-11" disabled={Boolean(addWhy) || Boolean(busy) || overBalance} onClick={deposit}>Add {usd(amt)}</button>
+                <button className="btn-ghost h-11" disabled={!account || Boolean(busy) || units <= 0n || overMax}
+                  onClick={() => run(`Withdraw ${usd(amt)} from Pro`, { address: pool, abi: PRO_ABI, functionName: "withdrawPro", args: [units] })}>
+                  Withdraw {usd(amt)}
+                </button>
+              </div>
+              {addWhy && <p className="text-xs text-muted mt-2">{addWhy}</p>}
               <p className="text-xs text-muted mt-1">
                 You can take out {maxW !== undefined ? fmtMoney(fromUnits(maxW)) : "—"} now. Money backing open protection unlocks when it ends.
               </p>

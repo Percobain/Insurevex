@@ -6,6 +6,7 @@ import {
 } from "recharts";
 import { useData } from "@/lib/api";
 import { Section, SectionHead, Seg } from "@/components/ui";
+import BrandLogo from "@/components/BrandLogo";
 
 // ------------------------------------------------------------------ formatting
 const P = 100_000;
@@ -362,6 +363,7 @@ function WorstAndProof({ m }) {
       </Section>
       <Section className="pt-16 sm:pt-24 pb-6">
         <div className="card p-6 sm:p-10 bg-ink text-paper">
+          <BrandLogo light className="w-[160px] sm:w-[200px] mb-8" />
           <div className="eyebrow !text-paper/70">7 · Not a slide</div>
           <h2 className="font-display text-3xl sm:text-4xl tracking-tight mt-2 max-w-3xl">It is live on three blockchains today. Try it with test money.</h2>
           <p className="mt-3 text-paper/80 max-w-2xl">Same rules as the numbers above: protection on stocks in 23 countries, a savings plan that cannot lose, and a pool that sets every payout aside before it sells protection.</p>

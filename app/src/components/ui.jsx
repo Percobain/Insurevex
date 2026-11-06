@@ -117,9 +117,13 @@ export function Placeholder({ title = "Not available yet", children }) {
   );
 }
 
-export function Seg({ value, onChange, options }) {
+const SEG_MOBILE_COLS = { 2: "max-sm:grid-cols-2", 3: "max-sm:grid-cols-3", 4: "max-sm:grid-cols-2" };
+
+/** `full`: on phones the choices become an even grid across the full width instead of wrapping. */
+export function Seg({ value, onChange, options, full = false }) {
+  const mobile = options.length > 4 ? "max-sm:grid max-sm:grid-cols-4 max-sm:w-full" : full ? `max-sm:grid max-sm:w-full ${SEG_MOBILE_COLS[options.length] || ""}` : "";
   return (
-    <div className={`seg ${options.length > 4 ? "max-sm:grid max-sm:grid-cols-4 max-sm:w-full" : ""}`} role="radiogroup">
+    <div className={`seg ${mobile}`} role="radiogroup">
       {options.map((o) => (
         <button key={String(o.value)} type="button" role="radio" aria-checked={value === o.value} data-on={value === o.value} className="seg-item" onClick={() => onChange(o.value)}>
           {o.label}

@@ -1,0 +1,16 @@
+Generated with the built-in image generation tool.
+The user's six references informed the direction; references 1–5 were supplied as image inputs (the tool accepts at most five).
+
+Final generation prompt:
+
+Use case: logo-brand.
+Create an exceptional original logo identity for "InsureVEX", using the five supplied images strictly as aesthetic references, not designs to copy.
+Reference roles: images 1 and 4 demonstrate powerful compact silhouettes and expressive negative-space cuts; images 2, 3 and 5 demonstrate custom lettering with inventive joins and flowing counters. Do not reproduce their specific stars, shapes, names, or arrow.
+Product: InsureVEX connects savers and stock owners. Savers fund stock-crash protection with a small part of their capital; stock owners' protection fees become saver earnings. The defining idea is reciprocal support and protection.
+Primary request: a beautifully resolved, striking, designer-quality BLACK-AND-CREAM identity. One original abstract symbol to the left of a bespoke lowercase wordmark reading exactly "insurevex". Use lowercase as an intentional typographic exploration of the brand InsureVEX.
+Symbol concept: two bold complementary curved wedges embracing around a crisp diagonal negative-space channel, creating a compact energetic abstract iv / vx monogram. They shelter each other and create a subtle grounded V at the base. Strong broad masses, controlled sweeping curves, a surprising negative-space discovery, two or three shapes maximum. Weight and character comparable to the reference symbols, but original architecture. It must be memorable as a solid single-color silhouette and readable as a 24px favicon. No enclosing circle, no shield, no ordinary checkmark, no literal handshake.
+Lettering: meticulously custom-designed heavy geometric lowercase sans, charismatic yet highly legible. Tight optical spacing. Rounded outer shoulders contrasted with sharp purposeful internal cuts, one or two sophisticated ligatures around the v/e/x area. Preserve every letter clearly: i n s u r e v e x. Make the terminal x particularly distinctive through the same diagonal negative-space language as the symbol. Avoid merely typesetting a common font. The symbol and lettering must feel cut from the same visual material. Wordmark should be the hero, icon around 1.15 times letter height.
+Composition: ONE finished horizontal logo centered on a warm ivory #f4f4f0 background, generous surrounding space, large scale, logo spans 82 percent of canvas width. All artwork in flat near-black #152321. Polished flat vector-like edges, immaculate typography, no texture.
+Art direction: independent contemporary identity studio, typographic intelligence, sculptural geometry, confident restraint. Bring the visual ambition of the references to a trustworthy financial brand.
+Constraints: one coherent logo lockup only, no contact sheet, no alternate versions, no design explanations, no tagline, no labels, no trademark or copyright symbols, no watermark. No gradients, shadows, 3D, grain, mockups, stock-market charts, coins, arrows, globes, chain links, or generic fintech motifs. Do not reuse the earlier teal-orange ribbon V.
+

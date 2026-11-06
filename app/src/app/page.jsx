@@ -8,6 +8,7 @@ import { fmtPct, fmtUnits } from "@/lib/format";
 import { Section } from "@/components/ui";
 import ExchangeGlobe from "@/components/ExchangeGlobe";
 import { LayerArt, SettleArt } from "@/components/IsoArt";
+import BrandLogo from "@/components/BrandLogo";
 
 const CHOICES = [
   {
@@ -65,7 +66,8 @@ export default function Landing() {
       <section className="border-b border-line">
         <div className="mx-auto max-w-[1440px] border-x border-line grid lg:grid-cols-[0.85fr_1.15fr] items-center gap-6 px-5 sm:px-10 lg:px-14 py-12 lg:py-16">
           <div>
-            <div className="eyebrow">
+            <div className="eyebrow flex items-center gap-2">
+              <BrandLogo variant="icon" className="w-6" alt="" />
               <span className="text-ink">InsureVEX</span>
             </div>
             <h1 className="font-display text-[40px] leading-[1.02] sm:text-[52px] lg:text-[56px] tracking-tight mt-4">

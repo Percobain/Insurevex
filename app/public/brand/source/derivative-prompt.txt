@@ -1,0 +1,6 @@
+Built-in image generation tool: transparent master edit.
+
+Use case: background-extraction.
+Image 1 is the approved InsureVEX logo and is the edit target. Produce a production-ready transparent master of EXACTLY this logo.
+Remove ONLY the warm ivory background, including within all counters, between the abstract icon's interlocking forms, and in the diagonal cuts. Preserve the precise outer and inner contours, all letterforms, exact spelling "insurevex", symbol geometry, relative size, kerning, alignment and spacing. Do not redesign or reinterpret anything. Flatten the existing very subtle texture in the dark artwork into one perfectly uniform solid #152321 ink color. Crisp antialiased edges. Genuinely transparent alpha everywhere outside the artwork. Keep the same wide horizontal layout and entire logo, no clipping. No new elements, no shadows, no effects, no additional text.
+
