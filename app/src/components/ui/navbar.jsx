@@ -106,7 +106,7 @@ export function Navbar({
     ));
 
   return (
-    <header className={cn("relative w-full border-b-2 border-dashed border-border bg-card font-mono shadow-xs select-none", className)} {...props}>
+    <header className={cn("relative w-full border-b-2 border-dashed border-border bg-card font-sans shadow-xs select-none", className)} {...props}>
       <div className="mx-auto flex w-full max-w-page items-center justify-between gap-4 px-4 py-3">
         {/* Brand */}
         <Link href="/" className="flex shrink-0 items-center gap-2 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary" aria-label={`${brand} home`}>
