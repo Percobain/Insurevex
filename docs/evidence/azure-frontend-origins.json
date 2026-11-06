@@ -1,0 +1,33 @@
+{
+  "verifiedAt": "2026-11-06T23:10:33.564224+00:00",
+  "backend": "https://insurevex-api-30d9bd1c.centralindia.cloudapp.azure.com",
+  "corsChecks": [
+    {
+      "origin": "https://www.insurevex.xyz",
+      "method": "GET",
+      "status": 200,
+      "allowOrigin": "https://www.insurevex.xyz"
+    },
+    {
+      "origin": "https://www.insurevex.xyz",
+      "method": "OPTIONS",
+      "status": 204,
+      "allowOrigin": "https://www.insurevex.xyz"
+    },
+    {
+      "origin": "https://insurevex.vercel.app",
+      "method": "GET",
+      "status": 200,
+      "allowOrigin": "https://insurevex.vercel.app"
+    },
+    {
+      "origin": "https://insurevex.vercel.app",
+      "method": "OPTIONS",
+      "status": 204,
+      "allowOrigin": "https://insurevex.vercel.app"
+    }
+  ],
+  "untrustedOriginNotAllowed": true,
+  "agentReadyAfterRestart": true,
+  "agentStatePreserved": true
+}

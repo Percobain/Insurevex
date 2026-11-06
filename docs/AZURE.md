@@ -68,18 +68,19 @@ Hosting this API does not deploy or schedule a CRE workflow.
 
 ## Connect the existing frontend
 
-The documented frontend at `https://insurevex-app.vercel.app` is live, but its
-deployment is not accessible to the currently logged-in Vercel account. Its
-existing deployment was left unchanged. In the **owning** Vercel project, set:
+The frontend origins are `https://www.insurevex.xyz` and
+`https://insurevex.vercel.app`. Both are allowed by the hosted backend's CORS
+configuration. In the frontend's Vercel project, set:
 
 ```env
 NEXT_PUBLIC_API_URL=https://insurevex-api-30d9bd1c.centralindia.cloudapp.azure.com
 ```
 
 Then redeploy that frontend. This checkout uses the same API base for the Agent
-page. Backend CORS currently permits that frontend and `http://localhost:3000`.
-If the actual frontend uses another origin, update `CLIENT_ORIGIN` in the VM's
-private environment file, then recreate the API container.
+page. The prior `https://insurevex-app.vercel.app` origin and
+`http://localhost:3000` remain allowed. Origins have no trailing slash in
+`CLIENT_ORIGIN`. Adding allowed origins does not change the frontend's build
+variables or redeploy it.
 
 ## Operations
 

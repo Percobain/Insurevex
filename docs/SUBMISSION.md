@@ -1,6 +1,6 @@
 # InsureVEX: submission guide (ETHGlobal)
 
-Live app: **https://insurevex-app.vercel.app** · API: **https://insurevex-api-30d9bd1c.centralindia.cloudapp.azure.com/api/health** · Repo: https://github.com/Percobain/ethgmum
+Live app: **https://www.insurevex.xyz** · Vercel frontend: **https://insurevex.vercel.app** · API: **https://insurevex-api-30d9bd1c.centralindia.cloudapp.azure.com/api/health** · Repo: https://github.com/Percobain/ethgmum
 
 Backend hosting and frontend connection status: [Azure deployment notes](AZURE.md). The frontend owner must redeploy with the Azure API URL to complete the frontend cutover.
 
