@@ -28,8 +28,9 @@ export function Navbar({
           href={item.href}
           aria-current={item.active ? "page" : undefined}
           className={cn(
-            "shrink-0 rounded-md px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition-colors",
-            item.active ? "bg-accent text-accent-foreground shadow-xs" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+            "relative shrink-0 rounded-md px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors",
+            "after:absolute after:left-2.5 after:right-2.5 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-accent after:transition-transform after:duration-200 after:origin-left",
+            item.active ? "text-foreground after:scale-x-100" : "text-muted-foreground hover:text-foreground after:scale-x-0 hover:after:scale-x-100 hover:after:bg-border",
           )}
         >
           {item.label}

@@ -4,7 +4,7 @@ import { useReadContract, useReadContracts } from "wagmi";
 import { ABI, ERC20_ABI, addr, notesOf, stableSymbol } from "@/lib/contracts";
 import { fmtDate, fmtDuration, fmtMoney, fmtPct, fromUnits, toUnits } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
-import { PageHead, Section, Notice, Row, useActiveChain, DeployGate, AddrLink, Placeholder } from "@/components/ui";
+import { PageHead, Section, SectionHead, Notice, Row, useActiveChain, DeployGate, AddrLink, Placeholder } from "@/components/ui";
 import { SaverArt } from "@/components/IsoArt";
 import { useKyc } from "@/components/KycBadge";
 import SaverCalculator from "@/components/SaverCalculator";
@@ -131,16 +131,17 @@ export default function SavePage() {
   const notes = notesOf(chainId);
   return (
     <>
-      <PageHead eyebrow="For savers" title="Your deposit back, guaranteed. Plus what the crash insurance earns.">
-        Each note splits your deposit in the same transaction: tokenised T-bills sized to grow back to your full deposit at maturity,
-        and a small sleeve that underwrites crash floors. Notes are restricted: only verified wallets can hold or receive them.
+      <PageHead
+        eyebrow="For savers · type 1"
+        title="Your deposit back, guaranteed."
+        art={<SaverArt />}
+        facts={[["$1,000", "back at maturity, from T-bills"], ["+ units", "vault units grow with every premium"], ["KYC", "only verified wallets hold notes"]]}
+      >
+        Each note splits your deposit in one transaction: T-bills sized to grow back to the full deposit by maturity, and a small
+        remainder that buys vault units. Holders&apos; premiums raise the unit price.
       </PageHead>
-      <Section className="pb-10">
-        <div className="max-w-3xl">
-          <SaverArt />
-        </div>
-      </Section>
       <Section>
+        <SectionHead eyebrow="Live on-chain" title="Pick a note">Read straight from the contract. Subscribe with a verified wallet.</SectionHead>
         <div className="space-y-3 mb-6">
           <DeployGate chainId={chainId}>{null}</DeployGate>
           {isConnected && deployed && !kyc.verified && <Notice>Verify your identity (header) before subscribing. The note contract checks the on-chain registry on every subscription and transfer.</Notice>}
@@ -151,7 +152,7 @@ export default function SavePage() {
           {deployed && notes.map((n) => <NoteCard key={n.address} note={n} chainId={chainId} account={address} kycOk={kyc.verified} />)}
         </div>
       </Section>
-      <Section className="mt-12">
+      <Section className="mt-16">
         <SaverCalculator />
       </Section>
     </>
