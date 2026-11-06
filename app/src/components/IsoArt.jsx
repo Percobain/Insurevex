@@ -77,6 +77,15 @@ function Defs({ ids }) {
       <pattern id={ids.hatchBad} width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
         <line x1="0" y1="0" x2="0" y2="5" className="iso-hatch-bad" />
       </pattern>
+      {/* soft top-down light on every side face (shared ids; identical in each scene) */}
+      <linearGradient id="iso-lit-side" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#f3f2ee" />
+        <stop offset="1" stopColor="#e2e0d9" />
+      </linearGradient>
+      <linearGradient id="iso-lit-front" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#e6e4dd" />
+        <stop offset="1" stopColor="#d3d0c7" />
+      </linearGradient>
       <pattern id="iso-grain" width="7" height="7" patternUnits="userSpaceOnUse">
         <circle cx="1" cy="1.5" r="0.55" className="iso-grain-dot" />
         <circle cx="4.5" cy="3" r="0.45" className="iso-grain-dot" />
@@ -134,7 +143,8 @@ function Cyl({ x, y, z = 0, r, h, className = "", topFill, top, style, shadow = 
 /** A stablecoin. tone: "" (neutral), "accent" (sleeve / premium), "good" (payout / coupon). */
 function Coin({ at, tone = "", opacity = 1 }) {
   if (!at) return null;
-  return <Cyl x={at[0]} y={at[1]} z={at[2]} r={11} h={4} className={`iso-coin ${tone ? `is-${tone}` : ""}`} style={{ opacity }} />;
+  // a coin: a short disc with an inner rim ring on its face
+  return <Cyl x={at[0]} y={at[1]} z={at[2]} r={11} h={4} className={`iso-coin ${tone ? `is-${tone}` : ""}`} style={{ opacity }} top={<circle cx="11" cy="11" r="7" className="iso-coin-ring" />} />;
 }
 
 /** The scene's viewBox, so labels can keep themselves inside it. */
