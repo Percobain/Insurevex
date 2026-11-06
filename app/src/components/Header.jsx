@@ -10,6 +10,7 @@ const NAV = [
   { href: "/protect", label: "Protect" },
   { href: "/save", label: "Save" },
   { href: "/pool", label: "Pool" },
+  { href: "/agent", label: "Agent" },
   { href: "/docs", label: "Research" },
   { href: "/activity", label: "Activity" },
   { href: "/issuer", label: "Issuer" },
