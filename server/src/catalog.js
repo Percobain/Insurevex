@@ -22,7 +22,7 @@ export const MARKETS = [
   { id: "NL", name: "Netherlands", country: "NLD", flag: "🇳🇱", currency: "EUR", exchange: "Euronext Amsterdam", symbols: [
     ["AMS:ASML", "ASML.AS", "ASML"], ["AMS:INGA", "INGA.AS", "ING"], ["AMS:AD", "AD.AS", "Ahold Delhaize"]] },
   { id: "CH", name: "Switzerland", country: "CHE", flag: "🇨🇭", currency: "CHF", exchange: "SIX", symbols: [
-    ["SIX:NESN", "NESN.SW", "Nestle"], ["SIX:NOVN", "NOVN.SW", "Novartis"], ["SIX:ROG", "ROG.SW", "Roche"], ["SIX:UBSG", "UBSG.SW", "UBS"]] },
+    ["SIX:NESN", "NESN.SW", "Nestle"], ["SIX:NOVN", "NOVN.SW", "Novartis"], ["SIX:ROG", "RO.SW", "Roche"], ["SIX:UBSG", "UBSG.SW", "UBS"]] },
   { id: "ES", name: "Spain", country: "ESP", flag: "🇪🇸", currency: "EUR", exchange: "BME", symbols: [
     ["BME:SAN", "SAN.MC", "Santander"], ["BME:ITX", "ITX.MC", "Inditex"], ["BME:IBE", "IBE.MC", "Iberdrola"]] },
   { id: "IT", name: "Italy", country: "ITA", flag: "🇮🇹", currency: "EUR", exchange: "Borsa Italiana", symbols: [

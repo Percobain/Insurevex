@@ -13,7 +13,7 @@ export const hederaTestnet = defineChain({
   id: 296,
   name: "Hedera Testnet",
   nativeCurrency: { name: "HBAR", symbol: "HBAR", decimals: 18 },
-  rpcUrls: { default: { http: ["https://testnet.hashio.io/api"] } },
+  rpcUrls: { default: { http: ["https://296.rpc.thirdweb.com", "https://testnet.hashio.io/api", "https://lb.routeme.sh/rpc/evm/296"] } }, // chainlist.org, tried in order
   blockExplorers: { default: { name: "HashScan", url: "https://hashscan.io/testnet" } },
   testnet: true,
 });
@@ -22,7 +22,7 @@ export const arcTestnet = defineChain({
   id: 5042002,
   name: "Arc Testnet",
   nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 },
-  rpcUrls: { default: { http: ["https://rpc.testnet.arc.network"] } },
+  rpcUrls: { default: { http: ["https://rpc.testnet.arc.network", "https://arc-testnet-rpc.publicnode.com", "https://arc-testnet.drpc.org"] } }, // chainlist.org, tried in order
   blockExplorers: { default: { name: "ArcScan", url: "https://explorer.testnet.arc.io" } },
   testnet: true,
 });

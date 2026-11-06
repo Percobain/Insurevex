@@ -1,15 +1,83 @@
 // Official daily closes from Yahoo Finance's public chart endpoint (no key), cached in memory.
 // sigmaDaily = 20-session realised volatility of log returns, known at the latest close (no lookahead).
-const cache = new Map(); // yahoo -> { at, data }
-const TTL = 10 * 60 * 1000;
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-export async function history(yahoo, range = "2y") {
-  const hit = cache.get(yahoo + range);
+const cache = new Map(); // yahoo+range -> { at, data }
+const inflight = new Map(); // yahoo+range -> Promise
+const TTL = 10 * 60 * 1000;
+const FETCH_TIMEOUT = 10000;
+// Yahoo serves the same API from two hosts; either can be slow or drop connections, so try both.
+const HOSTS = ["query2.finance.yahoo.com", "query1.finance.yahoo.com"];
+
+// Last good prices are kept on disk so a restart or a price-source outage never leaves the app without prices.
+const here = path.dirname(fileURLToPath(import.meta.url));
+const CACHE_FILE = process.env.PRICE_CACHE_FILE || (process.env.VERCEL ? "/tmp/insurevex-prices.json" : path.join(here, "..", "data", "price-cache.json"));
+try {
+  for (const [k, v] of Object.entries(JSON.parse(fs.readFileSync(CACHE_FILE, "utf8")))) cache.set(k, { at: 0, data: v }); // at 0: stale, refresh on use
+} catch {}
+let saveTimer = null;
+function saveSoon() {
+  if (saveTimer) return;
+  saveTimer = setTimeout(() => {
+    saveTimer = null;
+    try {
+      fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
+      fs.writeFileSync(CACHE_FILE, JSON.stringify(Object.fromEntries([...cache].map(([k, v]) => [k, v.data]))));
+    } catch {}
+  }, 2000);
+  saveTimer.unref?.();
+}
+
+// At most a few concurrent requests to the price source: a burst of 100+ gets throttled and stalls everything.
+const MAX_CONCURRENT = 12;
+let active = 0;
+const waiting = [];
+async function limited(fn) {
+  if (active >= MAX_CONCURRENT) await new Promise((r) => waiting.push(r));
+  active++;
+  try { return await fn(); } finally { active--; waiting.shift()?.(); }
+}
+
+/** Price history. Stale-while-revalidate: a cached result is returned immediately even if it is past its TTL,
+ *  and refreshed in the background, so a cold cache never blocks a page load. Pass { fresh: true } where a
+ *  stale value is not acceptable (settlement). */
+export async function history(yahoo, range = "2y", { fresh = false } = {}) {
+  const key = yahoo + range;
+  const hit = cache.get(key);
   if (hit && Date.now() - hit.at < TTL) return hit.data;
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahoo)}?range=${range}&interval=1d`;
-  const res = await fetch(url, { headers: { "user-agent": "Mozilla/5.0 InsureVEX/1.0" } });
-  if (!res.ok) throw new Error(`price source ${res.status} for ${yahoo}`);
-  const j = await res.json();
+  const load = inflight.get(key) || startLoad(yahoo, range, key);
+  if (hit && !fresh) { load.catch(() => {}); return hit.data; }
+  return load;
+}
+
+function startLoad(yahoo, range, key) {
+  const p = limited(() => fetchHistory(yahoo, range)).then((data) => { cache.set(key, { at: Date.now(), data }); saveSoon(); return data; })
+    .finally(() => inflight.delete(key));
+  inflight.set(key, p);
+  return p;
+}
+
+async function fetchChart(yahoo, range) {
+  let lastErr;
+  for (const host of HOSTS) {
+    try {
+      const url = `https://${host}/v8/finance/chart/${encodeURIComponent(yahoo)}?range=${range}&interval=1d`;
+      const res = await fetch(url, { headers: { "user-agent": "Mozilla/5.0 InsureVEX/1.0" }, signal: AbortSignal.timeout(FETCH_TIMEOUT) });
+      if (res.status === 404) throw Object.assign(new Error(`no data for ${yahoo}`), { final: true });
+      if (!res.ok) throw new Error(`price source ${res.status} for ${yahoo}`);
+      return await res.json();
+    } catch (e) {
+      if (e.final) throw e;
+      lastErr = e;
+    }
+  }
+  throw lastErr;
+}
+
+async function fetchHistory(yahoo, range) {
+  const j = await fetchChart(yahoo, range);
   const r = j?.chart?.result?.[0];
   if (!r) throw new Error(`no data for ${yahoo}`);
   const ts = r.timestamp || [];
@@ -44,14 +112,13 @@ export async function history(yahoo, range = "2y") {
     sigmaBlend,
     rows,
   };
-  cache.set(yahoo + range, { at: Date.now(), data });
   return data;
 }
 
 /** Official close on or before a unix timestamp (used for settlement). Falls back to the live price for
  *  intraday demo expiries that end before the next official close. */
 export async function closeAt(yahoo, ts) {
-  const h = await history(yahoo, "3mo");
+  const h = await history(yahoo, "3mo", { fresh: true });
   let best = null;
   for (const [t, c] of h.rows) if (t <= ts) best = [t, c];
   if (h.liveTs <= ts || !best || ts - best[0] > 3 * 86400) return { price: h.live, ts: h.liveTs, source: "last trade" };

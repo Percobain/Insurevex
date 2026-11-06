@@ -40,9 +40,39 @@ export async function usdPer(currency) {
 }
 setInterval(() => fxMemo.clear(), 6 * 3600 * 1000).unref();
 
+// The full market list (100+ symbols) is built in the background and served from memory, so a request never
+// waits on 100+ price fetches. Rebuilt every few minutes; the first request after boot waits for the first build.
+let marketsCache = null; // { at, markets }
+let marketsBuild = null;
+function buildMarkets() {
+  if (!marketsBuild) marketsBuild = marketsPayload(true)
+    .then((markets) => { marketsCache = { at: Date.now(), markets }; return markets; })
+    .finally(() => { marketsBuild = null; });
+  return marketsBuild;
+}
+const countErrors = (ms) => ms.reduce((n, m) => n + m.symbols.filter((x) => x.error).length, 0);
+function refreshMarkets() {
+  return buildMarkets().then((ms) => {
+    const bad = countErrors(ms);
+    if (bad) console.warn(`[markets] ${bad} symbol(s) without prices; retrying in 30s`);
+    if (bad) setTimeout(refreshMarkets, 30_000).unref();
+  }).catch((e) => console.error("[markets] refresh failed:", e.message));
+}
+refreshMarkets();
+setInterval(refreshMarkets, 5 * 60 * 1000).unref();
+
 app.get("/api/markets", wrap(async (req, res) => {
   const withPrices = req.query.prices !== "0";
-  const markets = await Promise.all(MARKETS.map(async (m) => ({
+  if (!withPrices) return res.json({ markets: await marketsPayload(false) });
+  if (marketsCache) {
+    if (Date.now() - marketsCache.at > 5 * 60 * 1000) buildMarkets().catch(() => {});
+    return res.json({ markets: marketsCache.markets, asOf: new Date(marketsCache.at).toISOString() });
+  }
+  res.json({ markets: await buildMarkets() });
+}));
+
+async function marketsPayload(withPrices) {
+  return Promise.all(MARKETS.map(async (m) => ({
     id: m.id, name: m.name, country: m.country, flag: m.flag, currency: m.currency, exchange: m.exchange,
     symbols: await Promise.all(m.symbols.map(async ([symbol, yahoo, name]) => {
       const base = { symbol, ticker: symbol.split(":")[1], name, yahoo, currency: m.currency };
@@ -57,8 +87,7 @@ app.get("/api/markets", wrap(async (req, res) => {
       } catch (e) { return { ...base, error: e.message, quotable: false }; }
     })),
   })));
-  res.json({ markets });
-}));
+}
 
 app.get("/api/price", wrap(async (req, res) => {
   const sym = resolveSymbol(req.query.symbol, req.query.yahoo);

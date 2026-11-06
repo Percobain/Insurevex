@@ -6,7 +6,7 @@ import { symbolId } from "./format";
 
 /** Map of on-chain symbol id (bytes32) -> "EXCHANGE:TICKER", built from the server's market list (plus samples). */
 export function useSymbolNames() {
-  const markets = useApi("/api/markets");
+  const markets = useApi("/api/markets", { timeout: 30000 });
   return useMemo(() => {
     const m = {};
     const add = (s) => { if (s) m[symbolId(s).toLowerCase()] = s; };

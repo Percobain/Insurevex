@@ -1,7 +1,7 @@
 "use client";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useEffect, useState } from "react";
-import { WagmiProvider, createConfig, http } from "wagmi";
+import { WagmiProvider, createConfig, http, fallback } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, connectorsForWallets, lightTheme } from "@rainbow-me/rainbowkit";
 import { injectedWallet, metaMaskWallet, coinbaseWallet, walletConnectWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
@@ -22,7 +22,7 @@ const ordered = [...CHAINS].sort((a, b) => (a.id === DEFAULT_CHAIN_ID ? -1 : b.i
 const config = createConfig({
   chains: ordered,
   connectors,
-  transports: Object.fromEntries(CHAINS.map((c) => [c.id, http(c.rpcUrls.default.http[0])])),
+  transports: Object.fromEntries(CHAINS.map((c) => [c.id, fallback(c.rpcUrls.default.http.map((u) => http(u)))])),
   ssr: true,
 });
 
