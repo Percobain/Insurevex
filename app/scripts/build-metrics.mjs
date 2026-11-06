@@ -1,7 +1,7 @@
-// Builds app/public/data/history.json for the /history page from the backtest outputs.
+// Builds app/public/data/metrics.json for the /metrics page from the backtest outputs.
 // Every number on that page comes from here, and every number here comes from backtest/results or the equity curve.
-//   node app/scripts/build-history.mjs
-import { readFileSync, writeFileSync } from "node:fs";
+//   node app/scripts/build-metrics.mjs
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -129,10 +129,32 @@ const lpCrashes = LP_STARTS.map(([ym, event]) => {
 const wf = csv("walkforward_policyB_metrics.csv").find((r) => Math.abs(Number(r._) - 0.125) < 1e-9);
 const boot = JSON.parse(readFileSync(join(RES, "bootstrap.json"), "utf8"));
 
+// where the premium dollar goes, over the whole backtest
+const lry = csv("loss_ratio_by_year.csv");
+const premSum = lry.reduce((a, r) => a + Number(r.prem), 0), paySum = lry.reduce((a, r) => a + Number(r.pay), 0);
+const lossRatio = paySum / premSum;
+
+// Pro (first-loss) investors: in-sample replay of the live engine and contract rules (backtest/stress_book.py)
+let pro = null;
+const sb = join(RES, "stress_book.json");
+if (existsSync(sb)) {
+  const j = JSON.parse(readFileSync(sb, "utf8"));
+  let v = 1;
+  const years = j.yearly.map((y) => { v *= 1 + y.pro_ret; return { year: y.year, ret: r4(y.pro_ret), depositRet: r4(y.senior_ret), value: r4(v) }; });
+  const worst = years.reduce((m, y) => (y.ret < m.ret ? y : m));
+  const best = years.reduce((m, y) => (y.ret > m.ret ? y : m));
+  pro = {
+    method: "In-sample replay of today's engine and contract rules, 2005-2026 (backtest/stress_book.py)",
+    from: years[0].year, to: years[years.length - 1].year, years, mult: r4(v),
+    cagr: r4(Math.pow(v, 1 / years.length) - 1), meanYear: r4(j.pro_mean_year),
+    negativeYears: j.pro_years_negative, wipedYears: j.pro_years_wiped, worst, best,
+  };
+}
+
 const out = {
   generated: new Date().toISOString().slice(0, 10),
   principal: 100000,
-  holders, coverTerms,
+  holders, coverTerms, lossRatio: r4(lossRatio), pro,
   savers, saverAll,
   lp: {
     from: d[0], to: d[n - 1],
@@ -144,8 +166,9 @@ const out = {
     bootstrap: { paths: boot.paths, years: boot.horizon_months / 12, pLoss5y: boot.p_5y_loss, pDrawdown20: boot.p_drawdown_gt_20, apyP5: r4(boot.apy_p5), apyP50: r4(boot.apy_p50), apyP95: r4(boot.apy_p95) },
   },
 };
-writeFileSync(join(DATA, "history.json"), JSON.stringify(out));
-console.log("history.json:", holders.week.length, "weekly +", holders.month.length, "monthly crash cards;", savers.length, "saver cohorts;", lpCrashes.length, "LP crash starts");
+writeFileSync(join(DATA, "metrics.json"), JSON.stringify(out));
+console.log("pro:", pro && { mult: pro.mult, cagr: pro.cagr, worst: pro.worst, best: pro.best, neg: pro.negativeYears }, "lossRatio", lossRatio);
+console.log("metrics.json:", holders.week.length, "weekly +", holders.month.length, "monthly crash cards;", savers.length, "saver cohorts;", lpCrashes.length, "LP crash starts");
 console.log("saver all:", saverAll, "\nLP:", out.lp.cagr, out.lp.maxDrawdown, ddAt, JSON.stringify(out.lp.outOfSample));
 console.log(JSON.stringify(savers, null, 0));
 console.log(JSON.stringify(lpCrashes, null, 0));
