@@ -184,5 +184,11 @@
     "tx": "0xd97f70ae0eb6f61fa73faa3ae66d4e328d25c59cdc49f8655a34efa1a29ad5a7",
     "url": "https://hashscan.io/testnet/transaction/0xd97f70ae0eb6f61fa73faa3ae66d4e328d25c59cdc49f8655a34efa1a29ad5a7",
     "at": "2026-11-05T23:18:33.737Z"
+  },
+  {
+    "step": "Schedule 0.0.11331278 executed natively at 00:06:34 UTC: distributeCoupon() paid 0.498395 tUSD to note holders (no keeper)",
+    "tx": "0.0.7314364-1793920264-913958545",
+    "url": "https://hashscan.io/testnet/schedule/0.0.11331278",
+    "at": "2026-11-06T00:06:34Z"
   }
 ]
