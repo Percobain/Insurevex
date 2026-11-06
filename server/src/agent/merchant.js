@@ -8,9 +8,10 @@ import { AgentState } from "./state.js";
 import { audit } from "./audit.js";
 import { prepareUnderwriting } from "./underwriting.js";
 import { CHAIN_ID, NETWORK, PATH, DEFAULT_LIMITS, insist, normalizeIntent, intentMessage, hash, same, hashscan, units } from "./policy.js";
+import { FACILITATOR, FEE_PAYER } from "./protocol.js";
+import { mountAgentControls } from "./control.js";
 
-export const FACILITATOR = "https://x402.org/facilitator";
-export const FEE_PAYER = "0.0.9185802";
+export { FACILITATOR, FEE_PAYER } from "./protocol.js";
 
 export function merchantConfig(env = process.env) {
   if (env.X402_ENABLED !== "1") return null;
@@ -118,5 +119,6 @@ export function mountAgentRoutes(app, options = {}) {
       if (!e.status) console.error("[agent]", e.message);
     }
   });
+  mountAgentControls(app, { config, ...options.controls });
   return { state };
 }

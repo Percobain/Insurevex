@@ -102,6 +102,20 @@ The merchant validates the transfer shape locally and delegates cryptographic pa
 
 ## Emergency stop and reconciliation
 
+### Frontend agent controls
+
+The `/agent` page includes a protection mandate (shares and deductible), read-only preflight, one-run execution, spending-limit editor, emergency stop/resume, live execution stages, recent runs, and a filterable ledger with HashScan receipts.
+
+Set `AGENT_CONTROLLER_ADDRESS` on the persistent merchant to the wallet allowed to manage the agent. Connect that controller wallet in the frontend and switch to Hedera testnet. Leave the setting empty to keep browser controls disabled. Do not import the dedicated agent's private key into a browser wallet.
+
+Every action uses an expiring, single-use wallet signature bound to the merchant origin, chain, controller, action and exact parameters. Preflight performs on-chain and pricing checks without paying a service fee or premium. Its preview expires after two minutes. A run consumes that preview once, rechecks the guardrails and starts one autonomous purchase; the controller does not approve each underlying payment.
+
+Limits saved from the page are stored in the agent's durable database and applied by both the frontend runner and CLI. They cannot exceed the wallet's original configured ceilings. Changes invalidate earlier previews and are refused while the wallet is locked. The page reports conservative reservations, including uncertain payments and gas bounds, rather than presenting them as exact transaction fees.
+
+Stop/resume uses the same stop file as the agent. Resume cannot remove an environment-level stop or clear a reconciliation lock. Interrupted runs retain their lock and appear as blocked after a server restart. No private keys, wallet credentials or reusable authorisations are returned in the status API. Dashboard controls require the persistent server and cannot run on Vercel.
+
+### Reconcile an interrupted run
+
 Create `server/.agent-state/STOP` to stop new agent operations. Stop files cannot cancel transactions already signed or submitted.
 
 After any uncertain outcome:

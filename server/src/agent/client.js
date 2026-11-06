@@ -5,7 +5,7 @@ import { ExactHederaScheme } from "@x402/hedera/exact/client";
 import { PrivateKey } from "@hiero-ledger/sdk";
 import { decodePaymentRequiredHeader, encodePaymentSignatureHeader, readLimitedText } from "@x402/core/http";
 import { CHAIN_ID, NETWORK, PATH, DEFAULT_LIMITS, insist, units, validateRequirements, validateQuote, intentMessage, hashscan } from "./policy.js";
-import { FACILITATOR, FEE_PAYER } from "./merchant.js";
+import { FACILITATOR, FEE_PAYER } from "./protocol.js";
 import { audit, anchorHcs } from "./audit.js";
 import { ABI, ERC20_ABI, QUOTE_TYPES } from "../chain.js";
 

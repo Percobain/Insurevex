@@ -19,7 +19,10 @@ try {
     console.log(JSON.stringify({ mode: "plan", network: NETWORK, chainId: CHAIN_ID, limits: DEFAULT_LIMITS,
       next: "Run npm run agent:setup to provision an isolated testnet wallet, then start the x402 merchant and run agent:plan again." }, null, 2));
   } else {
-    const policy = validateAgentPolicy(JSON.parse(fs.readFileSync(policyFile)));
+    const base = JSON.parse(fs.readFileSync(policyFile));
+    state = new AgentState(path.join(root, "agent.sqlite"));
+    const policy = validateAgentPolicy({ ...base, limits: { ...base.limits, ...state.settings() },
+      killFile: process.env.AGENT_KILL_FILE ? path.resolve(process.env.AGENT_KILL_FILE) : base.killFile });
     const credentialFile = path.join(root, "credentials.json");
     insist((fs.statSync(credentialFile).mode & 0o077) === 0, "Agent credentials must have mode 600");
     const credentials = JSON.parse(fs.readFileSync(credentialFile));
@@ -35,7 +38,6 @@ try {
       console.log(JSON.stringify({ mode: "plan", intent, limits: policy.limits, merchant: policy.merchant,
         message: "Read-only preflight passed. agent:run executes one bounded autonomous purchase with no per-payment approval." }, null, 2));
     } else {
-      state = new AgentState(path.join(root, "agent.sqlite"));
       lock = `agent:${wallet.address}`;
       state.acquire(lock);
       audit(state, "agent.started", { requestId: intent.requestId, buyer: wallet.address });
