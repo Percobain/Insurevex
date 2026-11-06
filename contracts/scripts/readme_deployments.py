@@ -94,7 +94,7 @@ Settlement token (InsureVEX test USD): [`{HC['stable']}`]({HX}contract/{HC['stab
 | Holder buys NVDA cover; insurable interest proven by the **ATS balance on-chain** | [tx]({find(h, 'Holder buys NASDAQ:NVDA')}) |
 | Cover on 150 NVDA with only 90 transferable: **reverted on-chain** (`cover exceeds holdings`) | `scripts/hedera-demo-checks.js` |
 | ATS compliance: freeze 10 of the holder's tokenised shares | [tx]({find(h, 'ATS equity: freeze')}) |
-| **Hedera Schedule Service** (HIP-1215): next coupon scheduled natively. Proven on v2: schedule 0.0.11331278 was **executed by the network at 00:06:34 UTC, paying 0.498 tUSD with no keeper** | [v3 schedule]({find(h, 'Hedera Schedule Service')}) · [v2 executed]({HX}schedule/0.0.11331278) |
+| **Hedera Schedule Service** (HIP-1215): the note coupon is scheduled natively and **executed by the network with no keeper**: v3 at 01:21:41 UTC and v2 at 00:06:34 UTC, each paying 0.498 tUSD to note holders | [v3 schedule tx]({find(h, 'Hedera Schedule Service')}) · [v2 schedule 0.0.11331278]({HX}schedule/0.0.11331278) |
 | Saver subscribes 5,000 · Pro LP 2,000 · tradfi covers on Reliance (NSE), SAP (Xetra), SPY | [sub]({find(h, 'Saver subscribes 5000')}) · [Pro]({find(h, 'Pro LP deposits')}) · [RELIANCE]({find(h, 'Holder buys NSE:RELIANCE')}) · [SAP]({find(h, 'Holder buys XETRA:SAP')}) |
 | T-bill NAV + reserve attestation | [tx]({find(h, 'T-bill NAV')}) |
 | Saver claims the coupon; the demo note matures and redeems **1,000 tUSD in, 1,000.014 tUSD back** | [coupon]({find(h, 'Saver claims')}) · [redeem]({find(h, 'Saver redeems demo note')}) |
