@@ -10,9 +10,11 @@ const NAV = [
   { label: "Save", href: "/save" },
   { label: "Pool", href: "/pool" },
   { label: "Agent", href: "/agent" },
+  { label: "History", href: "/history" },
   { label: "Research", href: "/docs" },
   { label: "Activity", href: "/activity" },
   { label: "Issuer", href: "/issuer" },
+  { label: "Admin", href: "/admin" },
 ];
 
 export default function Header() {
