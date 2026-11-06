@@ -7,6 +7,7 @@ import { useApi } from "@/lib/api";
 import { useSymbolNames } from "@/lib/useSymbolNames";
 import { fmtMoney, fromUnits, shortAddr, fmtNum } from "@/lib/format";
 import { PageHead, Section, useActiveChain, DeployGate, TxLink, Placeholder } from "@/components/ui";
+import { SettleArt } from "@/components/IsoArt";
 
 const ALL_ABI = [...ABI.CoverMarket, ...ABI.ProtectedNote, ...ABI.UnderwritingPool, ...ABI.IdentityRegistry, ...ABI.PriceOracle, ...ABI.TBillVault];
 const INTERESTING = new Set(["CoverBought", "CoverSettled", "Subscribed", "CouponDistributed", "CouponClaimed", "Matured", "MaturityClaimed",
@@ -68,6 +69,11 @@ export default function ActivityPage() {
       <PageHead eyebrow="Activity" title="Everything that happened, on-chain.">
         Subscriptions, covers, settlements, coupons and every compliance action. Each row links to the explorer.
       </PageHead>
+      <Section className="pb-10">
+        <div className="max-w-3xl">
+          <SettleArt />
+        </div>
+      </Section>
       <Section>
         <DeployGate chainId={chainId}>
           {api.isError && <p className="text-xs text-muted mb-3">Server offline: reading the last ~9,000 blocks directly from the chain.</p>}

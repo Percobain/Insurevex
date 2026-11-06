@@ -5,6 +5,7 @@ import { ABI, ERC20_ABI, addr, notesOf, stableSymbol } from "@/lib/contracts";
 import { fmtDate, fmtDuration, fmtMoney, fmtPct, fromUnits, toUnits } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
 import { PageHead, Section, Notice, Row, useActiveChain, DeployGate, AddrLink, Placeholder } from "@/components/ui";
+import { SaveArt } from "@/components/IsoArt";
 import { useKyc } from "@/components/KycBadge";
 import SaverCalculator from "@/components/SaverCalculator";
 
@@ -134,6 +135,11 @@ export default function SavePage() {
         Each note splits your deposit in the same transaction: tokenised T-bills sized to grow back to your full deposit at maturity,
         and a small sleeve that underwrites crash floors. Notes are restricted: only verified wallets can hold or receive them.
       </PageHead>
+      <Section className="pb-10">
+        <div className="max-w-3xl">
+          <SaveArt />
+        </div>
+      </Section>
       <Section>
         <div className="space-y-3 mb-6">
           <DeployGate chainId={chainId}>{null}</DeployGate>

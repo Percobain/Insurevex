@@ -6,6 +6,7 @@ import { useSymbolNames } from "@/lib/useSymbolNames";
 import { usePolicies } from "@/components/MyPolicies";
 import { fmtMoney, fmtNum, fmtPct, fromUnits } from "@/lib/format";
 import { PageHead, Section, Stat, Row, useActiveChain, DeployGate, AddrLink, Placeholder } from "@/components/ui";
+import { PoolArt } from "@/components/IsoArt";
 import ProPanel from "@/components/ProPanel";
 
 function Meter({ label, value, max, sub }) {
@@ -59,6 +60,11 @@ export default function PoolPage() {
         The pool is the savers' sleeves. A reserve never backs policies, no stock can use more than its cap, and the maximum payout of
         every open policy is locked until it settles. Idle cash sits in tokenised T-bills.
       </PageHead>
+      <Section className="pb-10">
+        <div className="max-w-3xl">
+          <PoolArt />
+        </div>
+      </Section>
       <Section>
         <DeployGate chainId={chainId}>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

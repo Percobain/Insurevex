@@ -1,8 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,jsx}"],
-  darkMode: ["class", '[data-theme="dark"]'],
-  theme: {
+    theme: {
     extend: {
       colors: {
         paper: "rgb(var(--paper-rgb) / <alpha-value>)",
@@ -12,6 +11,8 @@ module.exports = {
         ink2: "rgb(var(--ink2-rgb) / <alpha-value>)",
         muted: "rgb(var(--muted-rgb) / <alpha-value>)",
         line: "rgb(var(--line-rgb) / <alpha-value>)",
+        primary: "rgb(var(--primary-rgb) / <alpha-value>)",
+        sage: "rgb(var(--sage-rgb) / <alpha-value>)",
         accent: "rgb(var(--accent-rgb) / <alpha-value>)",
         accentInk: "rgb(var(--accent-ink-rgb) / <alpha-value>)",
         accentSoft: "rgb(var(--accent-soft-rgb) / <alpha-value>)",

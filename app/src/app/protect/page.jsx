@@ -8,6 +8,7 @@ import { EXCHANGES, flag } from "@/lib/exchanges";
 import { fmtMoney, fmtNum, fmtPct, fromUnits, shortHash, symbolId } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
 import { PageHead, Section, Seg, Notice, Row, useActiveChain, DeployGate } from "@/components/ui";
+import { ProtectArt } from "@/components/IsoArt";
 import { useKyc } from "@/components/KycBadge";
 import PriceChart from "@/components/PriceChart";
 import MyPolicies from "@/components/MyPolicies";
@@ -154,6 +155,11 @@ export default function ProtectPage() {
         Shares at your broker (Zerodha on NSE, Robinhood or IBKR on Nasdaq, LSE, TSE, HKEX…) or tokenised stock on-chain: pick it on any of 23 exchanges. If its official close falls more than your deductible by expiry, the pool pays the
         extra fall, up to the cap. Premium upfront, settled in {stable}, fully collateralised before you pay.
       </PageHead>
+      <Section className="pb-10">
+        <div className="max-w-3xl">
+          <ProtectArt />
+        </div>
+      </Section>
       <Section>
         <div className="space-y-4 mb-6">
           <DeployGate chainId={chainId}>{null}</DeployGate>

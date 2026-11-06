@@ -3,110 +3,44 @@
 @tailwind utilities;
 
 :root {
+  /* One light theme, after the Mendly reference: cream paper, white cards, near-black teal ink,
+     dark teal for primary actions and payouts, orange for the accent, sage for quiet fills. No dark mode. */
   color-scheme: light;
-  --paper: #f6f5f1;
-  --paper-rgb: 246 245 241;
+  --paper: #f4f4f0;
+  --paper-rgb: 244 244 240;
   --card: #ffffff;
   --card-rgb: 255 255 255;
-  --sunk: #efede7;
-  --sunk-rgb: 239 237 231;
-  --ink: #111214;
-  --ink-rgb: 17 18 20;
-  --ink2: #4a4b4f;
-  --ink2-rgb: 74 75 79;
-  --muted: #7c7d80;
-  --muted-rgb: 124 125 128;
-  --line: #e2dfd7;
-  --line-rgb: 226 223 215;
-  --accent: #3d5afe;
-  --accent-rgb: 61 90 254;
+  --sunk: #ecece6;
+  --sunk-rgb: 236 236 230;
+  --ink: #1a2423;
+  --ink-rgb: 26 36 35;
+  --ink2: #4c5654;
+  --ink2-rgb: 76 86 84;
+  --muted: #8b928f;
+  --muted-rgb: 139 146 143;
+  --line: #dedfd9;
+  --line-rgb: 222 223 217;
+  --primary: #1f3d3c;
+  --primary-rgb: 31 61 60;
+  --accent: #e8603c;
+  --accent-rgb: 232 96 60;
   --accent-ink: #ffffff;
   --accent-ink-rgb: 255 255 255;
-  --accent-soft: #e8ecff;
-  --accent-soft-rgb: 232 236 255;
-  --good: #12805c;
-  --good-rgb: 18 128 92;
-  --bad: #c8372d;
-  --bad-rgb: 200 55 45;
-  --warn: #b7791f;
-  --warn-rgb: 183 121 31;
-  --chart-1: #2a78d6;
-  --chart-2: #eb6834;
-  --chart-3: #1baf7a;
-  --chart-4: #eda100;
-  --chart-grid: #e4e3df;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --paper: #0d0e10;
-  --paper-rgb: 13 14 16;
-    --card: #15171a;
-  --card-rgb: 21 23 26;
-    --sunk: #1b1d21;
-  --sunk-rgb: 27 29 33;
-    --ink: #f1f0ec;
-  --ink-rgb: 241 240 236;
-    --ink2: #c3c2b9;
-  --ink2-rgb: 195 194 185;
-    --muted: #8d8e93;
-  --muted-rgb: 141 142 147;
-    --line: #272a2f;
-  --line-rgb: 39 42 47;
-    --accent: #7187ff;
-  --accent-rgb: 113 135 255;
-    --accent-ink: #0d0e10;
-  --accent-ink-rgb: 13 14 16;
-    --accent-soft: #1d2340;
-  --accent-soft-rgb: 29 35 64;
-    --good: #3fbf8f;
-  --good-rgb: 63 191 143;
-    --bad: #f06a5f;
-  --bad-rgb: 240 106 95;
-    --warn: #e0a940;
-  --warn-rgb: 224 169 64;
-    --chart-1: #3987e5;
-    --chart-2: #d95926;
-    --chart-3: #199e70;
-    --chart-4: #c98500;
-    --chart-grid: #2a2c31;
-  }
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --paper: #0d0e10;
-  --paper-rgb: 13 14 16;
-  --card: #15171a;
-  --card-rgb: 21 23 26;
-  --sunk: #1b1d21;
-  --sunk-rgb: 27 29 33;
-  --ink: #f1f0ec;
-  --ink-rgb: 241 240 236;
-  --ink2: #c3c2b9;
-  --ink2-rgb: 195 194 185;
-  --muted: #8d8e93;
-  --muted-rgb: 141 142 147;
-  --line: #272a2f;
-  --line-rgb: 39 42 47;
-  --accent: #7187ff;
-  --accent-rgb: 113 135 255;
-  --accent-ink: #0d0e10;
-  --accent-ink-rgb: 13 14 16;
-  --accent-soft: #1d2340;
-  --accent-soft-rgb: 29 35 64;
-  --good: #3fbf8f;
-  --good-rgb: 63 191 143;
-  --bad: #f06a5f;
-  --bad-rgb: 240 106 95;
-  --warn: #e0a940;
-  --warn-rgb: 224 169 64;
-  --chart-1: #3987e5;
-  --chart-2: #d95926;
-  --chart-3: #199e70;
-  --chart-4: #c98500;
-  --chart-grid: #2a2c31;
+  --accent-soft: #fbe5dc;
+  --accent-soft-rgb: 251 229 220;
+  --sage: #d3e0d9;
+  --sage-rgb: 211 224 217;
+  --good: #2b5a55;
+  --good-rgb: 43 90 85;
+  --bad: #d4502d;
+  --bad-rgb: 212 80 45;
+  --warn: #c98a3c;
+  --warn-rgb: 201 138 60;
+  --chart-1: #1f3d3c;
+  --chart-2: #e8603c;
+  --chart-3: #8fb0a2;
+  --chart-4: #c9a27c;
+  --chart-grid: #e3e3dd;
 }
 
 html,
@@ -122,6 +56,11 @@ body {
   font-feature-settings: "ss01", "cv11";
 }
 
+.font-display {
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+
 .tabular {
   font-variant-numeric: tabular-nums;
 }
@@ -134,7 +73,7 @@ body {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 h-11 text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed;
   }
   .btn-primary {
-    @apply btn bg-accent text-accentInk hover:brightness-110;
+    @apply btn bg-primary text-white hover:brightness-125;
   }
   .btn-ghost {
     @apply btn border border-line text-ink hover:bg-sunk;
@@ -149,7 +88,11 @@ body {
     @apply text-xs font-medium uppercase tracking-[0.08em] text-muted;
   }
   .eyebrow {
-    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-accent;
+    @apply text-[11px] font-semibold uppercase tracking-[0.12em] text-accent;
+  }
+  .eyebrow::before {
+    content: "//";
+    @apply text-ink mr-0.5;
   }
   .chip {
     @apply inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-xs text-ink2;
@@ -173,3 +116,119 @@ body {
     @apply py-2.5 px-3 border-b border-line whitespace-nowrap;
   }
 }
+
+/* ───────────── Isometric explainer art (components/IsoArt.jsx) ─────────────
+   One fixed palette in both themes, after the reference art: cream stage, near-black line work,
+   white tops, grainy grey sides, soft ground shadows, orange for money moving in, teal for money paid out. */
+.iso-stage {
+  --iso-bg: #f7f7f3;
+  --iso-ink: #1a2423;
+  --iso-ink2: #5c5b57;
+  --iso-muted: #9a9892;
+  --iso-face: #ffffff;
+  --iso-side: #ecebe6;
+  --iso-side2: #dcdad3;
+  --iso-shadow: #d9d6ce;
+  --iso-accent: #e8603c;
+  --iso-accent-dk: #b9472a;
+  --iso-accent-soft: #fbe5dc;
+  --iso-good: #1f3d3c;
+  --iso-good-dk: #132928;
+  --iso-sage: #d5e1da;
+  --iso-sage-side: #a7bfb4;
+  --iso-teal: #26403f;
+  --iso-bad: #d4502d;
+  position: relative;
+  border-radius: 18px;
+  background-color: var(--iso-bg);
+  background-image: radial-gradient(rgb(20 20 20 / 0.09) 0.8px, transparent 0.9px);
+  background-size: 14px 14px;
+  border: 1px solid rgb(20 20 20 / 0.08);
+  padding: clamp(14px, 2.4vw, 26px);
+  color: var(--iso-ink);
+}
+.iso-stage .iso-corner { position: absolute; width: 5px; height: 5px; border-radius: 9px; background: var(--iso-ink); }
+.iso { display: block; width: 100%; height: auto; overflow: visible; }
+.iso-face { fill: var(--iso-face); stroke: var(--iso-ink); stroke-width: 1.15; stroke-linejoin: round; }
+.iso-side { fill: var(--iso-side); stroke: var(--iso-ink); stroke-width: 1.15; stroke-linejoin: round; }
+.iso-side-front { fill: var(--iso-side2); }
+.iso-grain { stroke: none; pointer-events: none; }
+.iso-grain-dot { fill: var(--iso-ink); opacity: 0.22; }
+.iso-shadow { fill: var(--iso-shadow); stroke: none; filter: blur(3px); opacity: 0.85; }
+.iso-line { fill: none; stroke: var(--iso-ink); stroke-width: 1; }
+.iso-dashed { stroke-dasharray: 3 3; stroke: var(--iso-muted); }
+.iso-hatch { stroke: var(--iso-accent); stroke-width: 1.3; }
+.iso-hatch-ink { stroke: var(--iso-ink); stroke-width: 1; }
+.iso-hatch-bad { stroke: var(--iso-bad); stroke-width: 1.1; opacity: 0.6; }
+.iso-dot { fill: var(--iso-ink); opacity: 0.12; }
+.iso-text { font: 500 11px var(--font-mono), ui-monospace, monospace; fill: var(--iso-ink); }
+.iso-bold { font-weight: 700; }
+.iso-mini { font: 500 8.5px var(--font-mono), ui-monospace, monospace; fill: var(--iso-ink2); letter-spacing: 0.04em; }
+.iso-stripe { fill: none; stroke: var(--iso-muted); stroke-width: 0.8; opacity: 0.55; }
+.iso-meter { fill: var(--iso-side); stroke: var(--iso-ink); stroke-width: 0.6; }
+.iso-meter-fill { fill: var(--iso-accent); }
+.iso-ripple { fill: none; stroke: var(--iso-accent); stroke-width: 1.6; }
+.iso-pixel { fill: var(--iso-side2); }
+.iso-pixel.is-ink { fill: var(--iso-ink); }
+.iso-pixel.is-accent { fill: var(--iso-accent); }
+.iso-black .iso-face { fill: var(--iso-ink); stroke: var(--iso-ink); }
+.iso-black .iso-side { fill: #2a2a2a; }
+.iso-black .iso-side-front { fill: #000; }
+.iso-liquid .iso-face { fill: var(--iso-accent-soft); stroke: var(--iso-accent); }
+.iso-liquid .iso-side { fill: var(--iso-accent-soft); stroke: none; }
+.iso-coin .iso-face { fill: var(--iso-face); }
+.iso-coin.is-accent .iso-face { fill: var(--iso-accent); stroke: var(--iso-ink); }
+.iso-coin.is-accent .iso-side { fill: var(--iso-accent-dk); }
+.iso-coin.is-good .iso-face { fill: var(--iso-good); }
+.iso-coin.is-good .iso-side { fill: var(--iso-good-dk); }
+.iso-ghost .iso-face, .iso-ghost .iso-side { fill: none; stroke: var(--iso-accent); stroke-dasharray: 2 2; }
+.iso-covered .iso-side { fill: var(--iso-accent-soft); }
+.iso-shield { fill: var(--iso-accent); stroke: var(--iso-ink); stroke-width: 1.1; stroke-linejoin: round; }
+.iso-shield-tick { fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.iso-tick { fill: none; stroke: var(--iso-good); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.iso-collateral .iso-face { fill: var(--iso-accent); }
+.iso-collateral .iso-side { fill: var(--iso-accent-dk); }
+.iso-cage { fill: none; stroke: var(--iso-ink); stroke-width: 1; stroke-dasharray: 4 3; }
+.iso-dome { stroke: var(--iso-accent); stroke-width: 1.4; }
+.iso-dome-ring { fill: none; stroke: var(--iso-accent); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.iso-screen { fill: #fbfaf7; stroke: var(--iso-ink); stroke-width: 0.8; }
+.iso-guide { stroke: var(--iso-muted); stroke-width: 0.8; stroke-dasharray: 4 3; }
+.iso-chart { fill: none; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+.iso-chart.is-bad { stroke: var(--iso-bad); }
+.iso-chart.is-good { stroke: var(--iso-good); }
+.iso-chart-dot.is-bad { fill: var(--iso-bad); }
+.iso-chart-dot.is-good { fill: var(--iso-good); }
+.iso-leader { stroke: var(--iso-ink); stroke-width: 0.8; opacity: 0.5; }
+.iso-pin { fill: var(--iso-ink); }
+.iso-pill { fill: #fff; stroke: rgb(20 20 20 / 0.14); stroke-width: 1; filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)); }
+.iso-pill-text { font: 500 10.5px var(--font-mono), ui-monospace, monospace; fill: var(--iso-ink); }
+.iso-tagpill.is-ink .iso-pill { fill: var(--iso-ink); stroke: var(--iso-ink); }
+.iso-tagpill.is-ink .iso-pill-text { fill: #fff; }
+.iso-tagpill.is-accent .iso-pill { fill: var(--iso-accent); stroke: var(--iso-accent); }
+.iso-tagpill.is-accent .iso-pill-text { fill: #fff; }
+.iso-tagpill.is-good .iso-pill { stroke: var(--iso-good); }
+.iso-tagpill.is-good .iso-pill-text { fill: var(--iso-good); }
+.iso-tagpill.is-bad .iso-pill { stroke: var(--iso-bad); }
+.iso-tagpill.is-bad .iso-pill-text { fill: var(--iso-bad); }
+.iso-sage .iso-face { fill: var(--iso-sage); }
+.iso-sage .iso-side { fill: var(--iso-sage-side); }
+.iso-sage .iso-side-front { fill: #93ada1; }
+.iso-teal .iso-face { fill: var(--iso-teal); }
+.iso-teal .iso-side { fill: #182c2b; }
+.iso-orange .iso-face { fill: var(--iso-accent); }
+.iso-orange .iso-side { fill: var(--iso-accent-dk); }
+.iso-key-glyph { fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.iso-steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 20px; font-size: 12.5px; color: var(--iso-muted); }
+.iso-steps li { transition: color 0.3s; }
+.iso-steps .n { font-family: var(--font-mono), monospace; margin-right: 5px; opacity: 0.7; transition: color 0.3s, opacity 0.3s; }
+.iso-steps li.is-active { color: var(--iso-ink); }
+.iso-steps li.is-active .n { color: var(--iso-accent); opacity: 1; }
+
+/* Full-bleed hero: the conveyor runs behind the headline. */
+.iso-stage.iso-bare { background: none; border: 0; padding: 0; border-radius: 0; }
+.hero-art .iso { height: 100%; }
+.iso-lane { fill: none; stroke: var(--iso-side); stroke-width: 16; stroke-linecap: round; stroke-linejoin: round; }
+.iso-lane-dash { fill: none; stroke: var(--iso-muted); stroke-width: 1.4; stroke-dasharray: 6 6; stroke-linejoin: round; }
+.iso-lane-dash.is-accent { stroke: var(--iso-accent); }
+.iso-lane-dash.is-good { stroke: var(--iso-good); }
+.iso-on-dark { fill: #fff; }

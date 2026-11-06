@@ -7,7 +7,7 @@ import { isDeployed, addr } from "@/lib/contracts";
 import { EXCHANGES, REGIONS, flag } from "@/lib/exchanges";
 import { fmtPct, fmtUnits, fmtNum, fromUnits } from "@/lib/format";
 import { Section, Stat } from "@/components/ui";
-import MoneyFlow from "@/components/MoneyFlow";
+import { HeroArt, SaveArt, ProtectArt, SettleArt, MoneyMapArt } from "@/components/IsoArt";
 
 function NoteExample() {
   // 3-year note at a 4% locked T-bill rate (simple accrual, same formula as ProtectedNote.floorFor)
@@ -75,57 +75,89 @@ export default function Landing() {
   const oos = s?.walkforward_policyB?.["0.125"] || s?.walkforward_oos;
   return (
     <>
-      <Section className="pt-12 sm:pt-20 pb-10">
-        <div className="grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-start">
-          <div>
-            <div className="eyebrow">Principal-protected notes · crash floors on any stock</div>
-            <h1 className="font-display text-[44px] leading-[1.02] sm:text-6xl lg:text-[76px] tracking-tight mt-4">
-              Two scared people
-              <br />
-              protect each other.
-            </h1>
-            <p className="text-ink2 text-lg mt-6 max-w-xl leading-relaxed">
-              Savers are scared of losing money. Shareholders are scared of a crash. InsureVEX puts them in one pool: the saver's
-              spare yield insures the shareholder's stock, and the saver always gets their deposit back.
-            </p>
-            <div className="grid sm:grid-cols-2 gap-3 mt-6 max-w-xl">
-              <div className="rounded-xl border border-line p-3.5">
-                <div className="text-sm font-semibold">Shares at your broker</div>
-                <div className="text-xs text-ink2 mt-1">Zerodha on NSE, Robinhood or IBKR on Nasdaq, LSE, TSE, HKEX. Holdings attested from a statement or the broker API.</div>
+      <section className="relative border-b border-line overflow-hidden">
+        <div className="relative mx-auto max-w-[1440px] min-h-[640px] lg:h-[min(780px,calc(100vh-64px))] border-x border-line">
+          <div className="absolute inset-x-0 top-0 h-[300px] lg:h-full">
+            <HeroArt />
+          </div>
+          <div className="hidden lg:flex absolute top-10 right-10 max-w-[270px] gap-3 text-[13px] leading-relaxed text-ink2">
+            <span className="text-muted">|</span>
+            <span>InsureVEX turns a saver&apos;s spare yield into crash floors for shareholders, settled on the official close.</span>
+          </div>
+          <div className="relative h-full flex flex-col justify-end px-5 sm:px-10 lg:px-14 pt-[300px] lg:pt-0 pb-12 lg:pb-16 pointer-events-none">
+            <div className="max-w-[560px] pointer-events-auto">
+              <div className="eyebrow">
+                <span className="text-ink">InsureVEX</span> crash floors
               </div>
-              <div className="rounded-xl border border-line p-3.5">
-                <div className="text-sm font-semibold">Tokenised stocks</div>
-                <div className="text-xs text-ink2 mt-1">ATS equities on Hedera and other RWA tokens. The contract reads your balance on-chain.</div>
+              <h1 className="font-display uppercase text-[40px] leading-[0.98] sm:text-[54px] lg:text-[58px] mt-4">
+                Two scared people
+                <br />
+                protect each other
+              </h1>
+              <p className="text-ink2 text-[15px] sm:text-base mt-5 max-w-md leading-relaxed">
+                Savers fear losing money. Shareholders fear a crash. One pool: the saver&apos;s spare yield insures the stock, and the saver always gets their deposit back.
+              </p>
+              <div className="flex flex-wrap gap-3 mt-7">
+                <Link href="/protect" className="btn-primary h-12 px-6 uppercase tracking-[0.06em] text-[13px]">
+                  <span className="opacity-60">|</span>▸ Protect a stock
+                </Link>
+                <Link href="/save" className="btn h-12 px-6 bg-card border border-line uppercase tracking-[0.06em] text-[13px] hover:bg-sunk">Buy a protected note</Link>
               </div>
             </div>
-            <p className="text-xs text-muted mt-3 max-w-xl">Either way the cover pays in stablecoin, settled against the exchange's official close.</p>
-            <div className="flex flex-wrap gap-3 mt-8">
-              <Link href="/protect" className="btn-primary h-12 px-6">Protect a stock</Link>
-              <Link href="/save" className="btn-ghost h-12 px-6">Buy a protected note</Link>
-              <Link href="/docs" className="btn h-12 px-4 text-ink2 hover:text-ink">Read the research →</Link>
-            </div>
-            <div className="flex flex-wrap gap-2 mt-8">
-              {CHAINS.map((c) => (
-                <span key={c.id} className="chip">
-                  <span className={`h-1.5 w-1.5 rounded-full ${isDeployed(c.id) ? "bg-good" : "bg-muted"}`} />
-                  {CHAIN_META[c.id].short} · {CHAIN_META[c.id].stable}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-[1440px] border-x border-line grid lg:grid-cols-[1.1fr_1fr]">
+          <div className="px-5 sm:px-10 lg:px-14 py-8 lg:border-r border-line">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink"><span className="mr-0.5">//</span>Settles on</div>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-4">
+              {CHAINS.map((c, i) => (
+                <span key={c.id} className="flex items-center gap-6">
+                  {i > 0 && <span className="h-1 w-1 rounded-full bg-muted" />}
+                  <span className="text-2xl font-semibold tracking-tight text-muted">{CHAIN_META[c.id].short}</span>
+                  <span className="text-xs text-muted -ml-4">{CHAIN_META[c.id].stable}</span>
                 </span>
               ))}
             </div>
           </div>
-          <div className="space-y-4">
-            <NoteExample />
-            <HolderExample />
+          <div className="px-5 sm:px-10 lg:px-14 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6">
+            {[
+              ["Pool APY", oos ? fmtPct(oos.total_apy) : "8.8%"],
+              ["Worst year", oos ? fmtPct(oos.worst_year) : "−11%"],
+              ["Markets", s ? fmtNum(s.markets) : "23"],
+              ["Principal lost", "$0"],
+            ].map(([k, v]) => (
+              <div key={k}>
+                <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted"><span className="mr-0.5">//</span>{k}</div>
+                <div className="text-2xl font-semibold tracking-tight mt-3 tabular">{v}</div>
+              </div>
+            ))}
           </div>
         </div>
-      </Section>
+      </section>
 
-      <Section className="py-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Stat label="Markets backtested" value={s ? fmtNum(s.markets) : "23"} sub={s ? `${fmtNum(s.names)} stocks, ${s.data_range?.[0]?.slice(0, 4)}–${s.data_range?.[1]?.slice(0, 4)}` : "2001–2026"} />
-          <Stat label="Pool APY, out of sample" value={oos ? fmtPct(oos.total_apy) : "—"} sub={oos ? `${fmtPct(oos.uw_apy)} above T-bills · walk-forward, R50/u25` : "loading backtest"} />
-          <Stat label="Worst year for the pool" value={oos ? fmtPct(oos.worst_year) : "—"} sub={oos ? `${oos.worst_year_label} · max drawdown ${fmtPct(oos.maxdd)}` : ""} tone="bad" />
-          <Stat label="Saver principal lost" value="$0" sub="in every simulated note, every market" tone="good" />
+      <Section className="py-14">
+        <div className="max-w-2xl">
+          <div className="eyebrow">How it works</div>
+          <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Save, protect, settle.</h2>
+        </div>
+        <div className="mt-12 space-y-20">
+          {[
+            ["1 · Save", "A saver deposits stablecoins. Most of it buys tokenised T-bills sized to grow back to the full deposit by maturity. The rest, the sleeve, joins the underwriting pool and earns the premiums as coupons.", <SaveArt key="a" />, <NoteExample key="b" />],
+            ["2 · Protect", "A shareholder proves they own the stock, at a broker or as an ATS token, and pays a premium. The pool locks the maximum payout up front, so every floor is fully collateralised.", <ProtectArt key="a" />, <HolderExample key="b" />],
+            ["3 · Settle", "At expiry the exchange's official close is posted on-chain. If the stock fell more than the deductible, the pool pays the extra fall, up to the cap. If not, the collateral is freed and the premium becomes the saver's coupon.", <SettleArt key="a" />, null],
+          ].map(([t, d, art, ex], i) => (
+            <div key={t} className="grid lg:grid-cols-[1.25fr_1fr] gap-8 lg:gap-14 items-center">
+              <div className={i % 2 ? "lg:order-2" : ""}>{art}</div>
+              <div>
+                <div className="font-display text-3xl tracking-tight">{t}</div>
+                <p className="text-ink2 mt-3 leading-relaxed">{d}</p>
+                {ex && <div className="mt-6">{ex}</div>}
+              </div>
+            </div>
+          ))}
         </div>
       </Section>
 
@@ -134,19 +166,7 @@ export default function Landing() {
           <div className="eyebrow">How the money moves</div>
           <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">Premiums in, crash payouts out, principal untouched.</h2>
         </div>
-        <div className="mt-10"><MoneyFlow /></div>
-        <div className="grid md:grid-cols-3 gap-4 mt-10">
-          {[
-            ["1 · Save", "A saver deposits stablecoins. Most of it buys tokenised T-bills sized to grow back to the full deposit by maturity. The rest, the sleeve, joins the underwriting pool."],
-            ["2 · Protect", "A shareholder proves they own the stock and buys a floor for a week or a month. If the official close falls more than the deductible, the pool pays the extra fall, up to the cap."],
-            ["3 · Settle", "Every policy is fully collateralised and settles from the official close. Quiet months turn premiums into coupons for savers. At maturity savers get their deposit back plus what the sleeve earned."],
-          ].map(([t, d]) => (
-            <div key={t} className="card p-5">
-              <div className="font-semibold">{t}</div>
-              <p className="text-sm text-ink2 mt-2 leading-relaxed">{d}</p>
-            </div>
-          ))}
-        </div>
+        <div className="mt-10"><MoneyMapArt /></div>
       </Section>
 
       <Section className="py-14">
@@ -154,7 +174,7 @@ export default function Landing() {
           <div className="max-w-2xl">
             <div className="eyebrow">Any listed stock</div>
             <h2 className="font-display text-4xl sm:text-5xl tracking-tight mt-3">23 exchanges, one pool.</h2>
-            <p className="text-ink2 mt-3">No tokenised share needed: holders prove ownership with a broker statement or demat API, or hold an ATS-tokenised share on Hedera.</p>
+            <p className="text-ink2 mt-3">No tokenised share needed: holders prove ownership with a broker statement or demat API, or hold an ATS-tokenised share on Hedera. Either way the cover pays in stablecoin, settled against the exchange&apos;s official close.</p>
           </div>
           <Link href="/protect" className="btn-ghost shrink-0">Find your stock</Link>
         </div>

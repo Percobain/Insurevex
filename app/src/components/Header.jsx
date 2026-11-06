@@ -3,7 +3,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { ThemeToggle } from "./Theme";
 import KycBadge from "./KycBadge";
 
 const NAV = [
@@ -42,7 +41,7 @@ export default function Header() {
             <Link
               key={n.href}
               href={n.href}
-              className={`px-3 h-9 grid place-items-center rounded-lg text-sm ${path?.startsWith(n.href) ? "text-ink bg-sunk" : "text-ink2 hover:text-ink"}`}
+              className={`px-3 h-9 grid place-items-center rounded-lg text-[12px] font-medium uppercase tracking-[0.08em] ${path?.startsWith(n.href) ? "text-ink" : "text-muted hover:text-ink"}`}
             >
               {n.label}
             </Link>
@@ -50,7 +49,6 @@ export default function Header() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <div className="hidden sm:block"><KycBadge /></div>
-          <ThemeToggle />
           <ConnectButton chainStatus={{ smallScreen: "icon", largeScreen: "full" }} accountStatus={{ smallScreen: "avatar", largeScreen: "address" }} showBalance={false} />
           <button className="lg:hidden h-9 w-9 grid place-items-center rounded-lg border border-line" onClick={() => setOpen((v) => !v)} aria-label="Menu">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
