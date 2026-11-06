@@ -259,8 +259,9 @@ async function loadActivity(c, blocks) {
   const ranges = [];
   for (let x = from; x <= latest; x += c.cfg.logChunk) ranges.push([x, Math.min(latest, x + c.cfg.logChunk - 1)]);
   const logs = [];
-  // Hashio (Hedera) rejects JSON-RPC batches of eth_getLogs, and ethers batches parallel calls, so Hedera goes one at a time
-  const par = Number(c.chainId) === 296 ? 1 : 4;
+  // 4 ranges at a time. Hedera relays reject JSON-RPC batches of eth_getLogs, so its provider never batches
+  // (batchMaxCount 1 in chain.js) and the parallel calls go out as separate requests.
+  const par = 4;
   for (let i = 0; i < ranges.length; i += par) {
     const batch = await Promise.all(ranges.slice(i, i + par).map(([f, t]) => getLogsRetry(c, addresses, f, t)));
     batch.forEach((l) => logs.push(...l));
@@ -281,12 +282,17 @@ async function loadActivity(c, blocks) {
 }
 // default lookback per chain: Arc makes blocks ~every 0.5s, so it needs a much wider window for the same hours
 const ACTIVITY_BLOCKS = { 1874: 20000, 296: 20000, 5042002: 200000 };
+const activityInflight = new Map(); // key -> promise of the scan in progress
 async function warmActivity() {
   for (const id of [1874, 296, 5042002]) {
     const c = chain(id);
     if (!c) continue;
     const b = ACTIVITY_BLOCKS[id];
-    try { activityCache.set(`${id}:${b}`, { at: Date.now(), body: await loadActivity(c, b) }); } catch {}
+    const key = `${id}:${b}`;
+    const scan = loadActivity(c, b).then((body) => { activityCache.set(key, { at: Date.now(), body }); return body; })
+      .finally(() => activityInflight.delete(key));
+    activityInflight.set(key, scan);
+    try { await scan; } catch {}
   }
 }
 app.get("/api/activity", wrap(async (req, res) => {
@@ -305,8 +311,16 @@ app.get("/api/activity", wrap(async (req, res) => {
     }
     return res.json(hit.body);
   }
-  const body = await loadActivity(c, blocks);
-  activityCache.set(key, { at: Date.now(), body });
+  // Cold cache: every request shares one scan. If it is not done in 20 s, answer 503 so the page falls back to
+  // reading recent blocks itself and asks again shortly, instead of hanging on a slow RPC.
+  let scan = activityInflight.get(key);
+  if (!scan) {
+    scan = loadActivity(c, blocks).then((body) => { activityCache.set(key, { at: Date.now(), body }); return body; })
+      .finally(() => activityInflight.delete(key));
+    activityInflight.set(key, scan);
+  }
+  const body = await Promise.race([scan, new Promise((r) => setTimeout(() => r(null), 20_000).unref())]);
+  if (!body) return res.status(503).json({ error: "activity is still loading, try again shortly", warming: true });
   res.json(body);
 }));
 

@@ -101,7 +101,8 @@ export function chain(chainId) {
   const need = ["stable", "IdentityRegistry", "PriceOracle", "TBillVault", "UnderwritingPool", "CoverMarket"];
   if (!dep || need.some((k) => !dep.contracts?.[k])) return null; // missing or still being written
   const urls = cfg.rpcs.map((u) => u.trim()).filter(Boolean);
-  const provider = new MultiRpcProvider(urls, chainId, { staticNetwork: true, batchMaxCount: 20 });
+  // Hedera relays reject batched eth_getLogs: send every call on its own there.
+  const provider = new MultiRpcProvider(urls, chainId, { staticNetwork: true, batchMaxCount: chainId === 296 ? 1 : 20 });
   const signer = quoterKey ? new ethers.Wallet(quoterKey, provider) : null; // fresh pending nonce per tx (keeper txs are sequential)
   const runner = signer || provider;
   const c = dep.contracts;
