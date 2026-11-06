@@ -29,7 +29,7 @@ contract PriceOracle is AccessControl {
     }
 
     function post(bytes32 symbol, uint64 ts, uint256 price) public onlyRole(REPORTER_ROLE) {
-        require(price > 0 && price < type(uint128).max, "price");
+        require(price < type(uint128).max, "price"); // 0 is a real close (delisted / bankrupt)
         require(ts <= block.timestamp + 1 hours, "future");
         prices[symbol][ts] = Point(uint128(price), uint64(block.timestamp));
         if (ts >= latestTs[symbol]) {
@@ -48,14 +48,21 @@ contract PriceOracle is AccessControl {
         maxStaleness = s;
     }
 
-    /// @notice Price for a symbol at an exact settlement timestamp (0 if not posted yet).
+    /// @notice Price for a symbol at an exact settlement timestamp (0 if not posted yet; use closeAt to tell a zero close
+    ///         from a missing one).
     function priceAt(bytes32 symbol, uint64 ts) external view returns (uint256) {
         return prices[symbol][ts].price;
     }
 
+    /// @notice Whether an official close has been posted for this settlement timestamp, and its value (may be 0).
+    function closeAt(bytes32 symbol, uint64 ts) external view returns (bool posted, uint256 price) {
+        Point memory p = prices[symbol][ts];
+        return (p.postedAt > 0, p.price);
+    }
+
     function latestPrice(bytes32 symbol) external view returns (uint256 price, uint64 ts) {
         Point memory p = latest[symbol];
-        require(p.price > 0 && block.timestamp - p.postedAt <= maxStaleness, "stale");
+        require(p.postedAt > 0 && block.timestamp - p.postedAt <= maxStaleness, "stale");
         return (p.price, latestTs[symbol]);
     }
 }
