@@ -1,6 +1,6 @@
 "use client";
-import { useAccount } from "wagmi";
-import { chainMeta } from "@/lib/chains";
+import { useAccount, useSwitchChain } from "wagmi";
+import { chainMeta, CHAINS } from "@/lib/chains";
 import { isDeployed } from "@/lib/contracts";
 import { shortHash, shortAddr } from "@/lib/format";
 
@@ -147,17 +147,48 @@ export function AddrLink({ address, chainId, label }) {
 }
 
 /** Wraps chain-dependent UI: shows a clear message when the wallet's chain has no deployment yet. */
+const DEFAULT_CHAIN = Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID || 1874);
+const SUPPORTED = new Set(CHAINS.map((c) => c.id));
+
 export function useActiveChain() {
-  const { chainId, isConnected, address } = useAccount();
-  const id = chainId || Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID || 1874);
-  return { chainId: id, isConnected, address, deployed: isDeployed(id), meta: chainMeta(id) };
+  const { chainId: walletChain, isConnected, address } = useAccount();
+  // On a chain InsureVEX does not run on, keep showing live data from the default chain (read-only) and ask to switch.
+  const unsupported = Boolean(walletChain) && !SUPPORTED.has(walletChain);
+  const id = walletChain && !unsupported ? walletChain : DEFAULT_CHAIN;
+  return { chainId: id, walletChain, unsupported, isConnected, address, deployed: isDeployed(id), meta: chainMeta(id) };
+}
+
+function SwitchButtons() {
+  const { switchChain, isPending } = useSwitchChain();
+  return (
+    <span className="flex flex-wrap gap-2 mt-2">
+      {CHAINS.filter((c) => isDeployed(c.id)).map((c) => (
+        <button key={c.id} type="button" className="btn-ghost btn-sm" disabled={isPending} onClick={() => switchChain({ chainId: c.id })}>
+          Switch to {chainMeta(c.id).short}
+        </button>
+      ))}
+    </span>
+  );
 }
 
 export function DeployGate({ chainId, children }) {
+  const { walletChain, unsupported } = useActiveChain();
+  if (unsupported) {
+    return (
+      <>
+        <Notice tone="warn">
+          Your wallet is on a network InsureVEX does not run on (chain {walletChain}). You are seeing live data from {chainMeta(chainId).short}; switch networks to subscribe, buy cover or sign.
+          <SwitchButtons />
+        </Notice>
+        {children}
+      </>
+    );
+  }
   if (isDeployed(chainId)) return children;
   return (
     <Notice tone="warn">
-      InsureVEX is deploying soon on {chainMeta(chainId).short}. Switch to Whitechain Sepolia in the wallet menu to use the live contracts.
+      InsureVEX is not deployed on {chainMeta(chainId).short} yet.
+      <SwitchButtons />
     </Notice>
   );
 }

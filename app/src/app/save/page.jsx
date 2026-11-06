@@ -16,14 +16,14 @@ function useNow(ms = 1000) {
 }
 
 const NOTE_READS = ["name", "symbol", "snapshot", "couponInterval", "lastCoupon", "couponAvailable", "paused", "issueDate"];
-const USER_READS = ["balanceOf", "pendingCoupon", "claimableAtMaturity"];
+const USER_READS = ["balanceOf", "pendingCoupon", "claimableAtMaturity", "maturityClaimed"];
 
 function NoteCard({ note, chainId, account, kycOk }) {
   const now = useNow();
   const stable = stableSymbol(chainId);
   const stableAddr = addr(chainId, "stable");
   const { run, busy } = useTx();
-  const [amount, setAmount] = useState("100");
+  const [amount, setAmount] = useState("1");
   const reads = useReadContracts({
     contracts: [
       ...NOTE_READS.map((fn) => ({ address: note.address, abi: ABI.ProtectedNote, functionName: fn, chainId })),
@@ -35,8 +35,9 @@ function NoteCard({ note, chainId, account, kycOk }) {
   const r = (reads.data || []).map((x) => (x.status === "success" ? x.result : undefined));
   const [name, symbol, snap, couponInterval, lastCoupon, couponAvailable, paused] = r;
   const floor1000 = r[NOTE_READS.length];
-  const [bal, pending, claimable] = account ? r.slice(NOTE_READS.length + 1) : [];
+  const [bal, pending, claimable, redeemed] = account ? r.slice(NOTE_READS.length + 1) : [];
   const allowance = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "allowance", args: [account, note.address], query: { enabled: Boolean(account && stableAddr) } });
+  const wallet = useReadContract({ address: stableAddr, abi: ERC20_ABI, functionName: "balanceOf", args: [account], query: { enabled: Boolean(account && stableAddr), refetchInterval: 15_000 } });
 
   if (!snap) return <div className="card h-80 animate-pulse" />;
   const [supply, floorVal, sleeveVal, sleevePrin, couponsPaid, maturity, subEnd, rateBps, matured] = snap;
@@ -46,6 +47,9 @@ function NoteCard({ note, chainId, account, kycOk }) {
   const couponDue = now >= Number(lastCoupon || 0) + Number(couponInterval || 0);
   const units = toUnits(amount);
   const sleevePnL = fromUnits(sleeveVal) - fromUnits(sleevePrin);
+  const walletUnits = wallet.data;
+  const overBalance = walletUnits !== undefined && units > walletUnits;
+  const hasRedeemed = Boolean(matured && redeemed && redeemed > 0n && (!claimable || claimable === 0n));
 
   async function subscribe() {
     if ((allowance.data || 0n) < units) {
@@ -90,7 +94,8 @@ function NoteCard({ note, chainId, account, kycOk }) {
         <div className="rounded-xl bg-sunk p-4 mt-4 space-y-1.5 text-sm">
           <div className="flex justify-between"><span className="text-ink2">Your notes (face)</span><span className="tabular font-semibold">{fmtMoney(fromUnits(bal), { sym: "" })} {stable}</span></div>
           <div className="flex justify-between"><span className="text-ink2">Pending coupon</span><span className="tabular">{fmtMoney(fromUnits(pending), { sym: "" })}</span></div>
-          {matured && <div className="flex justify-between"><span className="text-ink2">Claimable at maturity</span><span className="tabular text-good">{fmtMoney(fromUnits(claimable), { sym: "" })}</span></div>}
+          {matured && !hasRedeemed && <div className="flex justify-between"><span className="text-ink2">Claimable at maturity</span><span className="tabular text-good">{fmtMoney(fromUnits(claimable), { sym: "" })}</span></div>}
+          {hasRedeemed && <div className="flex justify-between"><span className="text-ink2">Redeemed at maturity</span><span className="tabular text-good">{fmtMoney(fromUnits(redeemed), { sym: "" })} {stable}{bal > 0n ? ` (${fromUnits(redeemed) >= fromUnits(bal) ? "+" : ""}${fmtMoney(fromUnits(redeemed) - fromUnits(bal), { sym: "" })} vs face)` : ""}</span></div>}
         </div>
       )}
 
@@ -98,8 +103,14 @@ function NoteCard({ note, chainId, account, kycOk }) {
         {subOpen && !matured && (
           <div className="flex gap-2">
             <input className="input" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} aria-label="Subscription amount" />
-            <button className="btn-primary shrink-0" disabled={!account || !kycOk || Boolean(busy) || units <= 0n || paused} onClick={subscribe}>Subscribe</button>
+            <button className="btn-primary shrink-0" disabled={!account || !kycOk || Boolean(busy) || units <= 0n || paused || overBalance} onClick={subscribe}>Subscribe</button>
           </div>
+        )}
+        {subOpen && !matured && account && walletUnits !== undefined && (
+          <p className={`text-xs ${overBalance ? "text-bad" : "text-muted"}`}>
+            {overBalance ? `More than your wallet holds. ` : ""}Wallet: {fmtMoney(fromUnits(walletUnits), { sym: "" })} {stable}.{" "}
+            {walletUnits > 0n && <button type="button" className="underline underline-offset-2" onClick={() => setAmount(String(fromUnits(walletUnits)))}>Use all</button>}
+          </p>
         )}
         {subOpen && units > 0n && floor1000 !== undefined && (
           <p className="text-xs text-muted">{fmtMoney(Number(amount) * floorShare, { sym: "" })} buys T-bills, {fmtMoney(Number(amount) * (1 - floorShare), { sym: "" })} joins the pool. Worst case at maturity: {fmtMoney(Number(amount), { sym: "" })} {stable}.</p>
@@ -112,6 +123,10 @@ function NoteCard({ note, chainId, account, kycOk }) {
           {isMature ? (
             matured && claimable > 0n ? (
               <button className="btn-primary btn-sm" disabled={Boolean(busy)} onClick={() => run("Redeem note", { address: note.address, abi: ABI.ProtectedNote, functionName: "redeem", args: [] })}>Redeem</button>
+            ) : hasRedeemed ? (
+              <button className="btn-ghost btn-sm" disabled>Redeemed</button>
+            ) : matured && fromUnits(sleeveVal) < 0.01 ? (
+              <button className="btn-ghost btn-sm" disabled>{bal > 0n ? "Nothing to claim" : "Closed"}</button>
             ) : (
               <button className="btn-primary btn-sm" disabled={!account || Boolean(busy)} onClick={() => run("Mature note", { address: note.address, abi: ABI.ProtectedNote, functionName: "mature", args: [] })}>Mature</button>
             )

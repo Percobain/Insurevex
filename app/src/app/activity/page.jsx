@@ -58,10 +58,10 @@ function describe(e, nameOf, stable) {
 
 export default function ActivityPage() {
   const { chainId, deployed } = useActiveChain();
-  const api = useApi(`/api/activity?chainId=${chainId}`, { enabled: deployed, refetchInterval: 20_000 });
+  const api = useApi(`/api/activity?chainId=${chainId}`, { enabled: deployed, refetchInterval: 20_000, timeout: 30_000 });
   const apiEvents = api.data?.events || (Array.isArray(api.data) ? api.data : null);
   const chain = useChainActivity(chainId, deployed && (api.isError || (api.isSuccess && !apiEvents)));
-  const events = apiEvents || chain.data || [];
+  const events = (apiEvents || chain.data || []).filter((e) => !((e.event || e.type) === "Subscribed" && e.args && e.args.face === undefined));
   const nameOf = useSymbolNames();
   const stable = stableSymbol(chainId);
   return (
@@ -77,7 +77,7 @@ export default function ActivityPage() {
       <Section>
         <DeployGate chainId={chainId}>
           <SectionHead eyebrow="Live feed" title="Latest events" />
-          {api.isError && <p className="text-xs text-muted mb-3">Server offline: reading the last ~9,000 blocks directly from the chain.</p>}
+          {api.isError && <p className="text-xs text-muted mb-3">The InsureVEX server did not answer, so this reads the last ~9,000 blocks straight from the chain.</p>}
           {(api.isLoading || chain.isLoading) && events.length === 0 ? (
             <div className="card h-64 animate-pulse" />
           ) : events.length === 0 ? (

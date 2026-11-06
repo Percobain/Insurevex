@@ -27,6 +27,19 @@ app.get("/api/health", (req, res) => res.json({
 }));
 
 // ------------------------------------------------------------------ markets and prices
+// USD per one unit of a quote currency, from Yahoo FX closes. Sub-unit quotes (pence, agorot, cents) are scaled.
+const SUBUNIT = { GBp: ["GBP", 100], GBX: ["GBP", 100], ILA: ["ILS", 100], ZAc: ["ZAR", 100], ZAC: ["ZAR", 100] };
+const fxMemo = new Map();
+export async function usdPer(currency) {
+  if (!currency || currency === "USD") return 1;
+  const [cur, div] = SUBUNIT[currency] || [currency.toUpperCase(), 1];
+  if (cur === "USD") return 1 / div;
+  if (!fxMemo.has(cur)) fxMemo.set(cur, history(`${cur}USD=X`, "3mo").then((h) => h.close).catch(() => { fxMemo.delete(cur); return null; }));
+  const r = await fxMemo.get(cur);
+  return r ? r / div : null;
+}
+setInterval(() => fxMemo.clear(), 6 * 3600 * 1000).unref();
+
 app.get("/api/markets", wrap(async (req, res) => {
   const withPrices = req.query.prices !== "0";
   const markets = await Promise.all(MARKETS.map(async (m) => ({
@@ -38,7 +51,8 @@ app.get("/api/markets", wrap(async (req, res) => {
         const h = await history(yahoo);
         const q = priceFloor({ sigmaDaily: h.sigmaBlend, sessions: 21, deductible: 0.1, cap: 0.2, market: m.id });
         const w = priceFloor({ sigmaDaily: h.sigmaBlend, sessions: 5, deductible: 0.03, cap: 0.1, market: m.id });
-        return { ...base, currency: h.currency || m.currency, lastClose: h.close, lastCloseDate: new Date(h.closeTs * 1000).toISOString().slice(0, 10),
+        const fx = await usdPer(h.currency || m.currency);
+        return { ...base, currency: h.currency || m.currency, lastClose: h.close, usdPerUnit: fx, lastCloseUsd: fx ? h.close * fx : null, lastCloseDate: new Date(h.closeTs * 1000).toISOString().slice(0, 10),
           sigmaDaily: h.sigmaBlend, monthlyPremiumBps: Math.round(q.charged * 1e4), weeklyPremiumBps: Math.round(w.charged * 1e4), quotable: !q.refused || !w.refused };
       } catch (e) { return { ...base, error: e.message, quotable: false }; }
     })),
@@ -90,7 +104,18 @@ app.get("/api/quote", wrap(async (req, res) => {
   }
 
   const toWad = (x) => ethers.parseEther(Number(x).toFixed(18));
-  const shares = req.query.shares ? toWad(req.query.shares) : toWad(notionalUsd / h.close);
+  const fx = await usdPer(h.currency || sym.currency);
+  const usdClose = fx ? h.close * fx : null;
+  if (!usdClose) return res.json({ ok: false, error: `no FX rate for ${h.currency} right now`, pricing: { refused: true, reason: `No FX rate for ${h.currency} right now, so the cover cannot be sized in dollars. Try again shortly.` } });
+  // insurable interest by value: cover cannot exceed what the covered shares are worth (10% slack for price moves)
+  if (req.query.shares) {
+    const worth = Number(req.query.shares) * usdClose;
+    if (notionalUsd > worth * 1.1) {
+      const reason = `${req.query.shares} ${sym.symbol} is worth about ${worth.toFixed(2)} USD at the last close; cover cannot exceed that.`;
+      return res.json({ ok: false, error: reason, pricing: { refused: true, reason } });
+    }
+  }
+  const shares = req.query.shares ? toWad(req.query.shares) : toWad(notionalUsd / usdClose);
   const heldShares = req.query.heldShares ? toWad(req.query.heldShares) : shares;
   const now = Math.floor(Date.now() / 1000);
   const notional = ethers.parseUnits(notionalUsd.toFixed(6), 6);
@@ -162,22 +187,81 @@ const EVENTS = [
   ["market", "CoverBought"], ["market", "CoverSettled"], ["pool", "ClaimPaid"], ["identity", "IdentitySet"], ["identity", "Frozen"],
   ["oracle", "PricePosted"], ["tbill", "NavUpdated"],
 ];
+const NOTE_EVENTS = ["Subscribed", "CouponDistributed", "CouponClaimed", "Matured", "MaturityClaimed", "ForcedTransfer"];
+const activityCache = new Map(); // key -> { at, body }
+async function getLogsRetry(c, address, fromBlock, toBlock) {
+  for (let i = 0; i < 4; i++) {
+    try { return await c.provider.getLogs({ address, fromBlock, toBlock }); } catch { await new Promise((r) => setTimeout(r, 400 * (i + 1))); }
+  }
+  console.warn(`activity: getLogs ${fromBlock}-${toBlock} on ${c.chainId} failed after retries`);
+  return [];
+}
+async function loadActivity(c, blocks) {
+  const latest = await c.provider.getBlockNumber();
+  const from = Math.max(c.dep.startBlock || 0, latest - blocks);
+  // address -> { contract, label, events }: one getLogs per block chunk over every contract, chunks in parallel
+  const watch = new Map();
+  const add = (ct, label, ev) => {
+    if (!ct) return;
+    const k = String(ct.target).toLowerCase();
+    if (!watch.has(k)) watch.set(k, { ct, label, events: new Set() });
+    watch.get(k).events.add(ev);
+  };
+  for (const [k, e] of EVENTS) add(c[k], k, e);
+  for (const n of c.notes) for (const e of NOTE_EVENTS) add(n.contract, n.key, e);
+  const addresses = [...watch.values()].map((w) => w.ct.target);
+  const ranges = [];
+  for (let x = from; x <= latest; x += c.cfg.logChunk) ranges.push([x, Math.min(latest, x + c.cfg.logChunk - 1)]);
+  const logs = [];
+  // Hashio (Hedera) rejects JSON-RPC batches of eth_getLogs, and ethers batches parallel calls, so Hedera goes one at a time
+  const par = Number(c.chainId) === 296 ? 1 : 4;
+  for (let i = 0; i < ranges.length; i += par) {
+    const batch = await Promise.all(ranges.slice(i, i + par).map(([f, t]) => getLogsRetry(c, addresses, f, t)));
+    batch.forEach((l) => logs.push(...l));
+  }
+  const out = [];
+  for (const l of logs) {
+    const w = watch.get(String(l.address).toLowerCase());
+    if (!w) continue;
+    let parsed;
+    try { parsed = w.ct.interface.parseLog(l); } catch { continue; }
+    if (!parsed || !w.events.has(parsed.name)) continue;
+    const args = {};
+    parsed.fragment.inputs.forEach((inp, i) => { const v = parsed.args[i]; args[inp.name] = typeof v === "bigint" ? v.toString() : v; });
+    out.push({ contract: w.label, event: parsed.name, block: l.blockNumber, tx: l.transactionHash, args });
+  }
+  out.sort((x, y) => y.block - x.block);
+  return { explorer: c.cfg.explorer, latest, events: out.slice(0, 200) };
+}
+// default lookback per chain: Arc makes blocks ~every 0.5s, so it needs a much wider window for the same hours
+const ACTIVITY_BLOCKS = { 1874: 20000, 296: 20000, 5042002: 200000 };
+async function warmActivity() {
+  for (const id of [1874, 296, 5042002]) {
+    const c = chain(id);
+    if (!c) continue;
+    const b = ACTIVITY_BLOCKS[id];
+    try { activityCache.set(`${id}:${b}`, { at: Date.now(), body: await loadActivity(c, b) }); } catch {}
+  }
+}
 app.get("/api/activity", wrap(async (req, res) => {
   const c = chain(req.query.chainId || 1874);
   if (!c) throw bad("chain not deployed");
-  const latest = await c.provider.getBlockNumber();
-  const from = Math.max(c.dep.startBlock || 0, latest - Number(req.query.blocks || 20000));
-  const out = [];
-  const contracts = [...EVENTS.map(([k, e]) => [c[k], e, k]), ...c.notes.flatMap((n) => ["Subscribed", "CouponDistributed", "CouponClaimed", "Matured", "MaturityClaimed", "ForcedTransfer"].map((e) => [n.contract, e, n.key]))];
-  for (const [ct, ev, label] of contracts) {
-    for (let a = from; a <= latest; a += c.cfg.logChunk) {
-      const logs = await ct.queryFilter(ct.filters[ev](), a, Math.min(latest, a + c.cfg.logChunk - 1)).catch(() => []);
-      for (const l of logs) out.push({ contract: label, event: ev, block: l.blockNumber, tx: l.transactionHash,
-        args: Object.fromEntries(Object.entries(l.args?.toObject?.() || {}).map(([k, v]) => [k, typeof v === "bigint" ? v.toString() : v])) });
+  const id = Number(req.query.chainId || 1874);
+  const blocks = Math.min(Number(req.query.blocks || ACTIVITY_BLOCKS[id] || 20000), 200000);
+  const key = `${id}:${blocks}`;
+  const hit = activityCache.get(key);
+  if (hit && Date.now() - hit.at < 30_000) return res.json(hit.body);
+  // serve a stale copy at once and refresh behind it, so the page never waits on a slow RPC twice
+  if (hit) {
+    if (!hit.refreshing) {
+      hit.refreshing = true;
+      loadActivity(c, blocks).then((body) => activityCache.set(key, { at: Date.now(), body })).catch(() => { hit.refreshing = false; });
     }
+    return res.json(hit.body);
   }
-  out.sort((a, b) => b.block - a.block);
-  res.json({ explorer: c.cfg.explorer, events: out.slice(0, 200) });
+  const body = await loadActivity(c, blocks);
+  activityCache.set(key, { at: Date.now(), body });
+  res.json(body);
 }));
 
 // ------------------------------------------------------------------ KYC requests (issuer approves on-chain)
@@ -215,5 +299,6 @@ if (!process.env.VERCEL) {
   app.listen(port, () => {
     console.log(`InsureVEX server on :${port}; chains: ${activeChains().map((i) => CHAINS[i].name).join(", ") || "none"}`);
     if (process.env.KEEPER !== "0" && quoterKey) startKeeper();
+    warmActivity();
   });
 }
