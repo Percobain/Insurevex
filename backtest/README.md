@@ -1,6 +1,14 @@
 # InsureVEX world backtest
 
+The independent principal and variable-rate study is documented in
+[`docs/PRINCIPAL_FIRST_RESEARCH.md`](../docs/PRINCIPAL_FIRST_RESEARCH.md).
+It identifies failures in the assumed-rate floor and broad insurance pricing;
+the original headline results below do not validate principal protection or Pro profitability.
+Its inputs, scripts, and outputs are separate from the original run.
+
 This backtests the InsureVEX model across 23 stock markets. Savers' principal-protected notes underwrite USD-settled crash floors on stocks listed anywhere in the world.
+
+Current economic failures and expectation gaps are tracked in [the backtest failure register](../docs/BACKTEST_FAILURE_TRACKER.md), including Saver principal shortfalls, Pro LP losses, pricing losses, and checks that pass despite those failures. Refresh the saved-result snapshots with `python3 backtest/track_failures.py` from the repo root.
 
 ## Run
 

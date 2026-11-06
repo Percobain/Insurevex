@@ -1,0 +1,35 @@
+{
+  "startedAt": "2026-11-06T18:26:15.969Z",
+  "environment": "Hedera testnet; isolated agent fixture",
+  "origin": "http://localhost:8083",
+  "checks": [
+    "unauthorised controller rejected",
+    "signed emergency stop blocks preflight; signed resume restores fixture",
+    "signed settings persist existing limits without raising ceilings",
+    "actual ATS holdings, KYC, available collateral and budget preflight",
+    "a consumed preflight cannot start another paid run"
+  ],
+  "agent": {
+    "address": "0x767446E2e8b6A80658d6a3e58a93759Bc9Ffe18b",
+    "accountId": "0.0.11343726"
+  },
+  "plan": {
+    "checks": [
+      "Hedera testnet",
+      "Verified identity",
+      "ATS share ownership",
+      "Dedicated wallet",
+      "Pinned contracts",
+      "Pool collateral",
+      "Spending policy"
+    ],
+    "premium": "4285",
+    "notional": "1860200",
+    "serviceFee": "1000000"
+  },
+  "runId": "d90a2b35-3b5c-4148-996a-37020bea7672",
+  "stage": "preflight",
+  "status": "failed",
+  "error": "Agent stopped at preflight: exceeded maximum retry limit; reconcile recorded payments before retrying",
+  "finishedAt": "2026-11-06T18:26:29.235Z"
+}

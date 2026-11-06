@@ -1,0 +1,10 @@
+{
+  "schedule": "0 */5 * * * *",
+  "jobsUrl": "http://localhost:8080/api/chainlink/jobs?chainId=1874",
+  "reportUrl": "http://localhost:8080/api/chainlink/reports",
+  "deliveryEnabled": false,
+  "chains": [
+    { "chainId": 1874, "rpc": "https://rpc.testnet.whitechain.io", "market": "0x0B19a2C1042874dFe0374814464f89537519dDF0", "oracle": "0x3FCD2023FfE7E1d41dA07A96B47C3B9912033AD4" },
+    { "chainId": 296, "rpc": "https://testnet.hashio.io/api", "market": "0x65420A913Fa66038102DB7A609b98E99c11A519c", "oracle": "0x5AadEb63aac4c26A399FA043Aec7A2Ab0da1FF75" }
+  ]
+}

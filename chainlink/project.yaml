@@ -1,0 +1,10 @@
+staging-settings:
+  rpcs:
+    # CLI v1.39 requires a supported EVM capability RPC at startup, even for HTTP-only workflows.
+    # This official-template endpoint is host bootstrap only; actual policy reads use config.chains.
+    - chain-name: ethereum-testnet-sepolia
+      url: https://ethereum-sepolia-rpc.publicnode.com
+local-simulation:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia
+      url: https://ethereum-sepolia-rpc.publicnode.com

@@ -5,6 +5,7 @@ import path from "node:path";
 import { ethers } from "ethers";
 import { Client, PrivateKey, AccountCreateTransaction, TopicCreateTransaction, Hbar } from "@hiero-ledger/sdk";
 import { chain } from "../src/chain.js";
+import { confirmedReceipt } from "../src/receipts.js";
 import { DEFAULT_LIMITS, CHAIN_ID, NETWORK, insist, hashscan } from "../src/agent/policy.js";
 import { FACILITATOR, FEE_PAYER } from "../src/agent/merchant.js";
 
@@ -44,7 +45,7 @@ try {
   const expiry = Math.floor(Date.now() / 1000) + 30 * 86400;
   const record = async (label, pending) => {
     const tx = await pending;
-    const receipt = await tx.wait();
+    const receipt = await confirmedReceipt(c.provider, tx.hash);
     insist(receipt.status === 1, `${label} failed`);
     console.log(label, hashscan(tx.hash));
   };

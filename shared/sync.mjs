@@ -8,3 +8,5 @@ for (const dest of ["../server/src/shared", "../app/src/shared"]) {
   copyFileSync(join(here, "agent-control.mjs"), join(here, dest, "agent-control.mjs"));
   console.log("synced", join(dest, "agent-control.mjs"));
 }
+copyFileSync(join(here, "chainlink-settlement.mjs"), join(here, "../server/src/shared/chainlink-settlement.mjs"));
+console.log("synced ../server/src/shared/chainlink-settlement.mjs");

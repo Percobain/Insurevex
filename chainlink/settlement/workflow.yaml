@@ -1,0 +1,17 @@
+staging-settings:
+  user-workflow:
+    workflow-name: insurevex-stock-settlement
+    deployment-registry: private
+  workflow-artifacts:
+    workflow-path: ./main.ts
+    config-path: ./config.staging.json
+    # Read-only staging does not load payment-relay credentials.
+    secrets-path: ""
+local-simulation:
+  user-workflow:
+    workflow-name: insurevex-stock-settlement-local-simulation
+    deployment-registry: private
+  workflow-artifacts:
+    workflow-path: ./main.ts
+    config-path: ./config.local-simulation.json
+    secrets-path: ""

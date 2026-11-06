@@ -1,0 +1,516 @@
+{
+  "startedAt": "2026-11-06T17:31:34.835Z",
+  "testnetOnly": true,
+  "execute": true,
+  "maxStablePrincipalPerChain": "1.25",
+  "chains": [
+    {
+      "chainId": 1874,
+      "network": "Whitechain Sepolia",
+      "status": "passed",
+      "checks": [
+        {
+          "name": "network, funded signer, KYC, official stablecoin and deployed contract bytecode",
+          "passed": true
+        },
+        {
+          "name": "live market data and API underwriting quote",
+          "passed": true,
+          "source": "NASDAQ:MSFT",
+          "premium": "10"
+        },
+        {
+          "name": "Saver subscription mints face value and consumes exact allowance",
+          "passed": true
+        },
+        {
+          "name": "Pro first-loss liquidity deposit and withdrawal",
+          "passed": true
+        },
+        {
+          "name": "T-bill deposit and redemption",
+          "passed": true
+        },
+        {
+          "name": "premium collected, collateral reserved, replay and premature settlement rejected",
+          "passed": true
+        },
+        {
+          "name": "exact capped payout, Pro first loss, senior assets preserved, collateral released, no double settlement",
+          "passed": true,
+          "policyId": "5",
+          "payout": "10000"
+        }
+      ],
+      "transactions": [
+        {
+          "step": "Approve exactly 1 test stablecoin for Saver",
+          "hash": "0x213b4393a7293254deb8b17813696cdf90d2064cba6ddec9134323e56249bce6",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0x213b4393a7293254deb8b17813696cdf90d2064cba6ddec9134323e56249bce6",
+          "blockNumber": 12389932,
+          "gasUsed": "53376",
+          "fee": "266933376000000"
+        },
+        {
+          "step": "Saver subscribes 1 test stablecoin",
+          "hash": "0x16b4a7a63d1b1582ff61354ab6e6827d87f429bf0a8b2375a50654fcb248db55",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0x16b4a7a63d1b1582ff61354ab6e6827d87f429bf0a8b2375a50654fcb248db55",
+          "blockNumber": 12389937,
+          "gasUsed": "207828",
+          "fee": "1039347828000000"
+        },
+        {
+          "step": "Approve exact Pro deposit",
+          "hash": "0xac511a7835a77f73e41452e26e4ee2f80fa98c1652860cce4cac2471049e1adc",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0xac511a7835a77f73e41452e26e4ee2f80fa98c1652860cce4cac2471049e1adc",
+          "blockNumber": 12389943,
+          "gasUsed": "36276",
+          "fee": "181416276000000"
+        },
+        {
+          "step": "Pro deposits 0.1 test stablecoin",
+          "hash": "0xdbb5b12501ce0bea97f7a06167e17995cf3e2ae4d5852d6b4df4ef2c957507f9",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0xdbb5b12501ce0bea97f7a06167e17995cf3e2ae4d5852d6b4df4ef2c957507f9",
+          "blockNumber": 12389949,
+          "gasUsed": "89720",
+          "fee": "448689720000000"
+        },
+        {
+          "step": "Pro withdraws 0.1 test stablecoin",
+          "hash": "0x45c61b8095b0ee67503fa2fdaea48a69cb814915450d247764bc7baae6bd2808",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0x45c61b8095b0ee67503fa2fdaea48a69cb814915450d247764bc7baae6bd2808",
+          "blockNumber": 12389954,
+          "gasUsed": "94617",
+          "fee": "473179617000000"
+        },
+        {
+          "step": "Approve exact treasury deposit",
+          "hash": "0x64c32de03bb67b3d5b9b7eddb6b68efd4ccf70df17c1aa9c2447168051a55046",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0x64c32de03bb67b3d5b9b7eddb6b68efd4ccf70df17c1aa9c2447168051a55046",
+          "blockNumber": 12389960,
+          "gasUsed": "53364",
+          "fee": "266873364000000"
+        },
+        {
+          "step": "Treasury deposits 0.01 test stablecoin",
+          "hash": "0xc78c1e12dd18892f258fc379159ff076c5385b506960ff0d29b46024ae816f66",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0xc78c1e12dd18892f258fc379159ff076c5385b506960ff0d29b46024ae816f66",
+          "blockNumber": 12389966,
+          "gasUsed": "104276",
+          "fee": "521484276000000"
+        },
+        {
+          "step": "Treasury redeems newly acquired shares",
+          "hash": "0xfea94092f8107b238f211f4861ec1f2605e597778ba4998fba10d1eca14d7a5a",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0xfea94092f8107b238f211f4861ec1f2605e597778ba4998fba10d1eca14d7a5a",
+          "blockNumber": 12389972,
+          "gasUsed": "79899",
+          "fee": "399574899000000"
+        },
+        {
+          "step": "Approve exact bounded premium",
+          "hash": "0xa36e1df4bfeb2ff989379afd953caf0a79e9223658c79f6dbe729d41f971f14d",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0xa36e1df4bfeb2ff989379afd953caf0a79e9223658c79f6dbe729d41f971f14d",
+          "blockNumber": 12389978,
+          "gasUsed": "53352",
+          "fee": "266813352000000"
+        },
+        {
+          "step": "Holder pays live-priced synthetic-test premium",
+          "hash": "0x556fea9c23499803314a1cb6eefa164f1b0ebe9ec131549c085d2408ce0dbab1",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0x556fea9c23499803314a1cb6eefa164f1b0ebe9ec131549c085d2408ce0dbab1",
+          "blockNumber": 12389983,
+          "gasUsed": "463272",
+          "fee": "2316823272000000"
+        },
+        {
+          "step": "Post explicitly synthetic 50% crash for unique E2E symbol",
+          "hash": "0x7b5606f37041c8da2e96d574b1e2c0a0af8d95f26450708751011b0ec9275131",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0x7b5606f37041c8da2e96d574b1e2c0a0af8d95f26450708751011b0ec9275131",
+          "blockNumber": 12390015,
+          "gasUsed": "94010",
+          "fee": "470144010000000"
+        },
+        {
+          "step": "Settle test policy and pay capped protection",
+          "hash": "0xe9951eda964e19bb3e73be59006ce14a434a30c97a7c0b8c1032e52ea9fe65e8",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0xe9951eda964e19bb3e73be59006ce14a434a30c97a7c0b8c1032e52ea9fe65e8",
+          "blockNumber": 12390021,
+          "gasUsed": "199218",
+          "fee": "996289218000000"
+        }
+      ],
+      "wallet": "0x1d83F122EF31885B83139ABCb4f8fB4eF319DDF9",
+      "stable": "0xcedfB56113143d55b2358b8CFbB0dEB5Ad2f55a7",
+      "stableSymbol": "USDT",
+      "testPolicy": {
+        "policyId": "5",
+        "symbol": "0xbf2543c81452159e435cae6b4e23a55bf581c10e898b951a512d38bb7db755a0",
+        "expiry": 1793986378,
+        "notional": "100000",
+        "premium": "10",
+        "synthetic": true
+      },
+      "gasSpentWei": "7647569208000000"
+    },
+    {
+      "chainId": 296,
+      "network": "Hedera Testnet",
+      "status": "passed",
+      "checks": [
+        {
+          "name": "network, funded signer, KYC, official stablecoin and deployed contract bytecode",
+          "passed": true
+        },
+        {
+          "name": "live market data and API underwriting quote",
+          "passed": true,
+          "source": "NASDAQ:MSFT",
+          "premium": "10"
+        },
+        {
+          "name": "Saver subscription mints face value and consumes exact allowance",
+          "passed": true
+        },
+        {
+          "name": "Pro first-loss liquidity deposit and withdrawal",
+          "passed": true
+        },
+        {
+          "name": "T-bill deposit and redemption",
+          "passed": true
+        },
+        {
+          "name": "premium collected, collateral reserved, replay and premature settlement rejected",
+          "passed": true
+        },
+        {
+          "name": "exact capped payout, Pro first loss, senior assets preserved, collateral released, no double settlement",
+          "passed": true,
+          "policyId": "9",
+          "payout": "10000"
+        }
+      ],
+      "transactions": [
+        {
+          "step": "Approve exactly 1 test stablecoin for Saver",
+          "hash": "0xf188790b55615d931b5ff0f594ce66b06d94e689c03d776db59d69113afa1fe7",
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0xf188790b55615d931b5ff0f594ce66b06d94e689c03d776db59d69113afa1fe7",
+          "blockNumber": 42747732,
+          "gasUsed": "45956",
+          "fee": "56985440000000000",
+          "reconciled": true
+        },
+        {
+          "step": "Saver subscribes 1 test stablecoin",
+          "hash": "0x885056aebe358da7ae1816b477b9d9d9ee7feddbe5921ad09162c7d1c83b3e85",
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0x885056aebe358da7ae1816b477b9d9d9ee7feddbe5921ad09162c7d1c83b3e85",
+          "blockNumber": 42747736,
+          "gasUsed": "199783",
+          "fee": "247730920000000000",
+          "reconciled": true
+        },
+        {
+          "step": "Approve exact Pro deposit",
+          "hash": "0x095d1e5608c57f72691ca710e8dddbde109230422cdc063616a088753dc95570",
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0x095d1e5608c57f72691ca710e8dddbde109230422cdc063616a088753dc95570",
+          "blockNumber": 42748774,
+          "gasUsed": "45956",
+          "fee": "56985440000000000"
+        },
+        {
+          "step": "Pro deposits 0.1 test stablecoin",
+          "hash": "0xc8edf364ad8e7723a4916837619165665c8986a3dfca95cfba4e9e429682bb8d",
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0xc8edf364ad8e7723a4916837619165665c8986a3dfca95cfba4e9e429682bb8d",
+          "blockNumber": 42748781,
+          "gasUsed": "75852",
+          "fee": "94056480000000000"
+        },
+        {
+          "step": "Pro withdraws 0.1 test stablecoin",
+          "hash": "0x8a906b72e2e5263f44731ce4f0f6bd47ecb5dbcd74bc837c3ed0ed6ce8da851f",
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0x8a906b72e2e5263f44731ce4f0f6bd47ecb5dbcd74bc837c3ed0ed6ce8da851f",
+          "blockNumber": 42748791,
+          "gasUsed": "83498",
+          "fee": "103537520000000000"
+        },
+        {
+          "step": "Approve exact treasury deposit",
+          "hash": "0x5dd5d69702f0ec52db7b96ed3fdad02a61837240926f0500eff0d2f382e910cb",
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0x5dd5d69702f0ec52db7b96ed3fdad02a61837240926f0500eff0d2f382e910cb",
+          "blockNumber": 42748794,
+          "gasUsed": "45944",
+          "fee": "56970560000000000",
+          "reconciled": true
+        },
+        {
+          "step": "Treasury deposits 0.01 test stablecoin",
+          "hash": "0x6c18536b1a99173b5e1fcbad4959e379d7ac9e938a15358fdf71de2e837ae55f",
+          "nonce": 180,
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0x6c18536b1a99173b5e1fcbad4959e379d7ac9e938a15358fdf71de2e837ae55f",
+          "broadcastAcknowledged": true,
+          "blockNumber": 42748878,
+          "gasUsed": "90408",
+          "fee": "112105920000000000",
+          "reconciled": true
+        },
+        {
+          "step": "Treasury redeems newly acquired shares",
+          "hash": "0xae8bb2928ee7f0e50aec89479405dad5c19635f971056c7b14da1ad48b468cc5",
+          "nonce": 181,
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0xae8bb2928ee7f0e50aec89479405dad5c19635f971056c7b14da1ad48b468cc5",
+          "broadcastAcknowledged": true,
+          "blockNumber": 42748881,
+          "gasUsed": "69492",
+          "fee": "86170080000000000",
+          "reconciled": true
+        },
+        {
+          "step": "Approve exact bounded premium",
+          "hash": "0x9694fc06f1359ad334d96faaa7bd798eebd86de621cbc8f149dded91263ef3f9",
+          "nonce": 182,
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0x9694fc06f1359ad334d96faaa7bd798eebd86de621cbc8f149dded91263ef3f9",
+          "broadcastAcknowledged": true,
+          "blockNumber": 42749018,
+          "gasUsed": "45932",
+          "fee": "56955680000000000"
+        },
+        {
+          "step": "Holder pays live-priced synthetic-test premium",
+          "hash": "0xebf6de78c19128d3c9919f231b6da3e48aa1b41e5eb4dc19409ec92d588f9d50",
+          "nonce": 183,
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0xebf6de78c19128d3c9919f231b6da3e48aa1b41e5eb4dc19409ec92d588f9d50",
+          "broadcastAcknowledged": true,
+          "blockNumber": 42749021,
+          "gasUsed": "445808",
+          "fee": "552801920000000000"
+        },
+        {
+          "step": "Post explicitly synthetic 50% crash for unique E2E symbol",
+          "hash": "0x98e97245cce5b8bb54600b580e85aab799158253d0d44d7c98617d6241e57cef",
+          "nonce": 184,
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0x98e97245cce5b8bb54600b580e85aab799158253d0d44d7c98617d6241e57cef",
+          "broadcastAcknowledged": true,
+          "blockNumber": 42749107,
+          "gasUsed": "93998",
+          "fee": "116557520000000000"
+        },
+        {
+          "step": "Settle test policy and pay capped protection",
+          "hash": "0x74b18bd99be96c6187df9029f84557c0d31b8ce65bfa986be8a8cbca8d031825",
+          "nonce": 185,
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0x74b18bd99be96c6187df9029f84557c0d31b8ce65bfa986be8a8cbca8d031825",
+          "broadcastAcknowledged": true,
+          "blockNumber": 42749112,
+          "gasUsed": "188811",
+          "fee": "234125640000000000"
+        }
+      ],
+      "wallet": "0x1d83F122EF31885B83139ABCb4f8fB4eF319DDF9",
+      "stable": "0xDF7DE17d60876a32b902dc4f4698633C7d849e1f",
+      "stableSymbol": "tUSD",
+      "testPolicy": {
+        "policyId": "9",
+        "symbol": "0x33fc310258bac2a1a42e13c934b5682b68007c1171637ca5e6866c4ab4bbc76c",
+        "expiry": 1793989414,
+        "notional": "100000",
+        "premium": "10",
+        "synthetic": true
+      },
+      "gasSpentWei": "1774983120000000000"
+    },
+    {
+      "chainId": 5042002,
+      "network": "Arc Testnet",
+      "status": "passed",
+      "checks": [
+        {
+          "name": "network, funded signer, KYC, official stablecoin and deployed contract bytecode",
+          "passed": true
+        },
+        {
+          "name": "live market data and API underwriting quote",
+          "passed": true,
+          "source": "NASDAQ:MSFT",
+          "premium": "10"
+        },
+        {
+          "name": "Saver subscription mints face value and consumes exact allowance",
+          "passed": true
+        },
+        {
+          "name": "Pro first-loss liquidity deposit and withdrawal",
+          "passed": true
+        },
+        {
+          "name": "T-bill deposit and redemption",
+          "passed": true
+        },
+        {
+          "name": "premium collected, collateral reserved, replay and premature settlement rejected",
+          "passed": true
+        },
+        {
+          "name": "exact capped payout, Pro first loss, senior assets preserved, collateral released, no double settlement",
+          "passed": true,
+          "policyId": "4",
+          "payout": "10000"
+        }
+      ],
+      "transactions": [
+        {
+          "step": "Approve exactly 1 test stablecoin for Saver",
+          "hash": "0xd0294bdc774481bfcf86bb7617678463c0035e4e34efbde2b573af2bbdec3b5d",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0xd0294bdc774481bfcf86bb7617678463c0035e4e34efbde2b573af2bbdec3b5d",
+          "blockNumber": 71065023,
+          "gasUsed": "55438",
+          "fee": "1136479000000000"
+        },
+        {
+          "step": "Saver subscribes 1 test stablecoin",
+          "hash": "0x5cdeb44ffbcff04028f28958966825e5b73c0e8cce23a08d222016cd2267c96d",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0x5cdeb44ffbcff04028f28958966825e5b73c0e8cce23a08d222016cd2267c96d",
+          "blockNumber": 71065034,
+          "gasUsed": "212177",
+          "fee": "4349628500000000"
+        },
+        {
+          "step": "Approve exact Pro deposit",
+          "hash": "0xeb6edc36380022bf81810f5923ffa4b3c1491609011e5707cc32575ff5524647",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0xeb6edc36380022bf81810f5923ffa4b3c1491609011e5707cc32575ff5524647",
+          "blockNumber": 71065047,
+          "gasUsed": "55438",
+          "fee": "1164198000000000"
+        },
+        {
+          "step": "Pro deposits 0.1 test stablecoin",
+          "hash": "0x5612574e5679ba2d8008e8ef787e971f45705851dfe4fa5786314db7781b68c1",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0x5612574e5679ba2d8008e8ef787e971f45705851dfe4fa5786314db7781b68c1",
+          "blockNumber": 71065059,
+          "gasUsed": "88972",
+          "fee": "2133993420000000"
+        },
+        {
+          "step": "Pro withdraws 0.1 test stablecoin",
+          "hash": "0x0fd991bb389dd649e0624d286a9ef4e40706368769006b90d43248e086564832",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0x0fd991bb389dd649e0624d286a9ef4e40706368769006b90d43248e086564832",
+          "blockNumber": 71065071,
+          "gasUsed": "97470",
+          "fee": "2157985800000000"
+        },
+        {
+          "step": "Approve exact treasury deposit",
+          "hash": "0x9efe8aefc5cff6391291c1eb6d57ece739c6c0577a32203d751ed495cbf7c737",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0x9efe8aefc5cff6391291c1eb6d57ece739c6c0577a32203d751ed495cbf7c737",
+          "blockNumber": 71065084,
+          "gasUsed": "55426",
+          "fee": "1163946000000000",
+          "reconciled": true
+        },
+        {
+          "step": "Treasury deposits 0.01 test stablecoin",
+          "hash": "0x153111a97f789b389258bbbf8ea780a7dfede4c580c0098a7663d091f8f0d110",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0x153111a97f789b389258bbbf8ea780a7dfede4c580c0098a7663d091f8f0d110",
+          "blockNumber": 71065095,
+          "gasUsed": "103528",
+          "fee": "2174088000000000",
+          "reconciled": true
+        },
+        {
+          "step": "Treasury redeems newly acquired shares",
+          "hash": "0x6fcb79b554a89ddd0b179ff2933c47e953df27bf7f25cfd953244023d6d8525e",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0x6fcb79b554a89ddd0b179ff2933c47e953df27bf7f25cfd953244023d6d8525e",
+          "blockNumber": 71068557,
+          "gasUsed": "82639",
+          "fee": "2065975000000000"
+        },
+        {
+          "step": "Approve exact bounded premium",
+          "hash": "0x21d901e61785157e4c1c5b96641aa94e97edee636096bb4695fd8bdb1cfc5f91",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0x21d901e61785157e4c1c5b96641aa94e97edee636096bb4695fd8bdb1cfc5f91",
+          "blockNumber": 71068564,
+          "gasUsed": "55414",
+          "fee": "1385350000000000"
+        },
+        {
+          "step": "Holder pays live-priced synthetic-test premium",
+          "hash": "0x8425152a45b0817d1a8db71d9f13f97a7785c569de29f8237a83da9f90f95aba",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0x8425152a45b0817d1a8db71d9f13f97a7785c569de29f8237a83da9f90f95aba",
+          "blockNumber": 71068570,
+          "gasUsed": "465077",
+          "fee": "11626925000000000"
+        },
+        {
+          "step": "Post explicitly synthetic 50% crash for unique E2E symbol",
+          "hash": "0x250156312c9727693b4d9478a0dabc39d5c237a249bbef3c5e9d67bae71855a6",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0x250156312c9727693b4d9478a0dabc39d5c237a249bbef3c5e9d67bae71855a6",
+          "blockNumber": 71068634,
+          "gasUsed": "93998",
+          "fee": "2349950000000000"
+        },
+        {
+          "step": "Settle test policy and pay capped protection",
+          "hash": "0x549e0b2f6716d17794d831c7457de15743a58ee3c5a320439bb3d751eb17c303",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0x549e0b2f6716d17794d831c7457de15743a58ee3c5a320439bb3d751eb17c303",
+          "blockNumber": 71068640,
+          "gasUsed": "201958",
+          "fee": "5048950000000000"
+        }
+      ],
+      "wallet": "0x1d83F122EF31885B83139ABCb4f8fB4eF319DDF9",
+      "stable": "0x3600000000000000000000000000000000000000",
+      "stableSymbol": "USDC",
+      "testPolicy": {
+        "policyId": "4",
+        "symbol": "0x5c2fda1f1bdbf4dffe64d91152ff7ac61563a7b09cff56b852a03c7a60338ab3",
+        "expiry": 1793988845,
+        "notional": "100000",
+        "premium": "10",
+        "synthetic": true
+      },
+      "gasSpentWei": "36757468720000000"
+    }
+  ],
+  "notes": [
+    "Synthetic crash uses a unique E2E-only symbol; never overwrites a real stock's oracle close.",
+    "No risk settings, existing identities, global pauses or production wallets are changed.",
+    "Long-term maturity/coupon timing and negative controls are additionally tested on an isolated local EVM."
+  ],
+  "finishedAt": "2026-11-06T18:24:01.831Z"
+}

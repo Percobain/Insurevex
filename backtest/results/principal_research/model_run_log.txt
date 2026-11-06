@@ -1,0 +1,187 @@
+MODEL 0.0025 1.5
+MODEL 0.005 1.5
+MODEL 0.01 1.5
+MODEL 0.005 2
+MODEL 0.005 2.5
+[
+  {
+    "volatility_floor": 0.0025,
+    "markup": 1.5,
+    "utilisation": 0.1,
+    "accepted": 209,
+    "median_apy": 0.010995506008474765,
+    "worst_apy": 1.2126046795568612e-05,
+    "median_weekly_cover": 0.0037531489661588326,
+    "share_beating_bills": 0.6220095693779905,
+    "evaluation_book_loss_ratio": 1.2986107355384489,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.0025,
+    "markup": 1.5,
+    "utilisation": 0.25,
+    "accepted": 209,
+    "median_apy": 0.010751855198791738,
+    "worst_apy": 1.192165111740806e-05,
+    "median_weekly_cover": 0.009289200742335857,
+    "share_beating_bills": 0.6172248803827751,
+    "evaluation_book_loss_ratio": 1.2986107355384489,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.0025,
+    "markup": 1.5,
+    "utilisation": 0.5,
+    "accepted": 209,
+    "median_apy": 0.010295185889889202,
+    "worst_apy": 1.1578937349376872e-05,
+    "median_weekly_cover": 0.01841519429986551,
+    "share_beating_bills": 0.6076555023923444,
+    "evaluation_book_loss_ratio": 1.2986107355384489,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.005,
+    "markup": 1.5,
+    "utilisation": 0.1,
+    "accepted": 209,
+    "median_apy": 0.010995535200325257,
+    "worst_apy": 1.2125969774068324e-05,
+    "median_weekly_cover": 0.003752582217243072,
+    "share_beating_bills": 0.6220095693779905,
+    "evaluation_book_loss_ratio": 1.3001154310995404,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.005,
+    "markup": 1.5,
+    "utilisation": 0.25,
+    "accepted": 209,
+    "median_apy": 0.010751926532315492,
+    "worst_apy": 1.1921461767538943e-05,
+    "median_weekly_cover": 0.009288502229698441,
+    "share_beating_bills": 0.6172248803827751,
+    "evaluation_book_loss_ratio": 1.3001154310995404,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.005,
+    "markup": 1.5,
+    "utilisation": 0.5,
+    "accepted": 209,
+    "median_apy": 0.010293980288987425,
+    "worst_apy": 1.1578569395043203e-05,
+    "median_weekly_cover": 0.018407431943763982,
+    "share_beating_bills": 0.6076555023923444,
+    "evaluation_book_loss_ratio": 1.3001154310995404,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.005,
+    "markup": 2.0,
+    "utilisation": 0.1,
+    "accepted": 209,
+    "median_apy": 0.011130444880052881,
+    "worst_apy": 1.2216997953062858e-05,
+    "median_weekly_cover": 0.0037681741108785707,
+    "share_beating_bills": 0.6267942583732058,
+    "evaluation_book_loss_ratio": 0.9637242137778439,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.005,
+    "markup": 2.0,
+    "utilisation": 0.25,
+    "accepted": 209,
+    "median_apy": 0.01102427002104811,
+    "worst_apy": 1.214693711126813e-05,
+    "median_weekly_cover": 0.009376886368364559,
+    "share_beating_bills": 0.6267942583732058,
+    "evaluation_book_loss_ratio": 0.9637242137778439,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.005,
+    "markup": 2.0,
+    "utilisation": 0.5,
+    "accepted": 209,
+    "median_apy": 0.010750683296635977,
+    "worst_apy": 1.2022330688976623e-05,
+    "median_weekly_cover": 0.018748816342347593,
+    "share_beating_bills": 0.6220095693779905,
+    "evaluation_book_loss_ratio": 0.9637242137778439,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.005,
+    "markup": 2.5,
+    "utilisation": 0.1,
+    "accepted": 209,
+    "median_apy": 0.011254284526954983,
+    "worst_apy": 1.2310939534021514e-05,
+    "median_weekly_cover": 0.0037819096930928574,
+    "share_beating_bills": 0.6267942583732058,
+    "evaluation_book_loss_ratio": 0.7240847794467951,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.005,
+    "markup": 2.5,
+    "utilisation": 0.25,
+    "accepted": 209,
+    "median_apy": 0.011237752878280993,
+    "worst_apy": 1.2382357824858303e-05,
+    "median_weekly_cover": 0.009489137004090572,
+    "share_beating_bills": 0.6267942583732058,
+    "evaluation_book_loss_ratio": 0.7240847794467951,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.005,
+    "markup": 2.5,
+    "utilisation": 0.5,
+    "accepted": 209,
+    "median_apy": 0.011331299940727124,
+    "worst_apy": 1.2494805852636404e-05,
+    "median_weekly_cover": 0.019158303861267757,
+    "share_beating_bills": 0.6267942583732058,
+    "evaluation_book_loss_ratio": 0.7240847794467951,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.01,
+    "markup": 1.5,
+    "utilisation": 0.1,
+    "accepted": 209,
+    "median_apy": 0.010996153930526109,
+    "worst_apy": 1.2129709715980042e-05,
+    "median_weekly_cover": 0.003752394739231876,
+    "share_beating_bills": 0.6220095693779905,
+    "evaluation_book_loss_ratio": 1.3042835202123508,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.01,
+    "markup": 1.5,
+    "utilisation": 0.25,
+    "accepted": 209,
+    "median_apy": 0.010753424813553236,
+    "worst_apy": 1.1930656464098632e-05,
+    "median_weekly_cover": 0.009285758057056375,
+    "share_beating_bills": 0.6172248803827751,
+    "evaluation_book_loss_ratio": 1.3042835202123508,
+    "external_cost_funding_max": 0.0
+  },
+  {
+    "volatility_floor": 0.01,
+    "markup": 1.5,
+    "utilisation": 0.5,
+    "accepted": 209,
+    "median_apy": 0.010283508954640697,
+    "worst_apy": 1.1596438210803584e-05,
+    "median_weekly_cover": 0.018403337708784946,
+    "share_beating_bills": 0.6076555023923444,
+    "evaluation_book_loss_ratio": 1.3042835202123508,
+    "external_cost_funding_max": 0.0
+  }
+]

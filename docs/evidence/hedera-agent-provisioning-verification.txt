@@ -1,0 +1,15 @@
+
+> insurevex-server@1.0.0 agent:setup
+> node scripts/setup-agent-testnet.js
+
+(node:12188) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+Isolated agent funded with 3 test HBAR: https://hashscan.io/testnet/transaction/0.0.11330202%401793989469.500300247
+Demo KYC (testnet only) https://hashscan.io/testnet/transaction/0xea2bae734906782ebc40f40880a94c3cef8bc37d67749221647ef937f395c10f
+ATS demo KYC https://hashscan.io/testnet/transaction/0xaf034e1d2e991ae048d9a9244b0159c2c0bf72a2eab24c18c1d92bce07e7a90e
+Issue 1 test NVDA share https://hashscan.io/testnet/transaction/0xfc594bc90a3ea629715427770e2f5f4bf01884cc74c27ff8a72883d8fa37603c
+Fund 10 test USD https://hashscan.io/testnet/transaction/0xa1ed8d20937617908a5b1ef473aa2251a85969c8508f25788563760e9e161dcf
+Restricted agent audit topic: 0.0.11343736
+Provisioning complete. Start the merchant with:
+X402_ENABLED=1 X402_MERCHANT_ACCOUNT=0.0.11330202 KEEPER=0 npm start
+Then: npm run agent:plan && npm run agent:run

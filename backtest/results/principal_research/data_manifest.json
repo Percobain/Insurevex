@@ -1,0 +1,4460 @@
+{
+  "config": {
+    "cutoff": "2026-10-30",
+    "universe": "all recoverable names from existing 23-market universe",
+    "start": "2005-01-07",
+    "evaluation_start": "2016-01-01",
+    "history_start": "1999-06-01",
+    "tenor": "weekly",
+    "sessions": 5,
+    "volatility_floor_daily": 0.005,
+    "markup": 1.5,
+    "max_weekly_fee": 0.01,
+    "min_fee": 0.0001,
+    "utilisation": 0.25,
+    "per_name_weight": 0.05,
+    "per_market_weight": 0.25,
+    "annual_operating_cost_per_deposit": 0.0025,
+    "premium_execution_cost": 0.05,
+    "matched_zero_cost_policy": "Entire fixed-term operating budget segregated at issue, outside claim collateral",
+    "bill_term_days": 91,
+    "rate_quote_convention": "same-date indicative secondary-market rate, not an executable ask",
+    "tail_information_lag_buckets": 2,
+    "curve_price_convention": "same-date fitted zero curve as an execution-price proxy, not a predictive input",
+    "products": [
+      [
+        0.03,
+        0.1
+      ],
+      [
+        0.05,
+        0.1
+      ],
+      [
+        0.1,
+        0.2
+      ],
+      [
+        0.1,
+        0.9
+      ],
+      [
+        0.0,
+        1.0
+      ]
+    ],
+    "missing_expiry_rule": "pay the contractual maximum; omit unknown underlying return from holder metrics",
+    "note": "Fixed research assumptions, not parameter estimates, broker quotes, or launch approval"
+  },
+  "prices": [
+    {
+      "ticker": "NVDA",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "c7c68d94e9751f92df08b6702256cabbdbbc8e126189cee401000713c195fe54"
+    },
+    {
+      "ticker": "AAPL",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "3ed6285c74e581f446d18c430b26d86b5f074227f3422ce2592b3989b2d1fd1b"
+    },
+    {
+      "ticker": "MSFT",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "28fb975cc367ce87ec0d93c6c9a5a2bb42921fca043aa086c22bd288675da1d6"
+    },
+    {
+      "ticker": "AMZN",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "c1dc549304e529813ba2d9e3332349208222cc9e891063e115376f271c161e55"
+    },
+    {
+      "ticker": "GOOGL",
+      "market": "US",
+      "rows": 5586,
+      "first": "2004-08-19",
+      "last": "2026-10-30",
+      "sha256": "1cf513dbe13dca83404eeb6d7ee0a59f1c7ad3d9fee03b42f33110a52a32f4f4"
+    },
+    {
+      "ticker": "META",
+      "market": "US",
+      "rows": 3634,
+      "first": "2012-05-18",
+      "last": "2026-10-30",
+      "sha256": "42dd841dce2039aae6a8c10b5fc77ff1a7bcf5ecff7ef861f6d918230f201085"
+    },
+    {
+      "ticker": "TSLA",
+      "market": "US",
+      "rows": 4111,
+      "first": "2010-06-29",
+      "last": "2026-10-30",
+      "sha256": "9cf6b4e2547357265c22f3d71e2412f6d5ee62ac8949c03abca347b2a96e312d"
+    },
+    {
+      "ticker": "AMD",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "5254f8bd68e492301125869e8ddde5cb3f8c565ca2b6175dadd6a94a9fa6df12"
+    },
+    {
+      "ticker": "AVGO",
+      "market": "US",
+      "rows": 4336,
+      "first": "2009-08-06",
+      "last": "2026-10-30",
+      "sha256": "2447a511fd5f8236a76300ae1bf78936f4f3bedafa68e6d10f5e262e78013704"
+    },
+    {
+      "ticker": "NFLX",
+      "market": "US",
+      "rows": 6150,
+      "first": "2002-05-23",
+      "last": "2026-10-30",
+      "sha256": "f86b8cc1dead2d9f374b76d364632c1743a48732b94e45dc430fb3ac36188773"
+    },
+    {
+      "ticker": "JPM",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "eb13758c970fee671634fa710717d4a9fa2b50fcbea09faca885e6d225e30697"
+    },
+    {
+      "ticker": "XOM",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "ebea298a72aa447c0d50ff586a81f161714581f2c1b656c0193a4dc5c4067d92"
+    },
+    {
+      "ticker": "BAC",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "294a5da8c7c285188cda4d97ee9b0ef8aa75d43b32b96347c3c022b29579a454"
+    },
+    {
+      "ticker": "C",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "295cd9c7f3763534ead3efa93dfe9fefd905647c5a5a9861fd591a8a4d44ed9e"
+    },
+    {
+      "ticker": "WFC",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "d1ab60678cd98e3c3c1ef7807d4055a9cd3414ee64c6cf839297b5c7cc35cca7"
+    },
+    {
+      "ticker": "GS",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "dba8fb9c1dfb0703806b43dcf6cfebbb73efa770a99c7819b206382ba88ac9bb"
+    },
+    {
+      "ticker": "MS",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "815f2a507ae0d7e68c32c6b159548418ab51348526c5a6f2d1b19a787d171632"
+    },
+    {
+      "ticker": "INTC",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "59e41de904d542dbbf8ef11524fcd4e45d14ac37a86ce8d2688842d0697a4c3e"
+    },
+    {
+      "ticker": "CSCO",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "cc05d065c821eeca9599a989b0ca184951819df65f9dee5b65a35e2b64dca8e1"
+    },
+    {
+      "ticker": "ORCL",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "bda8f1a810ad2907dd60d73364894fe83f5a813f68d626d7e00c9b11e7df1d21"
+    },
+    {
+      "ticker": "IBM",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "a154a720412e1653371b771910d9b4f74e5392d447e97233779d35ccb2d55bee"
+    },
+    {
+      "ticker": "KO",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "6b53637e9620d63364e9bf01169d3d68498b17a1810df5c905e1a09809b4a43e"
+    },
+    {
+      "ticker": "PEP",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "ac8ba31fcf8d208bdcc95fce8a95a9b4ae97f77a81e696a21f721e090d4426d2"
+    },
+    {
+      "ticker": "PG",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "ccbec0b0854128e7053ce51ff9509660c28faa1140b7d8d051f5b78ed94365aa"
+    },
+    {
+      "ticker": "JNJ",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "fa2fb8e4b5e42833cf96476e949d7c2d2732ed437edf00462fce222be19c81ef"
+    },
+    {
+      "ticker": "PFE",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "e540ff99bc563cd92bdbd413bcf64536fa57bee4b745db342d56e22ee4896901"
+    },
+    {
+      "ticker": "MRK",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "d3deb520ab68120ab822e5d68395688de1987fcdb5bb49ab57d45f8ff732b3c6"
+    },
+    {
+      "ticker": "UNH",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "e311eca1fc50b53a7c11ff30b674077a2fcff2ac13368d7527d5ae9651a9cb0a"
+    },
+    {
+      "ticker": "WMT",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "79778aeba38d960d62847b99fe728386dc8bd04b0a4986c3cc1722767034c79d"
+    },
+    {
+      "ticker": "HD",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "2c5655fc86b900653defdd7fd65c26b10a4f4ad49ad14b0d1bc1de9fe9186313"
+    },
+    {
+      "ticker": "DIS",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "8465b5d6b1d7ab3134570a595f6001a42b5cd23b0f0f74c8c75aa31d30e14beb"
+    },
+    {
+      "ticker": "BA",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "f5c3f4939338e94d2262f6bc2b40f4a305110e7d01fbbd39e1879fb03b386696"
+    },
+    {
+      "ticker": "CAT",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "19f7c8bdf3b84b422fa300738c61ccd2d25ea55b045615e63a7b20c4c78e9d4c"
+    },
+    {
+      "ticker": "GE",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "83e45858b38b534401e6617b9ab5b323937345cdaa28164c906633e28abf4566"
+    },
+    {
+      "ticker": "CVX",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "7942c7c7ff989b47937fd613051a250eee443c11ea7bfa7452429beef5d6c8cc"
+    },
+    {
+      "ticker": "T",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "381a1ea94455cea08d4df3572350428baf036728f4ae7edd636769e1a9130299"
+    },
+    {
+      "ticker": "VZ",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "772d9d51173f153e5bbac70eb7290404cbb36f9c1778d6cb0e210629b50eea04"
+    },
+    {
+      "ticker": "MU",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "e91e6691c7aba9d231e6b3046fc33f5beb2308a6b4123cb890080f6aa2dd3d19"
+    },
+    {
+      "ticker": "QCOM",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "a049532b991f457bfa9524ad822bf44a962644ca222e31298261c106d5820cec"
+    },
+    {
+      "ticker": "ADBE",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "7753c57a25553b0c5426a7af9602a12fb4d3bc0f42a7db5beb403c3a4bd0fe6b"
+    },
+    {
+      "ticker": "CRM",
+      "market": "US",
+      "rows": 5626,
+      "first": "2004-06-23",
+      "last": "2026-10-30",
+      "sha256": "016a14b6130de967554e4e854eb7e48bbaada3eb4edc92af79b196082fa27fac"
+    },
+    {
+      "ticker": "NKE",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "6c9dfb9e409dd17300fa350e05a024fb81d1fb19dd32f77edc0c6ff2f309eeac"
+    },
+    {
+      "ticker": "MCD",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "9f886a84752d4912306ad132d58de67743c8275b6e840e14c7558f8f2c0ae405"
+    },
+    {
+      "ticker": "COST",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "90c753074f09011ef5654ee5c28e2103bb5e419566fc39ce69596c5cc3909edb"
+    },
+    {
+      "ticker": "SPY",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "51364a910296e4504f4471ba5590a4f3f859697e73295f0fc985d74cb95f3d55"
+    },
+    {
+      "ticker": "QQQ",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "792180ee951024e38db1c33c35a98f7062c17ca96188445749b83cf812be8e2e"
+    },
+    {
+      "ticker": "^GSPC",
+      "market": "US",
+      "rows": 6898,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "f197d26c159c9edaffa99be25e3aa8772eb9e6250bb523be5e5df262b473c52b"
+    },
+    {
+      "ticker": "RY.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "bb6a5c6e9fbfaa0e27a14c16c187bf9507c8ca83075815031c1c928f4a7d2bef"
+    },
+    {
+      "ticker": "TD.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "cc2435a9e37020770e3b49deab0e38cdbf823995e5fa77c42836a361ed8107bd"
+    },
+    {
+      "ticker": "ENB.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "9f152a64feac421720ddbc98f302196d16142376dedc1241685e687389fd9424"
+    },
+    {
+      "ticker": "SHOP.TO",
+      "market": "Canada",
+      "rows": 2873,
+      "first": "2015-05-21",
+      "last": "2026-10-30",
+      "sha256": "2bcc7b0157de8fdce671e245f9c08a374d0732a852ee41a9197e503251e25672"
+    },
+    {
+      "ticker": "CNR.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "9596d91ec14f17ccd28b6868d986e45200672a524ff9f8288f273849bb0ec873"
+    },
+    {
+      "ticker": "CP.TO",
+      "market": "Canada",
+      "rows": 6325,
+      "first": "2001-08-23",
+      "last": "2026-10-30",
+      "sha256": "a94015158cb9aece4ce75afba6648239bc84d42c1bfbdc7e787b3d61063fc022"
+    },
+    {
+      "ticker": "BMO.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "5c8c19897393359b62513871d4f9bf037e89fad61bae0ff110eaf71db5a2fe6d"
+    },
+    {
+      "ticker": "BNS.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "3e8d5902838b553fdca2326aa9ecc356b2e16d86365ffbc8cd8302da742160fa"
+    },
+    {
+      "ticker": "CNQ.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "3f6a4386032b5f6aa17e1c3fe09ad3d9929780310c520dd1e2f66aa4ff12e74b"
+    },
+    {
+      "ticker": "SU.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "72ae4d35c3ff2382f0bbe62ccb05290e56cfa3c27a6412f44f37197095a2bd21"
+    },
+    {
+      "ticker": "TRP.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "801a9c294202836361889f5a02042e4ade5c8a0f30fe997a689a832ffaaa9021"
+    },
+    {
+      "ticker": "BCE.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "49d851bbaad2aafb2c9fbd734e024a1f8675e7fdf18fb4da98696757bb0e75a0"
+    },
+    {
+      "ticker": "MFC.TO",
+      "market": "Canada",
+      "rows": 6803,
+      "first": "1999-09-30",
+      "last": "2026-10-30",
+      "sha256": "3ae5a73f64b717802f80c9165ea90e7c200c0f92b77f4ad72c85d5efb9df65ef"
+    },
+    {
+      "ticker": "ATD.TO",
+      "market": "Canada",
+      "rows": 6888,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0ef8f0d7be8efd1f762592c0841b5e0b9b62816afd36c121a926d4bed0fc1382"
+    },
+    {
+      "ticker": "CSU.TO",
+      "market": "Canada",
+      "rows": 4772,
+      "first": "2007-10-25",
+      "last": "2026-10-30",
+      "sha256": "8538bba869e5fdd581ec5c7eaa909e096aa84ec925cda7e0270a80fc32676b03"
+    },
+    {
+      "ticker": "NTR.TO",
+      "market": "Canada",
+      "rows": 2217,
+      "first": "2018-01-02",
+      "last": "2026-10-30",
+      "sha256": "0818933a390990fef7970d79aec9bd3c5c3e315754be2681aa3c1fd40737ead1"
+    },
+    {
+      "ticker": "ABX.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "afe660c2a98a50b8ff9147b0eb7296df8f81824679acef5defecf60849fefde5"
+    },
+    {
+      "ticker": "WCN.TO",
+      "market": "Canada",
+      "rows": 6157,
+      "first": "2002-04-25",
+      "last": "2026-10-30",
+      "sha256": "583a2923c93a95f2f640049bd4c7e4246f9c0ef7506ad282d5c1787313c03fc3"
+    },
+    {
+      "ticker": "FTS.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "2db43978575ac1d874915ae4c7be933fd3c42097f631e9f6a4e79971167e4428"
+    },
+    {
+      "ticker": "T.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "f78b3656135998e824652d3f552f68b976708dda1f497ed45dfe3a36975ca3ab"
+    },
+    {
+      "ticker": "SLF.TO",
+      "market": "Canada",
+      "rows": 6682,
+      "first": "2000-03-23",
+      "last": "2026-10-30",
+      "sha256": "8336e1f3537b9329eeff93a0bdc9b5e003bc3d770471322d29d9767dff10cd3f"
+    },
+    {
+      "ticker": "CM.TO",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "5305882894ea58029c75274e8dd2631b47c830a309e681470a8eeb180fe3c94c"
+    },
+    {
+      "ticker": "TECK-B.TO",
+      "market": "Canada",
+      "rows": 6939,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "60d924e5a02473413dc83fa42507065e432ee1c614307e545bae4030de8dd5e2"
+    },
+    {
+      "ticker": "CVE.TO",
+      "market": "Canada",
+      "rows": 4265,
+      "first": "2009-11-02",
+      "last": "2026-10-30",
+      "sha256": "4897274bb847717dded51a9c44c4d3e8f4f6ce5ef3b8d51abb98aae271f7e30a"
+    },
+    {
+      "ticker": "BAM.TO",
+      "market": "Canada",
+      "rows": 982,
+      "first": "2022-12-01",
+      "last": "2026-10-30",
+      "sha256": "c8219e63e2b8f428cbc55e9baa35a6b0112269885daa5cbbc3ac6777d3966048"
+    },
+    {
+      "ticker": "^GSPTSE",
+      "market": "Canada",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "1d382999c2050937868c8aa28be34d5d657e1b687fff8c49fb1ed0563e059620"
+    },
+    {
+      "ticker": "PETR4.SA",
+      "market": "Brazil",
+      "rows": 6735,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "e26a2a7d761f954952a7511505de89f6eeeb1b35c8ebaab8b45523611b176f15"
+    },
+    {
+      "ticker": "VALE3.SA",
+      "market": "Brazil",
+      "rows": 6735,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "b9589574456fdc1cf47eafafa8e5e37fd44f0fe99199dbe39466dc00346e89d5"
+    },
+    {
+      "ticker": "ITUB4.SA",
+      "market": "Brazil",
+      "rows": 6482,
+      "first": "2000-12-21",
+      "last": "2026-10-30",
+      "sha256": "7be266b4386ab60cc7dbe91112fb16ceeeb4380272b9f3d34b04feb91316c419"
+    },
+    {
+      "ticker": "BBDC4.SA",
+      "market": "Brazil",
+      "rows": 4679,
+      "first": "2008-01-02",
+      "last": "2026-10-30",
+      "sha256": "cb0f8a06a291450924df3c82b00175f2c457b88ad27864e69929845800a9db3d"
+    },
+    {
+      "ticker": "BBAS3.SA",
+      "market": "Brazil",
+      "rows": 6735,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "b73fa7aa6d4fcb6ba001ebeed55046290bb0e3aa0d8c1f11cc34bba04eaadc7a"
+    },
+    {
+      "ticker": "ABEV3.SA",
+      "market": "Brazil",
+      "rows": 6733,
+      "first": "2000-01-05",
+      "last": "2026-10-30",
+      "sha256": "f362c783665fe673bdffdb6d1a12576c30f94ddd5516cd619a4687c20043f7e1"
+    },
+    {
+      "ticker": "WEGE3.SA",
+      "market": "Brazil",
+      "rows": 6735,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "2b86fbeaf9defc2b966e4a983a17c340b4825d56a6537cb17f5e6221ec02441d"
+    },
+    {
+      "ticker": "B3SA3.SA",
+      "market": "Brazil",
+      "rows": 4718,
+      "first": "2007-10-26",
+      "last": "2026-10-30",
+      "sha256": "f3d78326c8c3edc0baf4a6777e255c54426dd6cf71f8e4d8e004a4ee9dd540b4"
+    },
+    {
+      "ticker": "RENT3.SA",
+      "market": "Brazil",
+      "rows": 5336,
+      "first": "2005-05-23",
+      "last": "2026-10-30",
+      "sha256": "da8a7a4787eb36a84a4728070c281df39b4614938227acb342fea208ce8f05d7"
+    },
+    {
+      "ticker": "SUZB3.SA",
+      "market": "Brazil",
+      "rows": 5537,
+      "first": "2004-08-05",
+      "last": "2026-10-30",
+      "sha256": "a2d7aa6f29f94cf2840dab50e13bbfb36f745e38dc84d33c0a14fa1985fdfb18"
+    },
+    {
+      "ticker": "GGBR4.SA",
+      "market": "Brazil",
+      "rows": 6735,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "e044c75c8b76d767b0d33ebae4e8ff421da70479709002f92a19444dd1fee207"
+    },
+    {
+      "ticker": "ITSA4.SA",
+      "market": "Brazil",
+      "rows": 6735,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "24b883bc6add8432b438e1b7b6130e218c282ff8fa787e1e57ae53bd98ab5861"
+    },
+    {
+      "ticker": "LREN3.SA",
+      "market": "Brazil",
+      "rows": 6734,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "7a906fab11f91f9a8f41069633a40df55336c69c699d5ed18a0ea2c3d784802e"
+    },
+    {
+      "ticker": "RADL3.SA",
+      "market": "Brazil",
+      "rows": 6732,
+      "first": "2000-01-06",
+      "last": "2026-10-30",
+      "sha256": "6e62448af802dd22303e7d35af729712471b9027862bbe9710f2e7f1d877fb0d"
+    },
+    {
+      "ticker": "PRIO3.SA",
+      "market": "Brazil",
+      "rows": 3981,
+      "first": "2010-10-25",
+      "last": "2026-10-30",
+      "sha256": "de7973a957b487ac94c907162e43eabb1360ecf02de0ae695e06a964339a14f2"
+    },
+    {
+      "ticker": "CSNA3.SA",
+      "market": "Brazil",
+      "rows": 6735,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "f70f652283dbdd8ce7e5bf4ac87eb0227f15e4715f493424f773f359508c050b"
+    },
+    {
+      "ticker": "MGLU3.SA",
+      "market": "Brazil",
+      "rows": 3855,
+      "first": "2011-05-02",
+      "last": "2026-10-30",
+      "sha256": "68b270aa546ddf298ebf2cd70f450826211a8fb201ef19300607d44650050f34"
+    },
+    {
+      "ticker": "CMIG4.SA",
+      "market": "Brazil",
+      "rows": 6735,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "e61cd257a9b5ee33ac09d5b1edb258b27061150d3e2b91d4fb61ed351967e612"
+    },
+    {
+      "ticker": "SBSP3.SA",
+      "market": "Brazil",
+      "rows": 6735,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "2ce0150b5a547a9f24507cc7ea07654b3033ed86b5544468ff9cdf1a29749efa"
+    },
+    {
+      "ticker": "^BVSP",
+      "market": "Brazil",
+      "rows": 6795,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "13a77b2ba990f8e93a536eed002253ac9b85c56f988737f14adb82b20187f3db"
+    },
+    {
+      "ticker": "AMXB.MX",
+      "market": "Mexico",
+      "rows": 6807,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "c579070ad8be1fb54278f444f5438f5e1810e7ee7c7c56d933b8836e10d74fb9"
+    },
+    {
+      "ticker": "WALMEX.MX",
+      "market": "Mexico",
+      "rows": 6025,
+      "first": "2003-01-01",
+      "last": "2026-10-30",
+      "sha256": "f6df63fa684b2e5a81798a1c19a0c16e45d31cc4e9e2adf3ac032445a7c5a353"
+    },
+    {
+      "ticker": "FEMSAUBD.MX",
+      "market": "Mexico",
+      "rows": 6807,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "3fdea0a2403f97607eec0bcccb90ff4749927bcc2851b672f0bb4f6fd06d8654"
+    },
+    {
+      "ticker": "GFNORTEO.MX",
+      "market": "Mexico",
+      "rows": 6807,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "6f69e6d1ba3170d7caf39ffb413137197f5f216852936b7296ac6b257828e0e9"
+    },
+    {
+      "ticker": "CEMEXCPO.MX",
+      "market": "Mexico",
+      "rows": 6807,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "d0779d2ccb7a61747d99bcc4d3e0de0c6ace5071246220b47929464676f9240e"
+    },
+    {
+      "ticker": "GMEXICOB.MX",
+      "market": "Mexico",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "e484d640387e5247ab7804343ed2e181f5c09b0227ddaa317934c7e3dc1763b2"
+    },
+    {
+      "ticker": "BIMBOA.MX",
+      "market": "Mexico",
+      "rows": 6807,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "9422db8f8c49bdbdf711ab9e4c246c29927db111b7b2ac00f6077d65f769860f"
+    },
+    {
+      "ticker": "GAPB.MX",
+      "market": "Mexico",
+      "rows": 5202,
+      "first": "2006-02-27",
+      "last": "2026-10-30",
+      "sha256": "4ac4277b94b981881399c3765827666b28a80fe9782307be3f4c4ceca1c33295"
+    },
+    {
+      "ticker": "ASURB.MX",
+      "market": "Mexico",
+      "rows": 6610,
+      "first": "2000-10-04",
+      "last": "2026-10-30",
+      "sha256": "7636be53e57c11762e4f1ee8c6410369afdc89d45a47a4d6ca0d079632076d2e"
+    },
+    {
+      "ticker": "KOFUBL.MX",
+      "market": "Mexico",
+      "rows": 1901,
+      "first": "2019-04-11",
+      "last": "2026-10-30",
+      "sha256": "32e8879e04e6651bf22c0ae8674ca7dd2dc559494f18c02cefa56ed23c5f5bf3"
+    },
+    {
+      "ticker": "GRUMAB.MX",
+      "market": "Mexico",
+      "rows": 6788,
+      "first": "2000-01-28",
+      "last": "2026-10-30",
+      "sha256": "481b2657f5c24637f7880ca5668178ed29d11b56f123ec816dad8a610a99d287"
+    },
+    {
+      "ticker": "TLEVISACPO.MX",
+      "market": "Mexico",
+      "rows": 6751,
+      "first": "2000-03-21",
+      "last": "2026-10-30",
+      "sha256": "2fd3c1acdb48afc099fba68f75bbaa665988abd4054a92b362c1fd9243a73416"
+    },
+    {
+      "ticker": "PE&OLES.MX",
+      "market": "Mexico",
+      "rows": 6805,
+      "first": "2000-01-05",
+      "last": "2026-10-30",
+      "sha256": "c2f6ab9bfbcb8ecfab5961ae7f0afeb35235a82453bf53fae88ea5b078bb5def"
+    },
+    {
+      "ticker": "ORBIA.MX",
+      "market": "Mexico",
+      "rows": 6807,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "efd7a5ebef766338df804329a7770dc9e97075b909968f99ebac1d840ace304b"
+    },
+    {
+      "ticker": "GCARSOA1.MX",
+      "market": "Mexico",
+      "rows": 6757,
+      "first": "2000-03-13",
+      "last": "2026-10-30",
+      "sha256": "bc5a500d384a27cfadfa6baeb42e9935fea93e5639dcccd3ac706ca37ce77593"
+    },
+    {
+      "ticker": "KIMBERA.MX",
+      "market": "Mexico",
+      "rows": 6807,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "380e44899d5e292a3a25525c2df5c1cbf55a20516fc0ccb4e31e770668a9d733"
+    },
+    {
+      "ticker": "AC.MX",
+      "market": "Mexico",
+      "rows": 6055,
+      "first": "2002-11-20",
+      "last": "2026-10-30",
+      "sha256": "4d9c284cfce2cc7b8937ab2c082a22c2065e5e3bd94e7b52f572b1a08913f434"
+    },
+    {
+      "ticker": "^MXX",
+      "market": "Mexico",
+      "rows": 6886,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "6c4032ee94aa15f22d4269c1c96646dcf55a4fab9315b6aab3bf19424bbcbbd9"
+    },
+    {
+      "ticker": "SHEL.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "636fba91046e180d9735a1e14c3cf3c468c0213c377c7cf579fa9f1692b31876"
+    },
+    {
+      "ticker": "AZN.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "4a5d988f69ac93a8671beb980db20b07d7f1cbf79a3a3114f29fe648cd22e889"
+    },
+    {
+      "ticker": "HSBA.L",
+      "market": "UK",
+      "rows": 6982,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "34f5a563c9ca047a098398a267012220c22a36802c30135fc0efa05f794a433c"
+    },
+    {
+      "ticker": "ULVR.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "e20bedd63f400a4e8cf98b23f4f17e228b71a0b8b54b3cc42dee0f3576f65d38"
+    },
+    {
+      "ticker": "BP.L",
+      "market": "UK",
+      "rows": 6982,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "ebcaae94f0e3eb1b9c3f355853498ae998a00d1f1a909210225d9202238bdffc"
+    },
+    {
+      "ticker": "GSK.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "43b7fdda476ede4550bd433628a6cdd6c8ee6561e665314c48e1dd11e635e309"
+    },
+    {
+      "ticker": "RIO.L",
+      "market": "UK",
+      "rows": 6982,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "1cf1e5b587b69ad004393299c0b80bfccaac2cc3004e9296d9677ce6ae429690"
+    },
+    {
+      "ticker": "BATS.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "e1aee1fbde5934827e917d61403fd38792d7b94d1420ad9971f9e044ced2d06d"
+    },
+    {
+      "ticker": "DGE.L",
+      "market": "UK",
+      "rows": 6982,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0192758438d3cbf2403745ffdfdfe02eadddb22b1a5ceeb606aa95d6736c2c7b"
+    },
+    {
+      "ticker": "LLOY.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "29e87cd12d039ed1c2485e94ee336598648c6fe38f6bb1798c580566653f086c"
+    },
+    {
+      "ticker": "BARC.L",
+      "market": "UK",
+      "rows": 6982,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0cfbb4fca2f12a853b811fd627ea13c882f673d1df62fc06ada0422e59fa8aa2"
+    },
+    {
+      "ticker": "VOD.L",
+      "market": "UK",
+      "rows": 6982,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "f5045d3851d72f8414d7c73dd20829f9061aaed0635389f8bcf859a9fe5add5f"
+    },
+    {
+      "ticker": "REL.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "a65e24cee8fc5cc141dac1b1b6a1d2f3278ff1e4d5c20e09519841f30016a3c1"
+    },
+    {
+      "ticker": "NG.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "539e72f1cf52c91c35664d33ec322251bf84dfb311e59bd83ac03adfa251cc7c"
+    },
+    {
+      "ticker": "GLEN.L",
+      "market": "UK",
+      "rows": 3902,
+      "first": "2011-05-19",
+      "last": "2026-10-30",
+      "sha256": "d0dee2f5cb6f850c072477f806e2985c3066e9b6ee05d49fe9ddc38669a962ee"
+    },
+    {
+      "ticker": "LSEG.L",
+      "market": "UK",
+      "rows": 6425,
+      "first": "2001-07-20",
+      "last": "2026-10-30",
+      "sha256": "b63a94a6f1b4c3523faf9b262af78d30f816eafb5985cccab5036e094aec11d9"
+    },
+    {
+      "ticker": "PRU.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "a8fe8d22fdc4342e5a8326cfa585f3905efbaf134102eeba03a351e6cf61ad83"
+    },
+    {
+      "ticker": "TSCO.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "33963577451ca1337d4815094ce40069854dfd28538ee2a978fbca07bc733009"
+    },
+    {
+      "ticker": "RR.L",
+      "market": "UK",
+      "rows": 6982,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "97eff51cc62e24c39dafe146318be1392c276a4ce56bdb491d731ea84cbf3226"
+    },
+    {
+      "ticker": "BT-A.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "fea664bb6dc3406bc07b9be200cebba49b6b0412dedbd5b7f00027664af450d2"
+    },
+    {
+      "ticker": "AAL.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "49add277734aa6aa07f729e44981f02ebca04bd60896f44db10d44142646604c"
+    },
+    {
+      "ticker": "BA.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "fc4f8f11afbaef33b0b0c0a657862ba4c8fa117cb8c0339a040438d96d487419"
+    },
+    {
+      "ticker": "NWG.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0f413fea82273ad08234185d18705641fc94790f264b28e034f1fc93b732ca96"
+    },
+    {
+      "ticker": "STAN.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "8acca57808462c88abc3cd409104f3e4f94818b40447aff83a1caaeadac1882e"
+    },
+    {
+      "ticker": "AV.L",
+      "market": "UK",
+      "rows": 6983,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "4f545cb17b66712bfaf9fee1f1397131948078fecbd39894357e465e0867a8b9"
+    },
+    {
+      "ticker": "^FTSE",
+      "market": "UK",
+      "rows": 6928,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "a86165b78e868d8e4d8b3b7463403a16cb211521e37e687cfb2be6d5d87dde3a"
+    },
+    {
+      "ticker": "SAP.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "46682cf2c66f0682aed9660238172a841efd7ccef8eab13eb0d0056d68653623"
+    },
+    {
+      "ticker": "SIE.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "86b7c0506c2174ef04c3cb4c9041ccd0185bf6f5bab70e26e18c7653c89a836d"
+    },
+    {
+      "ticker": "ALV.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "facdc66164ff7f064855f58d6ec7d4df767eac4e0b2fae277ad1331cfa3ac20e"
+    },
+    {
+      "ticker": "DTE.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "d3db16a3badf88438b695394c41a734af2f3d519591962eab2aab5b981517056"
+    },
+    {
+      "ticker": "MBG.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "3c735edf8eebcf968e609961fdd4be3c0f504865b65010f25b89b91b15323a2c"
+    },
+    {
+      "ticker": "BMW.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "353738f9b589bf2a82f3f470465f345f4abaf87a0bf8440ef718d1cc48221951"
+    },
+    {
+      "ticker": "BAS.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "4658b14a85084b9f38c63ff5f2451b9ccc78276db9b0fa52c54eaf1dac990a3b"
+    },
+    {
+      "ticker": "BAYN.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "54bbea456d51bc8703d0482f2cf30f43905c05f21d6deba92aee76cf658dc71b"
+    },
+    {
+      "ticker": "MUV2.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "dbbeff44dee913cf4bd513233f27924299a0e0f39d0624c20a48ecc334280eef"
+    },
+    {
+      "ticker": "DBK.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "a0c927c95d2acb852112b36fc047767d0d2d739912d9fa2f86553c141455277c"
+    },
+    {
+      "ticker": "IFX.DE",
+      "market": "Germany",
+      "rows": 6807,
+      "first": "2000-03-13",
+      "last": "2026-10-30",
+      "sha256": "131a952582687d49bc16acc02787409128e41a8389d3cc6e2f9a1af9b419925e"
+    },
+    {
+      "ticker": "ADS.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "c794784a3a0e939b6de77662be29a8b8c0913c1bd9bb367410680f6023be45da"
+    },
+    {
+      "ticker": "VOW3.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "9a3bf6248b505b174ab27d08bddb5d092b8d99e4bb02edc332d8fcdd387fec11"
+    },
+    {
+      "ticker": "DHL.DE",
+      "market": "Germany",
+      "rows": 6627,
+      "first": "2000-11-20",
+      "last": "2026-10-30",
+      "sha256": "a66478b9a0dcb07e99c501a087dc774d81613099e768d56d5811b7bbb44eda85"
+    },
+    {
+      "ticker": "RWE.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "cc02d5be6a8386fe9aaa206e52e2fc0e2b492b308ef1938724836c815ad25d60"
+    },
+    {
+      "ticker": "EOAN.DE",
+      "market": "Germany",
+      "rows": 6857,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "9e1f5060b952229b76b495b9aa98c7ac5f592b1f7196177fffe0ceae82e8e95f"
+    },
+    {
+      "ticker": "CBK.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "3e4682471081504bf2d5282140730de487730fd8b29deaf9c34173a28785244f"
+    },
+    {
+      "ticker": "HEN3.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "1e4323a94d309623410df450ed7455557105f848ca486f9a7d9e2c69ddf1eb2f"
+    },
+    {
+      "ticker": "FRE.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "9120afa2921072e349ab08bf5a1da84cb13949bc03fc9454097d7734413b81f5"
+    },
+    {
+      "ticker": "MRK.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "94a913d389c77ab69b51c90e013fa7557760a2d7cdfcf6360488bbb8b371e92e"
+    },
+    {
+      "ticker": "DB1.DE",
+      "market": "Germany",
+      "rows": 6572,
+      "first": "2001-02-05",
+      "last": "2026-10-30",
+      "sha256": "b8ecfe697cd765a152aa2db6041ad628b3313510e2a731074a68fb98f0581623"
+    },
+    {
+      "ticker": "BEI.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "fbd75f13ba0a100f04ebb6875554a3b7a9e41f40527d4dc587d4bdb634f0cbda"
+    },
+    {
+      "ticker": "CON.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "90badeb601357f28493910bc2f271c45f05a64954712a5e27d012d1cacbd6b4f"
+    },
+    {
+      "ticker": "LHA.DE",
+      "market": "Germany",
+      "rows": 7011,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "efb252afced0b0234c667c4bd66e10474c43c31f72d367f86515206862e595b9"
+    },
+    {
+      "ticker": "^GDAXI",
+      "market": "Germany",
+      "rows": 6965,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "235b20bf58181071176329466156f46a21aa40f4b5a8506e8f1305c304f0017c"
+    },
+    {
+      "ticker": "MC.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "dda9064c1273dfb9f735ed4c5d7ca807c2265bd67328ad5a674f7bdcb4d6cbe9"
+    },
+    {
+      "ticker": "OR.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "751c9ed6090401abd96d5bdd18bd1798c24122d8454442f2f4c36d979887780b"
+    },
+    {
+      "ticker": "TTE.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "6060cb743b582b8a93f1bfa921061e17e36a25e291aa3f1d3664c5a5bd1e2906"
+    },
+    {
+      "ticker": "SAN.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "0a0c397f1a16bb5c321201c801cb15142d291be17d84bd9c49aaebadd2872178"
+    },
+    {
+      "ticker": "AIR.PA",
+      "market": "France",
+      "rows": 6459,
+      "first": "2001-09-03",
+      "last": "2026-10-30",
+      "sha256": "943d71c0f9639eb124d6f27f19103f9313265d204c50992169975a929c1dd4ec"
+    },
+    {
+      "ticker": "SU.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "6c88c7595b3b26e736a35e591e53dabc32c52de3c02e58a25e2b6a22e8cb3458"
+    },
+    {
+      "ticker": "BNP.PA",
+      "market": "France",
+      "rows": 7048,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "947021d25b6a879a14c3bd62f31ccbf7fa4da2960c9fc180d4951773d2f275f6"
+    },
+    {
+      "ticker": "AI.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "4af7e6462ec2d758a58b78b6f8bcf4037c0fa33b0c4a7035de32db7df9afa5a0"
+    },
+    {
+      "ticker": "KER.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "4493699ae93d0d24b8bde75d94ea77e3776f363b7bfd1f1530c5a1c71bb51fed"
+    },
+    {
+      "ticker": "RMS.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "d883eb1dc62d8b9336f1143ec8e092aba5708b5454223e01962b6e244b316b45"
+    },
+    {
+      "ticker": "GLE.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "ef9ccf35c95ac131a9062167dc046628ff2208b810c25423edf30446e747a4ff"
+    },
+    {
+      "ticker": "ACA.PA",
+      "market": "France",
+      "rows": 5321,
+      "first": "2004-10-21",
+      "last": "2026-10-30",
+      "sha256": "42f282dd1987300f987193409ed51c0c6aa8249a223c2331eac6a48f817a2caf"
+    },
+    {
+      "ticker": "CS.PA",
+      "market": "France",
+      "rows": 7048,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "615e49f0391ed33b7918ce77690697479ee09e1856ebf8d6b2819cb4788120a8"
+    },
+    {
+      "ticker": "EL.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "d3c237f02de2da1372083104f877f6162cb8ff5569aafb751add07e1dba9a933"
+    },
+    {
+      "ticker": "DG.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "e51c2f51a656d562a74cfb50a318d7d93487983418d3791aa03462df3c4acba1"
+    },
+    {
+      "ticker": "BN.PA",
+      "market": "France",
+      "rows": 7048,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "cee971bc0249378b7e0f00afda91f1c22e4819391ca0f434fae833b9634f5d8d"
+    },
+    {
+      "ticker": "VIE.PA",
+      "market": "France",
+      "rows": 6751,
+      "first": "2000-07-20",
+      "last": "2026-10-30",
+      "sha256": "92ff3e77a368e46cf019d521f2ec8f78a2a69bf10d993044cb1c6edbad3425b6"
+    },
+    {
+      "ticker": "ENGI.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "a95591657a83259501f536522d372d5fee63b7de68e077306114996673ac9336"
+    },
+    {
+      "ticker": "ORA.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "1752c6c88a934d16b76bf5793ca35577381976c2df3ea185e21c6f221ba7c260"
+    },
+    {
+      "ticker": "CAP.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "b61313b0c23e4f099a3c73118744aee5445c15970d56fdab3f8f9dbe43541468"
+    },
+    {
+      "ticker": "SGO.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "fb90b87b5a25d839c549165ee31811f9aacc4b1980c11ec16a83cf079fa99bcb"
+    },
+    {
+      "ticker": "RI.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "b7f4930474e55b10df529a5cbfffbec1e3aef4b0756696e86daeaf4079f901d9"
+    },
+    {
+      "ticker": "ML.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "562e8f1d425b41441640e0d324ecb460ffbfeedd4c672dfefa9b99aa2d2e4623"
+    },
+    {
+      "ticker": "VIV.PA",
+      "market": "France",
+      "rows": 6894,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "c53b93b68e829882d029f63ff04bd8de81eb0d1701abe4a669cbd7768443d86a"
+    },
+    {
+      "ticker": "^FCHI",
+      "market": "France",
+      "rows": 7009,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "1d10990835727a3dfc1c9d21ec2df0ae9c6bdbac301ddedd1f1b0e1532cf4fd3"
+    },
+    {
+      "ticker": "ASML.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "29325074de076b9b5a3a0d05f67cec053a688b22e17504699d4d8a41dbe0a8d0"
+    },
+    {
+      "ticker": "INGA.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "93d6f8b28e84567b6a33a9a5ad320a03a3ce8c46ffbfe0e7d33d71bed89615aa"
+    },
+    {
+      "ticker": "PHIA.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "36e192d92f289eb34f8623951f65af90702b7e14dea15bd2b108ee9727240e64"
+    },
+    {
+      "ticker": "AD.AS",
+      "market": "Netherlands",
+      "rows": 4611,
+      "first": "2008-10-24",
+      "last": "2026-10-30",
+      "sha256": "d8281115b464c4518c3242ec49c57d9dc6b17f652c1379cffbc36b52e965a223"
+    },
+    {
+      "ticker": "HEIA.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "06c1f4aafda5dbca1ae69aa31a3a7bc5602bcab162a909dfedcd644c500564c8"
+    },
+    {
+      "ticker": "AKZA.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "53ab5bdee0e10b71bbfdd7fe468cb98f77557a0af09aebbebf7547c72091afda"
+    },
+    {
+      "ticker": "KPN.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "7b2104634e7f96f59560de1e3146a3c5409766252b0979546b8622dbafc78a17"
+    },
+    {
+      "ticker": "WKL.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "38eed05145199d2009492d509a79d7a41003cdbf6adc95106eb0c4d0d93fe790"
+    },
+    {
+      "ticker": "RAND.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "94e3e8a6976e8a009bcc9a316cce19c5ce4117b9ea5eb249fcdf439239c45a08"
+    },
+    {
+      "ticker": "ADYEN.AS",
+      "market": "Netherlands",
+      "rows": 2148,
+      "first": "2018-06-13",
+      "last": "2026-10-30",
+      "sha256": "718b371d71c2ce21f2fbd39d066886d05e69b06ef21066cfc47132635bc06aeb"
+    },
+    {
+      "ticker": "PRX.AS",
+      "market": "Netherlands",
+      "rows": 1829,
+      "first": "2019-09-11",
+      "last": "2026-10-30",
+      "sha256": "218646c843512efe4908bfc96c15b8d8113d5ce8edf224b08c99a2d0e41a7d46"
+    },
+    {
+      "ticker": "ABN.AS",
+      "market": "Netherlands",
+      "rows": 2801,
+      "first": "2015-11-20",
+      "last": "2026-10-30",
+      "sha256": "242737c8e5593b13ed97f3409a844da62c6982b2d079ddcfab688464c2f5b998"
+    },
+    {
+      "ticker": "ASM.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "9fecc119427308a66ddb4a4e9af4699870e2fb8e3937102d6ec677b8c3bc8459"
+    },
+    {
+      "ticker": "NN.AS",
+      "market": "Netherlands",
+      "rows": 3157,
+      "first": "2014-07-02",
+      "last": "2026-10-30",
+      "sha256": "c1b73d5f84bd9e9ae9eee6a2f931756fe4954381245540b4ad455b56a2d99297"
+    },
+    {
+      "ticker": "AGN.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "8d6a4f5332c30e0684daa70094e002779f1a368f8d459bfb61a88148a2242681"
+    },
+    {
+      "ticker": "BESI.AS",
+      "market": "Netherlands",
+      "rows": 7053,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "7762d4466d086b25699004b8392fb830f6b04376418b9e33ba602bba0cd0671e"
+    },
+    {
+      "ticker": "^AEX",
+      "market": "Netherlands",
+      "rows": 7014,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "493711715e7c3b6793e07b96800deb7c552b5d723aa56c4a3c401a8ed031529a"
+    },
+    {
+      "ticker": "NESN.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "070751b2f950ce5552866af78339f13d2ac8d8b372350c3cf03b681d1b5d10f8"
+    },
+    {
+      "ticker": "NOVN.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "2cd79d3290e90fb124d51fd7d904e8658660ad3eac92d03b14d74c6b9cd78b36"
+    },
+    {
+      "ticker": "UBSG.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "e66b2d3daa63c6741824dceb6521d0cd061fd95fd9e293ba82cb9bf218ee458e"
+    },
+    {
+      "ticker": "ZURN.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "3059fe36bc15fd47295f770252397ab7bf994cd225d2bc8be1d5abb583cd5407"
+    },
+    {
+      "ticker": "ABBN.SW",
+      "market": "Switzerland",
+      "rows": 6946,
+      "first": "1999-06-25",
+      "last": "2026-10-30",
+      "sha256": "50cf36848a67f0f4b75d9663e78d85e11ad67fc5a2fae6f6751971a9c50dff53"
+    },
+    {
+      "ticker": "CFR.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "5956474ae3fa923334e19af507907453ebb129660c33aa25657a5b76edbbeda4"
+    },
+    {
+      "ticker": "SIKA.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "8d7504fea13d00f5784d9a323be6c76ea266a8bc16d7dca3dfd1a2517ec8457d"
+    },
+    {
+      "ticker": "GIVN.SW",
+      "market": "Switzerland",
+      "rows": 6855,
+      "first": "1999-11-01",
+      "last": "2026-10-30",
+      "sha256": "482c60d1ce71f3a93357bb9374dec965c70b473b6fbaba0641284ef89605ba61"
+    },
+    {
+      "ticker": "LONN.SW",
+      "market": "Switzerland",
+      "rows": 6855,
+      "first": "1999-11-01",
+      "last": "2026-10-30",
+      "sha256": "d9ece311d03fb81eb5c6b724bce1b2226496691f5cc565bfe82be9663b42ada6"
+    },
+    {
+      "ticker": "SREN.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "5e1c07a3867cee1cd803a4622ab6d36cbe41f2db00222a6b89e61c016a4e1959"
+    },
+    {
+      "ticker": "HOLN.SW",
+      "market": "Switzerland",
+      "rows": 6448,
+      "first": "2001-05-23",
+      "last": "2026-10-30",
+      "sha256": "18fca53f19cdd5fd51334868f37f6dd8b1072d6f6da18bbc7fc19a8602c4d40d"
+    },
+    {
+      "ticker": "ALC.SW",
+      "market": "Switzerland",
+      "rows": 1902,
+      "first": "2019-04-08",
+      "last": "2026-10-30",
+      "sha256": "ee86586dca615334edd88c0eadab680fb20c240b6dafb55ce29e97ae53542692"
+    },
+    {
+      "ticker": "SCMN.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "1d5d008abf65be97cfd8fe6ad53b5f140039bd47e1e6c7416875fe48cc0d5f90"
+    },
+    {
+      "ticker": "SLHN.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "b714e5f5b6360f485077f21767e7ce39424143782e2bc6b3c825d8fb84568570"
+    },
+    {
+      "ticker": "GEBN.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "11ef391da33900b40d11626ef792b80bf18e65427990e1062fc78d783d4c8fc8"
+    },
+    {
+      "ticker": "PGHN.SW",
+      "market": "Switzerland",
+      "rows": 5186,
+      "first": "2006-03-24",
+      "last": "2026-10-30",
+      "sha256": "170d22ae343604785b9be51f623f9448abcca6d5e0f9712d64a5e474b700c61c"
+    },
+    {
+      "ticker": "SGSN.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "f4ebc16024b72ed9591757814e5c71c693eb8dfb043079c5aeb06156f749b210"
+    },
+    {
+      "ticker": "LOGN.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "7da4f2e7702d2b3d036b31331db13ca1e7c6f937fc6a7795dc814d8beb4688a2"
+    },
+    {
+      "ticker": "STMN.SW",
+      "market": "Switzerland",
+      "rows": 6964,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "b7a6e3e23b41427884fe84e3472a84d70683771a1869e31b2b9a79580b4c103d"
+    },
+    {
+      "ticker": "^SSMI",
+      "market": "Switzerland",
+      "rows": 6887,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "372854af23576cf135701db36531be130aa63b0c5351c08319d0a0a9a8153148"
+    },
+    {
+      "ticker": "SAN.MC",
+      "market": "Spain",
+      "rows": 6889,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "73b9a28f36710856ff703383e3a0bf91692e240d4d67dbef34bfecc92f44d72b"
+    },
+    {
+      "ticker": "BBVA.MC",
+      "market": "Spain",
+      "rows": 6889,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "fc16fe7cac551e6a575f5773e3e913553f933621b433cb160e51de3861ad8d9d"
+    },
+    {
+      "ticker": "ITX.MC",
+      "market": "Spain",
+      "rows": 6177,
+      "first": "2002-09-25",
+      "last": "2026-10-30",
+      "sha256": "65505a24d960bf18600a94040612f49df582ae4f1a3243ca69716cb3f692ca01"
+    },
+    {
+      "ticker": "IBE.MC",
+      "market": "Spain",
+      "rows": 6889,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "4d070afb53244cddedfd5f44f505dde782ac3211917dd0659f3c3c9898949afa"
+    },
+    {
+      "ticker": "TEF.MC",
+      "market": "Spain",
+      "rows": 6889,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "6a11fdcc038353b1ebdecc2496855eb040f3cf8356a1acb612222cbae6f17a43"
+    },
+    {
+      "ticker": "REP.MC",
+      "market": "Spain",
+      "rows": 6889,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "44947cf9532b118460e997281ba59dcffee87ba264ee324bf4436d9b9441f94a"
+    },
+    {
+      "ticker": "CABK.MC",
+      "market": "Spain",
+      "rows": 4870,
+      "first": "2007-10-10",
+      "last": "2026-10-30",
+      "sha256": "de11d1ac88c26eea3a5f0ede7f1c6a8bf27d4ff2096ac18f7a7533146e289137"
+    },
+    {
+      "ticker": "AENA.MC",
+      "market": "Spain",
+      "rows": 2999,
+      "first": "2015-02-11",
+      "last": "2026-10-30",
+      "sha256": "bede7bf5fec8f9fd40bc48c21490ca07e8b81af1503cfe1ad1b3ec2cda585bad"
+    },
+    {
+      "ticker": "FER.MC",
+      "market": "Spain",
+      "rows": 6889,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "9f4fe79778c4f9e5d0fc58c0a25039968da0dc3e3e07a4f633bd8887d1949e3e"
+    },
+    {
+      "ticker": "AMS.MC",
+      "market": "Spain",
+      "rows": 4225,
+      "first": "2010-04-29",
+      "last": "2026-10-30",
+      "sha256": "bdcefedfe2c0382dd558ea1cb50197cbe54c39f632c7ad2d5db52ac1d1002af9"
+    },
+    {
+      "ticker": "IAG.MC",
+      "market": "Spain",
+      "rows": 4035,
+      "first": "2011-01-24",
+      "last": "2026-10-30",
+      "sha256": "ecf08744857d0af7b566ad9d97de403c7388cfd0c11e4a092bc1d1ae99085566"
+    },
+    {
+      "ticker": "ACS.MC",
+      "market": "Spain",
+      "rows": 6367,
+      "first": "2002-01-02",
+      "last": "2026-10-30",
+      "sha256": "5c0510be022966f95a762fecc8b4970e36465965844afb7ab362bf2e8f2958d2"
+    },
+    {
+      "ticker": "GRF.MC",
+      "market": "Spain",
+      "rows": 5230,
+      "first": "2006-05-17",
+      "last": "2026-10-30",
+      "sha256": "a684e113f3606aebdfc5ed6434f5292e227647f625d58a4b5fad7bd94a9bb516"
+    },
+    {
+      "ticker": "MAP.MC",
+      "market": "Spain",
+      "rows": 6444,
+      "first": "2001-09-17",
+      "last": "2026-10-30",
+      "sha256": "ec1f3985727e63410be0a7a044478f288b2ab226f15ebd059f1e2bf8ee25fdb2"
+    },
+    {
+      "ticker": "SAB.MC",
+      "market": "Spain",
+      "rows": 6889,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "c98f0c98f20de0c7a930aafac99846616aadb15b5ad4e49489e4a93e1bfd41fc"
+    },
+    {
+      "ticker": "ELE.MC",
+      "market": "Spain",
+      "rows": 6759,
+      "first": "2000-07-03",
+      "last": "2026-10-30",
+      "sha256": "a50c40dd2ac4b64d8f6cb40a7a3857bf578276b4dc3acdfee59174cea392ae85"
+    },
+    {
+      "ticker": "NTGY.MC",
+      "market": "Spain",
+      "rows": 6889,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "82cf42be778566f034cf8a31eb9b3d4ee43e842c2c21c66cf95230fc13e89fd3"
+    },
+    {
+      "ticker": "BKT.MC",
+      "market": "Spain",
+      "rows": 6889,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "7cccd08f0c7de69f54d8e704f846d9894f36611bebdfded8c83ec10c6351d9ca"
+    },
+    {
+      "ticker": "MTS.MC",
+      "market": "Spain",
+      "rows": 5178,
+      "first": "2006-07-28",
+      "last": "2026-10-30",
+      "sha256": "fc2063d84f246d0f49ea0f5ffa50b098d0f0a6a09c1c41050864454e31c9d8f7"
+    },
+    {
+      "ticker": "ACX.MC",
+      "market": "Spain",
+      "rows": 6889,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "ff74d205485ea93c859abfeffdce3a9104936472498885298cb4f231705e5e8a"
+    },
+    {
+      "ticker": "^IBEX",
+      "market": "Spain",
+      "rows": 6974,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "b7c52456a23d8739fb65ee6a08fd200f41473d26fa5b16c593a4d0e5135704af"
+    },
+    {
+      "ticker": "ENI.MI",
+      "market": "Italy",
+      "rows": 7009,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "6eb70239ed54e356be5e673ed78c52d24395310395ce7774d969069dac5859b4"
+    },
+    {
+      "ticker": "ENEL.MI",
+      "market": "Italy",
+      "rows": 6899,
+      "first": "1999-11-02",
+      "last": "2026-10-30",
+      "sha256": "5937317aa124c31ae699c6b94aea5f4b33a1453d43524bf7aa1f023c1a2764bc"
+    },
+    {
+      "ticker": "ISP.MI",
+      "market": "Italy",
+      "rows": 7008,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "e22d8a473e192b7097ff13fd127d201611a4548573a2343d542123d124ef7232"
+    },
+    {
+      "ticker": "UCG.MI",
+      "market": "Italy",
+      "rows": 6595,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "a3e46eb0a5e9711d7a4d47d383ce12ccc44b6e67c64cb13e73f022ded4fffad2"
+    },
+    {
+      "ticker": "STLAM.MI",
+      "market": "Italy",
+      "rows": 6855,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "8eecfa593e3dc229fdc6a4b872bcfac1b61560e3ecdecf637fe7f383f29379bf"
+    },
+    {
+      "ticker": "G.MI",
+      "market": "Italy",
+      "rows": 7008,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "39c44c32c34805436d529502c937c45faaa17094be11df92fe02cba61da10a7a"
+    },
+    {
+      "ticker": "RACE.MI",
+      "market": "Italy",
+      "rows": 2753,
+      "first": "2016-01-04",
+      "last": "2026-10-30",
+      "sha256": "ed3fac985d2242e5af16bc30767bb91eff3c7c4590e6f19a3911426371d9b1ed"
+    },
+    {
+      "ticker": "TIT.MI",
+      "market": "Italy",
+      "rows": 7009,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "8d87b3d790845887e0e033001111988c50500fdbde82353b861924db63daefec"
+    },
+    {
+      "ticker": "PST.MI",
+      "market": "Italy",
+      "rows": 2799,
+      "first": "2015-10-27",
+      "last": "2026-10-30",
+      "sha256": "0be66df3a2e195fed717ef2cb68712191951ad8221fb1c670b0ebbfcc55cee5f"
+    },
+    {
+      "ticker": "MB.MI",
+      "market": "Italy",
+      "rows": 6749,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "537fd1e52ae049c1390847079fccaee422d06355bcb6c5a7cf335ac52d47c8c8"
+    },
+    {
+      "ticker": "LDO.MI",
+      "market": "Italy",
+      "rows": 5410,
+      "first": "2005-07-18",
+      "last": "2026-10-30",
+      "sha256": "29d8bb8991588e5eeaec52b33009ab63aafbd9a19119fd1ef90f747f19d2105b"
+    },
+    {
+      "ticker": "PRY.MI",
+      "market": "Italy",
+      "rows": 4952,
+      "first": "2007-05-03",
+      "last": "2026-10-30",
+      "sha256": "92a2e8ddeea6635834f8983c74eb02039885ed0b78b53545d154275f68a737f3"
+    },
+    {
+      "ticker": "TEN.MI",
+      "market": "Italy",
+      "rows": 6084,
+      "first": "2002-12-17",
+      "last": "2026-10-30",
+      "sha256": "242731b978e533a09271244542a958b26ae29d9f404a9be4911fad887a147ad1"
+    },
+    {
+      "ticker": "BAMI.MI",
+      "market": "Italy",
+      "rows": 6855,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "8978eae558e991424f2ab153803342fdc5048fc6686f08f6a8f798e5d347119c"
+    },
+    {
+      "ticker": "BMPS.MI",
+      "market": "Italy",
+      "rows": 6730,
+      "first": "1999-06-25",
+      "last": "2026-10-30",
+      "sha256": "e796a484dee4c9bbcd76c5439c25028dfe74db9c45d5ca1eea095960727e61d9"
+    },
+    {
+      "ticker": "SRG.MI",
+      "market": "Italy",
+      "rows": 6352,
+      "first": "2001-12-06",
+      "last": "2026-10-30",
+      "sha256": "f982ca99af631baa7bc2722857aac11a90d42d731822155646c3e20e4fd1159c"
+    },
+    {
+      "ticker": "TRN.MI",
+      "market": "Italy",
+      "rows": 5688,
+      "first": "2004-06-23",
+      "last": "2026-10-30",
+      "sha256": "2241740230b4a1ff6bb030bc1c0b7a978b7de1390e87ebb963dabdc8d96e847a"
+    },
+    {
+      "ticker": "MONC.MI",
+      "market": "Italy",
+      "rows": 3268,
+      "first": "2013-12-16",
+      "last": "2026-10-30",
+      "sha256": "e38df296d10417260143e9f234c2198baa2d9c74ca55996ad790896ad0e9db36"
+    },
+    {
+      "ticker": "A2A.MI",
+      "market": "Italy",
+      "rows": 6855,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "3e6560560a142907d44fbd5a0bc1f730010bd79bad26c355145fc23e12483609"
+    },
+    {
+      "ticker": "BPE.MI",
+      "market": "Italy",
+      "rows": 7009,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "1240cad11b18c06163e83b1f31fb71d21bf6d29ee0e89496aaf8c63d73597c5f"
+    },
+    {
+      "ticker": "FTSEMIB.MI",
+      "market": "Italy",
+      "rows": 6999,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "a9bd044b353a4994729489eede2ed213dad407d7107acae209898ee95d15d58f"
+    },
+    {
+      "ticker": "VOLV-B.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "4d85d019f1e49c73840139fb0fd24ba58caf7fb23370ed2737e09fbc40efc5a6"
+    },
+    {
+      "ticker": "ERIC-B.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "f072b470e5cebd43cfa12c6da9c3b3c7b2515ca4408cd5cfcfb757f112a7fe2a"
+    },
+    {
+      "ticker": "ATCO-A.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "8fdeb058b80e84c2fda3024971fd21ec11dad959b08f02fb0a38dce40abdb35d"
+    },
+    {
+      "ticker": "INVE-B.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "0165f4cfdfd8bafecc64903be85b91d60792be0f0045459f2a2d61e81d310a94"
+    },
+    {
+      "ticker": "SEB-A.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "a94e7e0b9f2a08012156c4e404ced31e4a52ab8ddd0183782ea5fc9cba001373"
+    },
+    {
+      "ticker": "SHB-A.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "58f9ad03ea1236ae19d0bbb554a464cbab2a82fb55d3c3d688faac731256b5c6"
+    },
+    {
+      "ticker": "SWED-A.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "a1019e147ddee99ba778190a05f2ad174bb767f998d5bbd0a21a272aa7acb86f"
+    },
+    {
+      "ticker": "HM-B.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "80144636275aaa8704d9ef91d777cf10a4ffc735400aa6c7b69723a9d5874731"
+    },
+    {
+      "ticker": "SAND.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "502ed3b556d9c002bd3fead2a7a473e07bc7999cd034f5a95eabd21df0beabe7"
+    },
+    {
+      "ticker": "ESSITY-B.ST",
+      "market": "Sweden",
+      "rows": 2358,
+      "first": "2017-06-15",
+      "last": "2026-10-30",
+      "sha256": "22e9bea60b069fe309f61cb26c7b237e1f1f5ac36347b1ed44d7052da178c7b0"
+    },
+    {
+      "ticker": "TELIA.ST",
+      "market": "Sweden",
+      "rows": 6692,
+      "first": "2000-06-13",
+      "last": "2026-10-30",
+      "sha256": "e54dd01d8d2d40f88e57e31617173bb18ca5a775e6d1a0f97e1020b279b8f5f6"
+    },
+    {
+      "ticker": "SKF-B.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "9b0333f3877b3f0c320a34b1696743090d4b787b206132468d2d628726c8f6fb"
+    },
+    {
+      "ticker": "ABB.ST",
+      "market": "Sweden",
+      "rows": 6457,
+      "first": "2001-05-08",
+      "last": "2026-10-30",
+      "sha256": "511211aed1c89d89dc21d0bfc6fef097ca48bf785076b8304a496fe64b6d42f0"
+    },
+    {
+      "ticker": "ALFA.ST",
+      "market": "Sweden",
+      "rows": 6189,
+      "first": "2002-05-17",
+      "last": "2026-10-30",
+      "sha256": "33e9dff27a78cde4bbc5674454e3dfb9996098ce5afaf0f7dfa554bf8957de50"
+    },
+    {
+      "ticker": "EVO.ST",
+      "market": "Sweden",
+      "rows": 2921,
+      "first": "2015-03-20",
+      "last": "2026-10-30",
+      "sha256": "7a6f453cc2fd763f6cec68cdc9cc6672b6a51cc0f25cd95ada6f215d73d83afe"
+    },
+    {
+      "ticker": "NDA-SE.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "03e1ac0b72e0928737bb3d4ca71e891f10d0f62eaa5c71569b251c2f5733f94e"
+    },
+    {
+      "ticker": "ASSA-B.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "a09e37f3b0365a229abea52f70a3f54574cd4b01109ca970955c5b0bd3578048"
+    },
+    {
+      "ticker": "BOL.ST",
+      "market": "Sweden",
+      "rows": 6306,
+      "first": "2001-12-05",
+      "last": "2026-10-30",
+      "sha256": "86f20fc9b8f2c66e3333e2c9485a7a8e75bd4e11c620e77886a80256b3b55ccc"
+    },
+    {
+      "ticker": "SCA-B.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "6d619000b4573faedd7e4049aaf8539371375e1da8e44f5545b2ff7f44c0cbba"
+    },
+    {
+      "ticker": "ELUX-B.ST",
+      "market": "Sweden",
+      "rows": 6808,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "aad0aff95d70438523ea26d050df116b85e409cdb958966fff1e16f6a38f3e5e"
+    },
+    {
+      "ticker": "^OMX",
+      "market": "Sweden",
+      "rows": 4501,
+      "first": "2008-11-20",
+      "last": "2026-10-30",
+      "sha256": "ab4439c03251c18b8f86adf3fd3ffa5e4e5b2ec2014fef6487a2816d10861cff"
+    },
+    {
+      "ticker": "7203.T",
+      "market": "Japan",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "9440b213e24d1c62f7a966b2f1f78cd8762b44a7913699e06aee0ebfda26443b"
+    },
+    {
+      "ticker": "6758.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "0c41c468fe40aad8ea31fc314d8354f4d2e8df9320ef7b52b3f5db2a8af116b3"
+    },
+    {
+      "ticker": "9984.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "1605d4444324f4863d240953abe6c6609376ceb3f1d2a8e4787efdb182b70d36"
+    },
+    {
+      "ticker": "6861.T",
+      "market": "Japan",
+      "rows": 6433,
+      "first": "2001-01-01",
+      "last": "2026-10-30",
+      "sha256": "0de2845fa3493978777a1fdd125efb2b2a7fb9f303cfe5376a2bf90b3932fccb"
+    },
+    {
+      "ticker": "8306.T",
+      "market": "Japan",
+      "rows": 5195,
+      "first": "2005-09-29",
+      "last": "2026-10-30",
+      "sha256": "30974881439319729591cd1e4976410d35fa3b024253e7ce2a2f2e64a15a4960"
+    },
+    {
+      "ticker": "9432.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "ebcacdb7db6ac5256b4a8553c3ba78ed01dd726599f7228f4fa25d51db7cb2aa"
+    },
+    {
+      "ticker": "6501.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "87c2a0b84290fc87281274a358a73235cd1f31c42fd7ae0017875ca71f91cbcd"
+    },
+    {
+      "ticker": "7974.T",
+      "market": "Japan",
+      "rows": 6430,
+      "first": "2001-01-04",
+      "last": "2026-10-30",
+      "sha256": "2c559832bbe296d162421816b43097219e6937358ffbde53e0720d05de8d790a"
+    },
+    {
+      "ticker": "8035.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "b275092cfae708047312f5ccc763e3984567cdcf40eb1ac4a28baf32bd05d875"
+    },
+    {
+      "ticker": "9983.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "3d2fffccb3c7d80c258f7a32da6fecc5403921f292891125094902b2e2c7dc5e"
+    },
+    {
+      "ticker": "4063.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "11c8dc9c54c5d77a42a307f0b028fdc51099ebc0b80f4cc602594be3302e485c"
+    },
+    {
+      "ticker": "6098.T",
+      "market": "Japan",
+      "rows": 2961,
+      "first": "2014-10-16",
+      "last": "2026-10-30",
+      "sha256": "1364f985626cdfb4f01c00b4b604801ee285eb655a215b5f9545f8e5f5197e72"
+    },
+    {
+      "ticker": "8058.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "0b1397c61e440103faba0395581bb94910474ddf3ba547bc203c1dcbb651dcd0"
+    },
+    {
+      "ticker": "7267.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "732c34a34bc1b7b2f5c77338a250b0f99ca2f61cca5bff56bc84a5ea5dc09d71"
+    },
+    {
+      "ticker": "6902.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "fdf047a266a65adb54c784882f6f6d0a3903bd958fc4e3a21b36371f0a48153e"
+    },
+    {
+      "ticker": "4502.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "49184b5d5770c7e63d36616629d3d062ea93169ee4a99fd88729aa184c8d999d"
+    },
+    {
+      "ticker": "8316.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "26202fb3d3e4de478a4327cad8560f30d96ebbc0b3b1bca365facfc88b59e78e"
+    },
+    {
+      "ticker": "6367.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "d4165bec23b4cbebdffb04de9f90b54066977b2fd27a2edb9d3592b3a0765f14"
+    },
+    {
+      "ticker": "7751.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "388e6a58b8d1077808c797d276e76d5a8bbad7ec8672ec5d0d1cc58b4a807be3"
+    },
+    {
+      "ticker": "6954.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "f0040c635c48b9a39733374f53801b384d37408439bb9caf85fb8f2b3c814f06"
+    },
+    {
+      "ticker": "8411.T",
+      "market": "Japan",
+      "rows": 5861,
+      "first": "2003-03-12",
+      "last": "2026-10-30",
+      "sha256": "9052f3b05764e0f81ab26aa10148747bec97b89cb4931128ad71ba2c0cbc470a"
+    },
+    {
+      "ticker": "6752.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "72f27d8a575c5a87c7b168b9f0ef21589c1869529a62aa1ac2ff6f5c558c8cd5"
+    },
+    {
+      "ticker": "4568.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "8e4754dffc638193701f5c6ed96a164bf3fe60b597aa4e88bbd2bfbcc1e51131"
+    },
+    {
+      "ticker": "8001.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "6cadf2545e8d3f6848f215d509bd038a7bbdafe41fe848b1eff97ed1af83f53d"
+    },
+    {
+      "ticker": "6702.T",
+      "market": "Japan",
+      "rows": 6692,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "3670092d72cd123cf0e24eb76cd232bb6009029616693dcd651bed3a1ffd7473"
+    },
+    {
+      "ticker": "^N225",
+      "market": "Japan",
+      "rows": 6716,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "55621bcdd8587b3c0adbd584d8b12c2aeaca02bef68d410f05b7f41cf42c6e56"
+    },
+    {
+      "ticker": "0700.HK",
+      "market": "HongKong",
+      "rows": 5525,
+      "first": "2004-06-16",
+      "last": "2026-10-30",
+      "sha256": "3733ec1c58714bf3f856582ec0e7d2284276432e54d71a93f9fb2741d1f37ce4"
+    },
+    {
+      "ticker": "9988.HK",
+      "market": "HongKong",
+      "rows": 1704,
+      "first": "2019-11-26",
+      "last": "2026-10-30",
+      "sha256": "b8d68e561874c43263e65cdd9b8de3e7d4bdc2c59e7e9049a8540a032c782b55"
+    },
+    {
+      "ticker": "0005.HK",
+      "market": "HongKong",
+      "rows": 6687,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "6b75184d4a71372e36f6c64f391eb02c3705a06fbdd40ca7c22b931a83e03897"
+    },
+    {
+      "ticker": "1299.HK",
+      "market": "HongKong",
+      "rows": 3942,
+      "first": "2010-10-29",
+      "last": "2026-10-30",
+      "sha256": "e5223cdda89c221f211f912d8ecf12f787282a0bf6bb78370eee2a278c4209a7"
+    },
+    {
+      "ticker": "0941.HK",
+      "market": "HongKong",
+      "rows": 6686,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "59efce0e89f15c2030244a0c2ed7e1fc320eb89017799f1b0b83346d532e8b90"
+    },
+    {
+      "ticker": "0388.HK",
+      "market": "HongKong",
+      "rows": 6561,
+      "first": "2000-06-27",
+      "last": "2026-10-30",
+      "sha256": "2c3908bbe5a9d9db6c9933205de90a102e648d32b6308b2d9b3c0995cfec3f33"
+    },
+    {
+      "ticker": "3690.HK",
+      "market": "HongKong",
+      "rows": 1994,
+      "first": "2018-09-20",
+      "last": "2026-10-30",
+      "sha256": "8a7da22aecc8784104097d364060322ef46073b0be26f75c8ebe2236aa7da580"
+    },
+    {
+      "ticker": "1810.HK",
+      "market": "HongKong",
+      "rows": 2047,
+      "first": "2018-07-09",
+      "last": "2026-10-30",
+      "sha256": "a1d5a4ffcb102d46ef9e9fb6045ca4621008f5b199a61f358fbc59c614b41792"
+    },
+    {
+      "ticker": "0883.HK",
+      "market": "HongKong",
+      "rows": 5590,
+      "first": "2004-03-17",
+      "last": "2026-10-30",
+      "sha256": "a6dc7df58e765688f35f4a49633f286687ba73f34343e3974f22b50aebeef6ba"
+    },
+    {
+      "ticker": "2318.HK",
+      "market": "HongKong",
+      "rows": 5519,
+      "first": "2004-06-24",
+      "last": "2026-10-30",
+      "sha256": "a228cbfaec2dd956ed6334e92b98b0ca6bcd2e13a34ccb1cee059783b80dfd68"
+    },
+    {
+      "ticker": "0939.HK",
+      "market": "HongKong",
+      "rows": 5180,
+      "first": "2005-10-27",
+      "last": "2026-10-30",
+      "sha256": "cf45c61ec6921843c643fb52627aeebabd9bf56308d50c5aa91594781bd5497e"
+    },
+    {
+      "ticker": "1398.HK",
+      "market": "HongKong",
+      "rows": 4931,
+      "first": "2006-10-27",
+      "last": "2026-10-30",
+      "sha256": "f458e9ef60607c957e1863c6fba00a9888138029bdf49afd73933d8588e3bb0a"
+    },
+    {
+      "ticker": "0001.HK",
+      "market": "HongKong",
+      "rows": 6686,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "7753307dfbe6ad6f6ccff74f1056f5c5ea3780870f170fc5d1d336f3314caf31"
+    },
+    {
+      "ticker": "0016.HK",
+      "market": "HongKong",
+      "rows": 6686,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "b48c42e42451276af322359ea97115c81d285f1dbad1c5a235f91dd7b6c818de"
+    },
+    {
+      "ticker": "2388.HK",
+      "market": "HongKong",
+      "rows": 6019,
+      "first": "2002-07-25",
+      "last": "2026-10-30",
+      "sha256": "c7df8a37797125efa764d6b605d68de1584d46ea9d3d0ad62e4089bdca77d5b0"
+    },
+    {
+      "ticker": "0027.HK",
+      "market": "HongKong",
+      "rows": 6686,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "bfc3b53f352f498e2f274f3b4d3ff9fe855012bc4c66c1f02ece3e6239a336be"
+    },
+    {
+      "ticker": "1928.HK",
+      "market": "HongKong",
+      "rows": 4169,
+      "first": "2009-11-30",
+      "last": "2026-10-30",
+      "sha256": "d75e0bb0e72a0f7cc20961da5208f9ddf57e8189e6a9792eaede7049ffd2699d"
+    },
+    {
+      "ticker": "9618.HK",
+      "market": "HongKong",
+      "rows": 1566,
+      "first": "2020-06-18",
+      "last": "2026-10-30",
+      "sha256": "ebfe979cf2c3835025e849787e47acabcc2ba4eceaa7fd7e1ef106f1217080c5"
+    },
+    {
+      "ticker": "3988.HK",
+      "market": "HongKong",
+      "rows": 5036,
+      "first": "2006-06-01",
+      "last": "2026-10-30",
+      "sha256": "0cf775317c46b5534ecd36b90ac784f5ea808734c3e443f45c741ce0b62f72ef"
+    },
+    {
+      "ticker": "0175.HK",
+      "market": "HongKong",
+      "rows": 5199,
+      "first": "2005-09-29",
+      "last": "2026-10-30",
+      "sha256": "f5d93616513bbb4524bb4d901a5c803731e62d15e9bb2e2896909d9a8a65970a"
+    },
+    {
+      "ticker": "2020.HK",
+      "market": "HongKong",
+      "rows": 4762,
+      "first": "2007-07-10",
+      "last": "2026-10-30",
+      "sha256": "663d23129364b93e59056b58a0b26fa686c18e48cff3afefc7f68659847e3063"
+    },
+    {
+      "ticker": "1211.HK",
+      "market": "HongKong",
+      "rows": 6015,
+      "first": "2002-07-31",
+      "last": "2026-10-30",
+      "sha256": "1bcf6af31a9fe1da8feb402ca41dd71067d12ce9e8f6e20ee3c1c47679f6f9bb"
+    },
+    {
+      "ticker": "^HSI",
+      "market": "HongKong",
+      "rows": 6757,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "225bb5e2d41720d81d050ecda3af7bcfbeaba3abb5245055d66044c4e9dceb10"
+    },
+    {
+      "ticker": "600519.SS",
+      "market": "ChinaA",
+      "rows": 6193,
+      "first": "2001-08-27",
+      "last": "2026-10-30",
+      "sha256": "ebd2b4636f86edda21f0d2c16621e079d4d387df735c70af9358e85ef3de606c"
+    },
+    {
+      "ticker": "601318.SS",
+      "market": "ChinaA",
+      "rows": 4782,
+      "first": "2007-03-01",
+      "last": "2026-10-30",
+      "sha256": "41f1b6bf272893b536cdb77127fc6e25eef538d7d5fafc420a6fc0e8d59bd87f"
+    },
+    {
+      "ticker": "600036.SS",
+      "market": "ChinaA",
+      "rows": 6032,
+      "first": "2002-04-09",
+      "last": "2026-10-30",
+      "sha256": "96c22f115a6837626252f95fb2abc33283feb8675a0332f784ce071909b1297c"
+    },
+    {
+      "ticker": "601398.SS",
+      "market": "ChinaA",
+      "rows": 4863,
+      "first": "2006-10-27",
+      "last": "2026-10-30",
+      "sha256": "de4ccbcbcdfb5bb3d73c78679cd51ca71c9798081bee8ea4b48c8790636c20f8"
+    },
+    {
+      "ticker": "600900.SS",
+      "market": "ChinaA",
+      "rows": 5612,
+      "first": "2003-11-18",
+      "last": "2026-10-30",
+      "sha256": "2876cb972ec61ae435e822b1fa858e66e9f1d2a49eb4409c82b2533b49e99c6c"
+    },
+    {
+      "ticker": "600276.SS",
+      "market": "ChinaA",
+      "rows": 6416,
+      "first": "2000-10-18",
+      "last": "2026-10-30",
+      "sha256": "b64db922dceadffa3f751de9f376b43e45e705ef6ef1f9641f3098d5a84f2fab"
+    },
+    {
+      "ticker": "601166.SS",
+      "market": "ChinaA",
+      "rows": 4795,
+      "first": "2007-02-05",
+      "last": "2026-10-30",
+      "sha256": "dd14758ea1e8b5156f3417e3052aa08debf5642699387d17e04cbd2660bbc81e"
+    },
+    {
+      "ticker": "600030.SS",
+      "market": "ChinaA",
+      "rows": 5838,
+      "first": "2003-01-06",
+      "last": "2026-10-30",
+      "sha256": "62418044e02c22fe54435c6a85bef6754954216b7be7ac13c2db01fa19af5b8d"
+    },
+    {
+      "ticker": "600887.SS",
+      "market": "ChinaA",
+      "rows": 6777,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "bc08de60c92e58152f443802ee10ec0e7056e57f6dbfb58e520bbed0cde5f82d"
+    },
+    {
+      "ticker": "601012.SS",
+      "market": "ChinaA",
+      "rows": 3534,
+      "first": "2012-04-11",
+      "last": "2026-10-30",
+      "sha256": "09a82e1deb2a240b024223a97b63e3ecf8341293f993764472585a8eeb93f3d4"
+    },
+    {
+      "ticker": "600309.SS",
+      "market": "ChinaA",
+      "rows": 6359,
+      "first": "2001-01-05",
+      "last": "2026-10-30",
+      "sha256": "df14a03d322fa3cc69ddecab24fc78da3518c020b5cc3a3134121eff657559d5"
+    },
+    {
+      "ticker": "601857.SS",
+      "market": "ChinaA",
+      "rows": 4613,
+      "first": "2007-11-05",
+      "last": "2026-10-30",
+      "sha256": "4c69d3ca7f9a4b56ea3f74e583f39e9527e852fb88565563ab9c6f5be5ee2f41"
+    },
+    {
+      "ticker": "601288.SS",
+      "market": "ChinaA",
+      "rows": 3954,
+      "first": "2010-07-15",
+      "last": "2026-10-30",
+      "sha256": "ad1964d83643670e911d4c8f819a145c0c710eab33ea60b43f14ca5ba4df5eac"
+    },
+    {
+      "ticker": "600028.SS",
+      "market": "ChinaA",
+      "rows": 6206,
+      "first": "2001-08-08",
+      "last": "2026-10-30",
+      "sha256": "04681445621228561908728d12249af79e9625eeef3e634a711a6462f49b66c1"
+    },
+    {
+      "ticker": "601888.SS",
+      "market": "ChinaA",
+      "rows": 4139,
+      "first": "2009-10-15",
+      "last": "2026-10-30",
+      "sha256": "22e650e4e1ce439e86de42cd272bb37d076d93f543fd50294aeae371d8a4e44e"
+    },
+    {
+      "ticker": "000858.SZ",
+      "market": "ChinaA",
+      "rows": 6777,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "426e6ded5479d4480b0b3550a1552ebc692e5495f4602af7e537d86f79fbaaf9"
+    },
+    {
+      "ticker": "000333.SZ",
+      "market": "ChinaA",
+      "rows": 3183,
+      "first": "2013-09-18",
+      "last": "2026-10-30",
+      "sha256": "1f543ebf9b8bd857fa40409a8feb64b0c3742873e364bb10764cc2c64dfd3270"
+    },
+    {
+      "ticker": "002594.SZ",
+      "market": "ChinaA",
+      "rows": 3721,
+      "first": "2011-06-30",
+      "last": "2026-10-30",
+      "sha256": "8aad0591df255f1c5097b9bff8dcf3594e71b9591839ec34454aa7b807eec091"
+    },
+    {
+      "ticker": "300750.SZ",
+      "market": "ChinaA",
+      "rows": 2033,
+      "first": "2018-06-11",
+      "last": "2026-10-30",
+      "sha256": "6b5141fdd21e28af5b186c20aa63288965af9accfc5e1d1ab7c10fbbd6737380"
+    },
+    {
+      "ticker": "000001.SZ",
+      "market": "ChinaA",
+      "rows": 6777,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "868780e741f7ac01f2f72c420dc2dbf682bb8172148b6f70e8030d07f9725730"
+    },
+    {
+      "ticker": "002415.SZ",
+      "market": "ChinaA",
+      "rows": 3850,
+      "first": "2010-12-20",
+      "last": "2026-10-30",
+      "sha256": "bffef0710ac7a7a03a4061ee3eea943856b22ff5745b72ef41fe2c017c95ab65"
+    },
+    {
+      "ticker": "000651.SZ",
+      "market": "ChinaA",
+      "rows": 6777,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "fd0d2180a171a17d82eee21709266ad0f5f0a1226526b958903dd8f81ebc207b"
+    },
+    {
+      "ticker": "000002.SZ",
+      "market": "ChinaA",
+      "rows": 6777,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "1468baa78423c78aebac402b10cbb60c822ead05923e3c0fb00acf6865a52754"
+    },
+    {
+      "ticker": "300059.SZ",
+      "market": "ChinaA",
+      "rows": 4034,
+      "first": "2010-03-19",
+      "last": "2026-10-30",
+      "sha256": "1aa2b7d3202bb67dec8cd88cdb8709c8c279b21a3d296b17db60909970c3e036"
+    },
+    {
+      "ticker": "000001.SS",
+      "market": "ChinaA",
+      "rows": 6640,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "ea6c982769bc9866512af6a7eebc9fdf6188da2142595c0e8ed65da3ddde24d5"
+    },
+    {
+      "ticker": "2330.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "030943576b5415e60d84739368ab1b0140df3e53a95ddb8d4f9fc18720a8e040"
+    },
+    {
+      "ticker": "2317.TW",
+      "market": "Taiwan",
+      "rows": 6823,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0e5d7f0afb4247d6afe93875620121adf7ead788e52bccd707132e678ddd2e4c"
+    },
+    {
+      "ticker": "2454.TW",
+      "market": "Taiwan",
+      "rows": 6264,
+      "first": "2001-07-23",
+      "last": "2026-10-30",
+      "sha256": "f453f1737ed5d35ab80a6c3cdbfac26004cc4d5954e8c8ae87d86ba27daf30e9"
+    },
+    {
+      "ticker": "2308.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "2860860327af8196c8f97f0d5e0cdcc85a1799f8c997432098e924fbd9191204"
+    },
+    {
+      "ticker": "2412.TW",
+      "market": "Taiwan",
+      "rows": 6442,
+      "first": "2000-11-15",
+      "last": "2026-10-30",
+      "sha256": "fec719bfd34cef277324e0cd0f65ffab1835ceb562d0d04e340f5deb8a6b1f9d"
+    },
+    {
+      "ticker": "2882.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "a4a0bde9a742a698904ac3c6169bf6ff8a56f4bfa61c6ef900149f547737d811"
+    },
+    {
+      "ticker": "2881.TW",
+      "market": "Taiwan",
+      "rows": 6156,
+      "first": "2001-12-20",
+      "last": "2026-10-30",
+      "sha256": "57d7d08d9b2badd92c43acb9274e3b007885e8680bc8e38cfc11492ce15b46aa"
+    },
+    {
+      "ticker": "1301.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "9d4af95b19a13fb8cfe9ee3876451ff26c7c8ed59b68287e43c9135a376d27f3"
+    },
+    {
+      "ticker": "1303.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "295f0cffe4eec5171406a85580b0dc7736fff14f2587e4500861332acfb9f746"
+    },
+    {
+      "ticker": "2002.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "ca4e3bf8b49027c48109b5b3c5aff9573a8f32ebd9b091701aa3ef722247b975"
+    },
+    {
+      "ticker": "3711.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "dbcca5aeebb6d15475939eae117aa8cc188725d919b388d4a003fc9025f3bce1"
+    },
+    {
+      "ticker": "2891.TW",
+      "market": "Taiwan",
+      "rows": 6050,
+      "first": "2002-05-17",
+      "last": "2026-10-30",
+      "sha256": "969f4f5a562a6fe219b3c655e2364977916e98e2970145edf916ab697270bcfb"
+    },
+    {
+      "ticker": "2303.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "6a6bda7cbe7c9ab8e9e9716d31c340ef2b5a611929dea8c4db2f52534e2acb0d"
+    },
+    {
+      "ticker": "2886.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "10621a398836e3f2857c1fb441a07f5ae787ccb1fe26c69b75b372547ac5351f"
+    },
+    {
+      "ticker": "1216.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "e167c1f7ca1f96cfeae882c44fe7f7dcbc21a334a6d86e7101da12da9b5030b4"
+    },
+    {
+      "ticker": "2357.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "291e921c230008d138b64c9e6730e6c568a4ba89fa1fb6f4df79523128111dfa"
+    },
+    {
+      "ticker": "3008.TW",
+      "market": "Taiwan",
+      "rows": 6099,
+      "first": "2002-03-11",
+      "last": "2026-10-30",
+      "sha256": "0061047127ae7157922f99c21a52c2fa536381725407c810b2e873b4d1c6b7e9"
+    },
+    {
+      "ticker": "2382.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "cd0078196a5d09f859856f2b3c6ec62a3f7ffd7f996f9e423a4ff07f83801e55"
+    },
+    {
+      "ticker": "2603.TW",
+      "market": "Taiwan",
+      "rows": 6668,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "eeffed7dac418e2efe42f8aaf80df103beb112e7e89e48942521de9acbba8b87"
+    },
+    {
+      "ticker": "2884.TW",
+      "market": "Taiwan",
+      "rows": 6128,
+      "first": "2002-01-29",
+      "last": "2026-10-30",
+      "sha256": "e55bc7513c71024ffe10b098e4811c6296b3bceab15048f21e7e167ed0d5dd26"
+    },
+    {
+      "ticker": "^TWII",
+      "market": "Taiwan",
+      "rows": 6720,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "1daf5a89c0378f801952709497ee00e724c0455876dec50571fe1e9e0ff2e412"
+    },
+    {
+      "ticker": "005930.KS",
+      "market": "Korea",
+      "rows": 6704,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "a1c50feaa114a2f0ca5fd1dccba499b2614178cfefdf820a9994ae21f7cdd2b1"
+    },
+    {
+      "ticker": "000660.KS",
+      "market": "Korea",
+      "rows": 5926,
+      "first": "2002-12-27",
+      "last": "2026-10-30",
+      "sha256": "8104221d9fc09683be416209b797b6dfc31890c7f1a451f7280e9f7ea97aee49"
+    },
+    {
+      "ticker": "035420.KS",
+      "market": "Korea",
+      "rows": 5969,
+      "first": "2002-10-29",
+      "last": "2026-10-30",
+      "sha256": "af7e8f982a889617c10c7a4ba5886e6b0b321f7b613bb8552d7ed20f7eb77740"
+    },
+    {
+      "ticker": "005380.KS",
+      "market": "Korea",
+      "rows": 6704,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "1734c9f12f51e6754315ec815ca77db68c3c82faab7684577817333e1b38a551"
+    },
+    {
+      "ticker": "051910.KS",
+      "market": "Korea",
+      "rows": 6363,
+      "first": "2001-04-25",
+      "last": "2026-10-30",
+      "sha256": "4caf82a19e6ac6db0e38d97419336e4cee32ea3d5b1abbfb773c6f13021e7cc5"
+    },
+    {
+      "ticker": "006400.KS",
+      "market": "Korea",
+      "rows": 6704,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "310d8ed9dc170cd66ed6bcde7631c3f88e4a755e56b08e5d17b8cc88c3d73a36"
+    },
+    {
+      "ticker": "035720.KS",
+      "market": "Korea",
+      "rows": 6676,
+      "first": "2000-02-11",
+      "last": "2026-10-30",
+      "sha256": "2c265f23d4d7ccdcdf7a5baf7abcd2cc6fac38abdc16d513097fa0883c3b0c61"
+    },
+    {
+      "ticker": "068270.KS",
+      "market": "Korea",
+      "rows": 5259,
+      "first": "2005-07-19",
+      "last": "2026-10-30",
+      "sha256": "3cd2a794b0507934dcf5017304bc75382827f1054bac0b095fe79735a7efa2e6"
+    },
+    {
+      "ticker": "105560.KS",
+      "market": "Korea",
+      "rows": 6189,
+      "first": "2001-12-25",
+      "last": "2026-10-30",
+      "sha256": "afb0692f3aedb5bb672eb71d4f9ac3ddc19c440fc2464ce777c3705020a25eb4"
+    },
+    {
+      "ticker": "055550.KS",
+      "market": "Korea",
+      "rows": 6704,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "4376a47a928d1f7dc6db7bbaec2e8d76fa1f80537745bcdb41fc3bfbe63341e6"
+    },
+    {
+      "ticker": "012330.KS",
+      "market": "Korea",
+      "rows": 6704,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "950a01003bd8b05514d536694e36a37456decb0dba3ec95c39ff823040d1201b"
+    },
+    {
+      "ticker": "028260.KS",
+      "market": "Korea",
+      "rows": 2906,
+      "first": "2014-12-18",
+      "last": "2026-10-30",
+      "sha256": "ce648d20a7a43977d1552323b7d1af127e9579d29013a0ee6950c2b82329fc3e"
+    },
+    {
+      "ticker": "066570.KS",
+      "market": "Korea",
+      "rows": 6103,
+      "first": "2002-04-24",
+      "last": "2026-10-30",
+      "sha256": "552fe0d3b18544db504368064a439b9273435c8fc481d095cbe100972adc59b0"
+    },
+    {
+      "ticker": "096770.KS",
+      "market": "Korea",
+      "rows": 4753,
+      "first": "2007-07-25",
+      "last": "2026-10-30",
+      "sha256": "dad340a876551ad63478b473b5f716c7a7375bb70c9bd5123b890bcc9039d4e9"
+    },
+    {
+      "ticker": "003550.KS",
+      "market": "Korea",
+      "rows": 5441,
+      "first": "2004-11-05",
+      "last": "2026-10-30",
+      "sha256": "87bb30cce20fcf662bd6374936b6f119341dae2e8cb519345e7b0fd0b2c483ae"
+    },
+    {
+      "ticker": "017670.KS",
+      "market": "Korea",
+      "rows": 6704,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "68e94f977302ef0daef17f1eae36839ef142b3f91ed86c04f937258bcdf75f84"
+    },
+    {
+      "ticker": "034730.KS",
+      "market": "Korea",
+      "rows": 4172,
+      "first": "2009-11-11",
+      "last": "2026-10-30",
+      "sha256": "2894cf44ce1a24a4fb3c13287d033474df98271f1f1d5c28a69b8f517887d60e"
+    },
+    {
+      "ticker": "207940.KS",
+      "market": "Korea",
+      "rows": 2438,
+      "first": "2016-11-11",
+      "last": "2026-10-30",
+      "sha256": "8d44ee81a47791ea871cab35af6fa69e5e58c14a3eca1568cebb34736bbd8c95"
+    },
+    {
+      "ticker": "000270.KS",
+      "market": "Korea",
+      "rows": 6704,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "34662cae221ed930b404aee42463f607d81a634dfa73da9fa4292daa23bd080c"
+    },
+    {
+      "ticker": "015760.KS",
+      "market": "Korea",
+      "rows": 6704,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "51a09cb258924a9a0b4772e9b5d6f378465be917b26d46373dd4f03ea48fb2e2"
+    },
+    {
+      "ticker": "^KS11",
+      "market": "Korea",
+      "rows": 6754,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "82071db5e11cd359d9820d6c8f6a9838afcb736a77de575e3d50c425c830aaad"
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "market": "India",
+      "rows": 6844,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "6a6b5c853fe205a2e8333c4e96047cef97bec1d6a7063a513dd429fe0f5923f1"
+    },
+    {
+      "ticker": "TCS.NS",
+      "market": "India",
+      "rows": 6011,
+      "first": "2002-08-12",
+      "last": "2026-10-30",
+      "sha256": "ce1d7b0efd7ec4a14158d5d519c708532980eb463405b7991fb77e74aff0f9e1"
+    },
+    {
+      "ticker": "INFY.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "6938f3d050f16af9b617d0b0d27a72b0b0de22339691db42b7145272185e041b"
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "bdb2a858f2d852d9b4a3b3687151992c0944d86f6a5951b03a5a251be78d1a2e"
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "market": "India",
+      "rows": 6040,
+      "first": "2002-07-01",
+      "last": "2026-10-30",
+      "sha256": "d213641f648d232ab5396e3e2245f33f02eb5c633d1238fd124663681f433cc0"
+    },
+    {
+      "ticker": "SBIN.NS",
+      "market": "India",
+      "rows": 6845,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "1d7e5c18d36d3ffb0bacf758a16b8a7fe6720065f38788a104c0b519fccdc5c1"
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "market": "India",
+      "rows": 6040,
+      "first": "2002-07-01",
+      "last": "2026-10-30",
+      "sha256": "f72f990c193b77528990417c68da5d08dc5f99217c80c6ad2ab20213d449d689"
+    },
+    {
+      "ticker": "ITC.NS",
+      "market": "India",
+      "rows": 6844,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "b4188b75653b68149a6e4a6e06fa65136129030c2e032179f4168a5dd662a252"
+    },
+    {
+      "ticker": "LT.NS",
+      "market": "India",
+      "rows": 6043,
+      "first": "2002-07-01",
+      "last": "2026-10-30",
+      "sha256": "cbc6b36cd664c76d571e88b53b4bb937a17395fd96cdf1a7959b9c0fc0d5b4ce"
+    },
+    {
+      "ticker": "KOTAKBANK.NS",
+      "market": "India",
+      "rows": 6302,
+      "first": "2001-07-02",
+      "last": "2026-10-30",
+      "sha256": "c549645bff313a0b680d490b30a7fe47569690dd055831a53c81d5f0cac8893d"
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "market": "India",
+      "rows": 6844,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "10b96927a83f69e1f380dcc3cfd964c58f57c96b403914b66318bd090b923062"
+    },
+    {
+      "ticker": "HINDUNILVR.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "f05ff70df984945d4ca3e04d78bf8a48c035da571b8e5ad7a0151d942c5e5d97"
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "market": "India",
+      "rows": 6040,
+      "first": "2002-07-01",
+      "last": "2026-10-30",
+      "sha256": "4271e2724b8ac6fd8bfe3df3231c379d51f1da680f1cd17d0fa363d63f0c36d7"
+    },
+    {
+      "ticker": "MARUTI.NS",
+      "market": "India",
+      "rows": 5776,
+      "first": "2003-07-09",
+      "last": "2026-10-30",
+      "sha256": "b8232093d2f1fccb3755a61089269a1daafeb00cfdb7429adad3677aca8751e9"
+    },
+    {
+      "ticker": "SUNPHARMA.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0f42b11743d53ee497e792515c1c3cc836dca5634941f4d723b6cea38f13d1ba"
+    },
+    {
+      "ticker": "TATASTEEL.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "3f856862a9aa3ead743ed735dbe703825afadde233127e635be7eadd3773a528"
+    },
+    {
+      "ticker": "WIPRO.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0cd0608b5f1a79bf388abbe9dcf05c83904db5d599f88ba96ef0fb9cc8f9f8d3"
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "market": "India",
+      "rows": 6014,
+      "first": "2002-08-12",
+      "last": "2026-10-30",
+      "sha256": "08b94c77fc7887c83a298f936fd4ebd6a39cd5670fd9810799a63b21e7ce3624"
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "market": "India",
+      "rows": 6040,
+      "first": "2002-07-01",
+      "last": "2026-10-30",
+      "sha256": "808d5f5383f6a301e24994c604f902a61c95bfe7e21864c51c39aabfb7be83fd"
+    },
+    {
+      "ticker": "TITAN.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "4fe08fcb456c3c0ef6897e5a6bb0a2e69de8d23a0b2bdadd57b72128671de2bb"
+    },
+    {
+      "ticker": "ULTRACEMCO.NS",
+      "market": "India",
+      "rows": 6010,
+      "first": "2002-08-12",
+      "last": "2026-10-30",
+      "sha256": "72f5b32bc4bf92a106af49f818960d56535a3f0fa00f448c45a827cf42db08e6"
+    },
+    {
+      "ticker": "NTPC.NS",
+      "market": "India",
+      "rows": 5429,
+      "first": "2004-11-05",
+      "last": "2026-10-30",
+      "sha256": "d8fbda4bdac47cd443e29f67e4d86fa31108762f7de0bdee3ce0569dadb64a08"
+    },
+    {
+      "ticker": "POWERGRID.NS",
+      "market": "India",
+      "rows": 4702,
+      "first": "2007-10-05",
+      "last": "2026-10-30",
+      "sha256": "78ae44426e26464592aeaa60887e662454dc74445f42937f5034f391e8f5ba58"
+    },
+    {
+      "ticker": "ONGC.NS",
+      "market": "India",
+      "rows": 6844,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "bca87000fdd507c44e9a1a38fced7e68132683d793026fd5c5dc7923aa9bb177"
+    },
+    {
+      "ticker": "M&M.NS",
+      "market": "India",
+      "rows": 6845,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "56518c3d1a73701ce2ddebc8b8a7002c80789efdf74102f60db0c374fd4f6f11"
+    },
+    {
+      "ticker": "ADANIENT.NS",
+      "market": "India",
+      "rows": 5995,
+      "first": "2002-09-04",
+      "last": "2026-10-30",
+      "sha256": "a2fda7fe075d7bb69f1351ff0a99ea86c4b98354a1f10aa1ab489687b5b158f0"
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "market": "India",
+      "rows": 4666,
+      "first": "2007-11-27",
+      "last": "2026-10-30",
+      "sha256": "44ec6c6c20072123acc620b0751ee95b1667b3127a31bc1cd7cca23253e9eefc"
+    },
+    {
+      "ticker": "INDUSINDBK.NS",
+      "market": "India",
+      "rows": 6041,
+      "first": "2002-07-01",
+      "last": "2026-10-30",
+      "sha256": "e0e3ce56ee4cf5d0fd712d9a1968275f60ba754c3004012172388350bf097a5d"
+    },
+    {
+      "ticker": "YESBANK.NS",
+      "market": "India",
+      "rows": 5256,
+      "first": "2005-07-12",
+      "last": "2026-10-30",
+      "sha256": "6ab38312e6ff4616c2985b1e6983a5b240612b1886be1eed00c0fb39970ec0b5"
+    },
+    {
+      "ticker": "IDEA.NS",
+      "market": "India",
+      "rows": 4846,
+      "first": "2007-03-09",
+      "last": "2026-10-30",
+      "sha256": "e8fa303815cabd38f7fe5c6e40fa1697fbc6ae712006e84909327ac5ca65135f"
+    },
+    {
+      "ticker": "ZEEL.NS",
+      "market": "India",
+      "rows": 6040,
+      "first": "2002-07-01",
+      "last": "2026-10-30",
+      "sha256": "490bf6c745722530f5b5ed6f18fe923328e18ff7220a3465603dee401f769df3"
+    },
+    {
+      "ticker": "TMPV.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "a0c4de51aa67c9c8932abb4eac941ce32aed809e5d8835b2765acaa8df76244b"
+    },
+    {
+      "ticker": "JSWSTEEL.NS",
+      "market": "India",
+      "rows": 5820,
+      "first": "2003-05-08",
+      "last": "2026-10-30",
+      "sha256": "25462827e43306f9e5fae58ec2b66d57413bdf072377d16173d78acbaa090242"
+    },
+    {
+      "ticker": "HINDALCO.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0f74754a027a9796d10d147731c0d875e8879b96b2b4b53e0a1ea5471157499b"
+    },
+    {
+      "ticker": "VEDL.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "36488957e5bb198f05f6ea8e0f7051cc2cffee5df0279bd885721f93ad92491f"
+    },
+    {
+      "ticker": "SAIL.NS",
+      "market": "India",
+      "rows": 6847,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "283adca6268ea633d073ebb92e3c7e42f7747fa12720d078ed12321ec55f95fe"
+    },
+    {
+      "ticker": "BHEL.NS",
+      "market": "India",
+      "rows": 6844,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "09f9bcf8e9aefc1544d3e47c7d3528ee90fe4a61193c8a4e18309ed4719277b7"
+    },
+    {
+      "ticker": "PNB.NS",
+      "market": "India",
+      "rows": 6042,
+      "first": "2002-07-01",
+      "last": "2026-10-30",
+      "sha256": "34a126f33a2c89f5158b2182c76f5f83212e5cb5deb6bc47f9bbb3d6e52396f9"
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "market": "India",
+      "rows": 6040,
+      "first": "2002-07-01",
+      "last": "2026-10-30",
+      "sha256": "c0df686619cf98d9c5f3d0c3edeb13056495683e0c428399b661f94b70a0b2ac"
+    },
+    {
+      "ticker": "TATAPOWER.NS",
+      "market": "India",
+      "rows": 6844,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "2286d398af568229c814135e94da6b94a4d26d92522651c052108aa2a8bc9b04"
+    },
+    {
+      "ticker": "^NSEI",
+      "market": "India",
+      "rows": 4691,
+      "first": "2007-09-17",
+      "last": "2026-10-30",
+      "sha256": "8b11f0e7bc2751ad0ccc0c07a4fd3b0dc53c3c5956c7a5e1bb79762b4642c825"
+    },
+    {
+      "ticker": "D05.SI",
+      "market": "Singapore",
+      "rows": 6793,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "dbe449541edcdf365232a94407bdd4f1be57561ca5b7a719a091c4ffb9273833"
+    },
+    {
+      "ticker": "O39.SI",
+      "market": "Singapore",
+      "rows": 6793,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "e1cab67dbc6ba6ae17a1f303813ccbf96f93b5c91e58662cd5e8f2382229dc64"
+    },
+    {
+      "ticker": "U11.SI",
+      "market": "Singapore",
+      "rows": 6793,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "c818c0e1f431132a86417d2d564a93d8af57548ec385de417e7f98a25318f154"
+    },
+    {
+      "ticker": "Z74.SI",
+      "market": "Singapore",
+      "rows": 5529,
+      "first": "2004-11-05",
+      "last": "2026-10-30",
+      "sha256": "5b54984edf948d2d7e7284c65a169d8e0c339bdccf4efa165472451552e5b051"
+    },
+    {
+      "ticker": "C6L.SI",
+      "market": "Singapore",
+      "rows": 6793,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "ee5c7de35f6ff36edf9082aacaf720caf7d92a51e9e0c5e94936462e922dad1b"
+    },
+    {
+      "ticker": "BN4.SI",
+      "market": "Singapore",
+      "rows": 4899,
+      "first": "2007-05-02",
+      "last": "2026-10-30",
+      "sha256": "4d0331aadd8f207d9363dddbc92769d0cbfd79bb155b115f1dfcc186fd6107d9"
+    },
+    {
+      "ticker": "C38U.SI",
+      "market": "Singapore",
+      "rows": 4768,
+      "first": "2007-11-05",
+      "last": "2026-10-30",
+      "sha256": "e1a1601fcea93cf525b9ba1e3cd96cebf35ec0bf93f68eb3ae33abe8d2fdf725"
+    },
+    {
+      "ticker": "A17U.SI",
+      "market": "Singapore",
+      "rows": 5301,
+      "first": "2005-09-30",
+      "last": "2026-10-30",
+      "sha256": "c11a014d22533fd299ef7a37174a39b8581b31c509afd64091fa82025bc373df"
+    },
+    {
+      "ticker": "F34.SI",
+      "market": "Singapore",
+      "rows": 5099,
+      "first": "2006-07-17",
+      "last": "2026-10-30",
+      "sha256": "b30a20565450b82e0f4811a410c4a27074062ddae8c282d2a99cdfa6f46d93ac"
+    },
+    {
+      "ticker": "S68.SI",
+      "market": "Singapore",
+      "rows": 6560,
+      "first": "2000-11-23",
+      "last": "2026-10-30",
+      "sha256": "7283c5b70232db30a63b9e91b01e4163fc7096bada0dd923d913e963be21d143"
+    },
+    {
+      "ticker": "G13.SI",
+      "market": "Singapore",
+      "rows": 6793,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "f65c01b629152cbeaaed59f93131701cf85de530b18e4621e556bc40f6f913d3"
+    },
+    {
+      "ticker": "Y92.SI",
+      "market": "Singapore",
+      "rows": 5133,
+      "first": "2006-05-30",
+      "last": "2026-10-30",
+      "sha256": "f4e5e95e4c884061e3e89fc37f4968f83124c510daeddc73c495eca4a0d6eda2"
+    },
+    {
+      "ticker": "U96.SI",
+      "market": "Singapore",
+      "rows": 6793,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "44524bdcaeaa8d0061bda6b206440fae879155473bcc3731ec724e28e06e21dd"
+    },
+    {
+      "ticker": "C09.SI",
+      "market": "Singapore",
+      "rows": 6793,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "2aab04ebe066fbaaa6cf01074a515157c658676310de9ff1153e74864726131b"
+    },
+    {
+      "ticker": "S63.SI",
+      "market": "Singapore",
+      "rows": 6793,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "d7b83eef6c7e26e65aa84dc51a125c0bd9e3af8ff718f401e3bec80cb76832ef"
+    },
+    {
+      "ticker": "V03.SI",
+      "market": "Singapore",
+      "rows": 6793,
+      "first": "2000-01-03",
+      "last": "2026-10-30",
+      "sha256": "5970fd5b1243d9ec3f7248489a25b9d266b178ee27f9bf301de46c07e62b44ab"
+    },
+    {
+      "ticker": "BS6.SI",
+      "market": "Singapore",
+      "rows": 4908,
+      "first": "2007-04-18",
+      "last": "2026-10-30",
+      "sha256": "24b0172fc35cb016453ecee770abc567bdb182ef60c23b384c1b7d3b2e9048ea"
+    },
+    {
+      "ticker": "^STI",
+      "market": "Singapore",
+      "rows": 6869,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "583d886a03225dfd414cf1255acced16fc12eb62d738eadce338b6d11ff835ad"
+    },
+    {
+      "ticker": "BHP.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "a5623802310952df77b99bab50ce8a7b674f689b1e03752c583c07f1fc8e0f26"
+    },
+    {
+      "ticker": "CBA.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "5066d1119f5544b27f4188e5f993fd8a917c49e25e7eafb4ae602a8de5c8adee"
+    },
+    {
+      "ticker": "CSL.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0d08218967fdfbcafb1c65ee715147c09da98e6922f7fe7cb39bfc18c647b45e"
+    },
+    {
+      "ticker": "NAB.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "8708c635da8a9c78126ca23f79937540d3f690586db7048ca29fba3734a2ebe1"
+    },
+    {
+      "ticker": "WBC.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "f9afbd30e5ae58749508b2be7ae223163e01a532d18748c54f627917e26f59dc"
+    },
+    {
+      "ticker": "ANZ.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "3f370b59b4ce5af3bfe8fb852e0a50732923b01140c1af5a464e663c074514a6"
+    },
+    {
+      "ticker": "WES.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "ef50a4b0387548fe0d830a84b8fc74ae541f7777caf7af8a957c37e050aa2155"
+    },
+    {
+      "ticker": "MQG.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "8e4e46534f290a6a8ab3cf7b63825de7261883a97264327f12500ed17d4b7637"
+    },
+    {
+      "ticker": "WOW.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "781d935df681dbccb74419b0012ad1021bfa1b4c1b38f789ccce6bd55fb10468"
+    },
+    {
+      "ticker": "FMG.AX",
+      "market": "Australia",
+      "rows": 6942,
+      "first": "1999-07-26",
+      "last": "2026-10-30",
+      "sha256": "5c07026b9559bc8131c60828b4b07ac44ca95828a696bf0e4c0d96b059541ce6"
+    },
+    {
+      "ticker": "RIO.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "3e5aac35e1ea1f42bded6750d6aee9d512833ec3bcfc8e5fb7c62cacbbbde6c9"
+    },
+    {
+      "ticker": "TLS.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0a0330f842c78c181e85fc3d3ab5a3ce85d051868d99ea9d22606581146fd80a"
+    },
+    {
+      "ticker": "WDS.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "64466dc63f01fcf49c968a480e96753737c09deb26bebb26abe755522d6b64b9"
+    },
+    {
+      "ticker": "GMG.AX",
+      "market": "Australia",
+      "rows": 5502,
+      "first": "2005-02-02",
+      "last": "2026-10-30",
+      "sha256": "424475675009027815292922262d10ca2790fd1211859ebdeb351792bcb7fa09"
+    },
+    {
+      "ticker": "TCL.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "2f57da00def23df2399f2d514b33fb9908d6ec55dd1078830be02562fe359014"
+    },
+    {
+      "ticker": "STO.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "10477995dffdb4f75d0ca63458ea88819c8f7af8c0950afe9d1a9754fee73be6"
+    },
+    {
+      "ticker": "QBE.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "acbbf9b6c10f4ac9456a242193474ae1c9f928f08c94f5d24be57ec35b92d288"
+    },
+    {
+      "ticker": "ALL.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "a3dc3e9fbe9129155deaedc5fff3fd682339603c136a23ae2fce2239fc91d832"
+    },
+    {
+      "ticker": "COL.AX",
+      "market": "Australia",
+      "rows": 2011,
+      "first": "2018-11-21",
+      "last": "2026-10-30",
+      "sha256": "b3be9b64ae5a0651d180f7a92e80ff92e7a4339e6199805243e07f7134b8e83a"
+    },
+    {
+      "ticker": "SUN.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "43968dc1c39deb0a1014349d3d892eca11984c26921d6fa7adbfcaa742082e0e"
+    },
+    {
+      "ticker": "ORG.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "b3b4775895b305064c54ca112d7fc542a3ba51bd1400f23e1ef3aa710de9fd5a"
+    },
+    {
+      "ticker": "AMC.AX",
+      "market": "Australia",
+      "rows": 6981,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "0f6086afb4c29428b8079dd257c8c6a199d6c3266cb604b39fcda18333edff79"
+    },
+    {
+      "ticker": "RMD.AX",
+      "market": "Australia",
+      "rows": 6854,
+      "first": "1999-11-25",
+      "last": "2026-10-30",
+      "sha256": "993f4cc0871048effdd7cf7935efad181201fdc1bc97f335f45cad960e0dbb70"
+    },
+    {
+      "ticker": "XRO.AX",
+      "market": "Australia",
+      "rows": 3539,
+      "first": "2012-11-08",
+      "last": "2026-10-30",
+      "sha256": "a918d5078987431c93d0260f8debeacdda719596ee4dff3bf98be021fa3c51c0"
+    },
+    {
+      "ticker": "^AXJO",
+      "market": "Australia",
+      "rows": 6931,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "8d1d150449fbfc730da7cdf6b4e14c4525c2ff2700910664af245881a21e0eb2"
+    },
+    {
+      "ticker": "NPN.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "83cf2dd03e3807e1ca2bf8f8e2ac7db456ec48868d2d5a4f23966987641c3acf"
+    },
+    {
+      "ticker": "PRX.JO",
+      "market": "SouthAfrica",
+      "rows": 1785,
+      "first": "2019-09-11",
+      "last": "2026-10-30",
+      "sha256": "c3213565b209afd4f6f185ca4b7dba2a9d281537039864cad6959adbde97071c"
+    },
+    {
+      "ticker": "FSR.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "a5d2c292887684b8b50c4ce92fea3adec1dc0168ee7c24b98f032bd048718440"
+    },
+    {
+      "ticker": "SBK.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "b2f17002c79a4e2ab235fc89672ba3fbcca81285195bf8bed2f6311f720d30ac"
+    },
+    {
+      "ticker": "ABG.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "9e4de20ec734353100c1f0c562eda5d41b9aa0a7503279c78b1de4ab4ff0f941"
+    },
+    {
+      "ticker": "NED.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "57725b548838859d8c772e0cba3178068930ed07cc7980e183926f44341bc75d"
+    },
+    {
+      "ticker": "MTN.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "f463b38e14fae6546d47b9b32e156db68c33faf221dac048414aaf3e491a16b0"
+    },
+    {
+      "ticker": "VOD.JO",
+      "market": "SouthAfrica",
+      "rows": 6041,
+      "first": "2003-03-04",
+      "last": "2026-10-30",
+      "sha256": "180770ebb091dffc908dc131549dd992363f7cba03c39b5d7c3871f303710dc3"
+    },
+    {
+      "ticker": "SOL.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "e66f64b705a511ade64dd13e7af10333e2dfb8f2e8b46b15391eb1deff08d6b8"
+    },
+    {
+      "ticker": "AGL.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "f1b88bedbe573dd37d5132aa39df349f335df83f479c6846ba8fe6e9ac337898"
+    },
+    {
+      "ticker": "BHG.JO",
+      "market": "SouthAfrica",
+      "rows": 1187,
+      "first": "2022-01-31",
+      "last": "2026-10-30",
+      "sha256": "beb10e8b17f80954de3035534533af5c073e29094043a7653388c00dd4785471"
+    },
+    {
+      "ticker": "ANG.JO",
+      "market": "SouthAfrica",
+      "rows": 6862,
+      "first": "2000-01-10",
+      "last": "2026-10-30",
+      "sha256": "1c979c1c347f7fda482fdfccc85cd3424202d9a6ec0f31ec30664a975874441e"
+    },
+    {
+      "ticker": "GFI.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "0cca5675ae4afafb2977f890d9e47aaa5c1c6c0d93e7944c2bf9bbdc08e477c8"
+    },
+    {
+      "ticker": "IMP.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "c8e2d6e8ccc75eef54e6050977438c9adae44b349304ce22a078aafab95da587"
+    },
+    {
+      "ticker": "SHP.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "701d558446d8d7cb886482cddbce4106f5d0a27594cb27c711322c4f1b5fee71"
+    },
+    {
+      "ticker": "BTI.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "44a396439f155da813ffcf3fb45973e80e21f1173f2e4c50d5ff3e2ce280dd2c"
+    },
+    {
+      "ticker": "CFR.JO",
+      "market": "SouthAfrica",
+      "rows": 884,
+      "first": "2023-04-19",
+      "last": "2026-10-30",
+      "sha256": "28bc4343c0ec4387d6f76e04b0692ea8f25d2c054267da55c125a97e787493da"
+    },
+    {
+      "ticker": "REM.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "f509c72a568b1ae2ec46f660c36f30deebc9af1c2b6c947066f9b16f3f05c7ac"
+    },
+    {
+      "ticker": "BID.JO",
+      "market": "SouthAfrica",
+      "rows": 2620,
+      "first": "2016-05-27",
+      "last": "2026-10-30",
+      "sha256": "ad1e669205756bd779a173675c684eb4f48f80e0ac8fb96351c9651d433d7e4f"
+    },
+    {
+      "ticker": "SLM.JO",
+      "market": "SouthAfrica",
+      "rows": 6857,
+      "first": "2000-01-17",
+      "last": "2026-10-30",
+      "sha256": "e0df533b8d29041489a09d6432ef7e259f9b1f026f7129cb20e0a54b93f6b8f8"
+    },
+    {
+      "ticker": "INL.JO",
+      "market": "SouthAfrica",
+      "rows": 6866,
+      "first": "2000-01-04",
+      "last": "2026-10-30",
+      "sha256": "46a27991342a244406a6ca1c077c1a47e45e243664fd37802f0918977a4547a0"
+    },
+    {
+      "ticker": "STX40.JO",
+      "market": "SouthAfrica",
+      "rows": 4444,
+      "first": "2009-01-02",
+      "last": "2026-10-30",
+      "sha256": "8e4a91d47e8fc4ae318ba6fb5ded95dd49a61b3b194dd1154bfac811e354d785"
+    },
+    {
+      "ticker": "2222.SR",
+      "market": "Saudi",
+      "rows": 1718,
+      "first": "2019-12-11",
+      "last": "2026-10-29",
+      "sha256": "1273abd35a983fa7e0fa92750f3f460099324cdf9e4eeff367578c4575bccfac"
+    },
+    {
+      "ticker": "1120.SR",
+      "market": "Saudi",
+      "rows": 4130,
+      "first": "2010-03-03",
+      "last": "2026-10-29",
+      "sha256": "24abf687b8c5075e3c9760dca677893149c3f3aba906bb534cd67710f7fb53d4"
+    },
+    {
+      "ticker": "2010.SR",
+      "market": "Saudi",
+      "rows": 4101,
+      "first": "2010-03-03",
+      "last": "2026-10-29",
+      "sha256": "3c798120d1633694c7b71edd0983b54ee87a6227b747a1d28bcc429d7d6a74de"
+    },
+    {
+      "ticker": "1180.SR",
+      "market": "Saudi",
+      "rows": 3017,
+      "first": "2014-11-12",
+      "last": "2026-10-29",
+      "sha256": "a2f42224a677e21fbca3d31237b33aa509f3b2b27cbbc46f1b2e29f93305f6d2"
+    },
+    {
+      "ticker": "7010.SR",
+      "market": "Saudi",
+      "rows": 4094,
+      "first": "2010-03-04",
+      "last": "2026-10-29",
+      "sha256": "ee25475e6b5125af44fd15ae39ea5ac1ba2454e89e8d8e5874e39a68fa4b13ef"
+    },
+    {
+      "ticker": "2082.SR",
+      "market": "Saudi",
+      "rows": 1212,
+      "first": "2021-12-19",
+      "last": "2026-10-29",
+      "sha256": "b3f71eb56074bc93093cecd80e913fe0b46105033fccade5150ed20f5aa15944"
+    },
+    {
+      "ticker": "1150.SR",
+      "market": "Saudi",
+      "rows": 4130,
+      "first": "2010-03-03",
+      "last": "2026-10-29",
+      "sha256": "69ff433e8fcefdd656880106a74a6de12e074edac07978901e6a8301f354c398"
+    },
+    {
+      "ticker": "1211.SR",
+      "market": "Saudi",
+      "rows": 4096,
+      "first": "2010-03-03",
+      "last": "2026-10-29",
+      "sha256": "d858ff98001a3299fd343c4b6eb94d4efd40eb8acf1b9dd6a2308d39d54d9b1c"
+    },
+    {
+      "ticker": "2280.SR",
+      "market": "Saudi",
+      "rows": 4092,
+      "first": "2010-03-04",
+      "last": "2026-10-29",
+      "sha256": "1dc4eefb4ceb1a45669b3784431e5943246bc63540ffb5ecb09ac73535e4c21c"
+    },
+    {
+      "ticker": "4200.SR",
+      "market": "Saudi",
+      "rows": 4094,
+      "first": "2010-03-04",
+      "last": "2026-10-29",
+      "sha256": "94f38799e8b9ef30f4d53eddd81659e2dc9dfba949010b5affe53431aff4937d"
+    },
+    {
+      "ticker": "1010.SR",
+      "market": "Saudi",
+      "rows": 3626,
+      "first": "2012-04-01",
+      "last": "2026-10-29",
+      "sha256": "c92239a707e90e6ce8399b100ff84c2c98eda07fe57e3acaf74f34431fe4f9b7"
+    },
+    {
+      "ticker": "2350.SR",
+      "market": "Saudi",
+      "rows": 4092,
+      "first": "2010-03-04",
+      "last": "2026-10-29",
+      "sha256": "4c1c0ba9bc288b2eaf30fd60d2b60a54234b86cacc39ad722644072ce2a67ab2"
+    },
+    {
+      "ticker": "4190.SR",
+      "market": "Saudi",
+      "rows": 4094,
+      "first": "2010-03-03",
+      "last": "2026-10-29",
+      "sha256": "aca4ba4f879aaa3ead36054e9ce7f00895721c7e4a41894ef65b97f7087e19fe"
+    },
+    {
+      "ticker": "1060.SR",
+      "market": "Saudi",
+      "rows": 4092,
+      "first": "2010-03-04",
+      "last": "2026-10-29",
+      "sha256": "878689a2fe692537a0b9da34cadf6eac746e371da31b04e18891dfe10b0d040f"
+    },
+    {
+      "ticker": "2020.SR",
+      "market": "Saudi",
+      "rows": 4092,
+      "first": "2010-03-04",
+      "last": "2026-10-29",
+      "sha256": "db05299358f0481bf2a963b62ba297a0a937d113c0438fd07b00501e03171e5f"
+    },
+    {
+      "ticker": "BBCA.JK",
+      "market": "Indonesia",
+      "rows": 5520,
+      "first": "2004-06-08",
+      "last": "2026-10-30",
+      "sha256": "50292088d1ac401cb30f2efa2a97a54975b382e9acb53d1d24f33aafbbf837e3"
+    },
+    {
+      "ticker": "BBRI.JK",
+      "market": "Indonesia",
+      "rows": 5671,
+      "first": "2003-11-10",
+      "last": "2026-10-30",
+      "sha256": "47fb5ec1b893b12f7006a6a6a882d785127209e24cbb39a17ca77098d659fbc9"
+    },
+    {
+      "ticker": "BMRI.JK",
+      "market": "Indonesia",
+      "rows": 5756,
+      "first": "2003-07-14",
+      "last": "2026-10-30",
+      "sha256": "90f84cc17899499c6e912c3a1efe881746d5fd90d87fa1abe90b228181d3e5ac"
+    },
+    {
+      "ticker": "TLKM.JK",
+      "market": "Indonesia",
+      "rows": 5439,
+      "first": "2004-09-28",
+      "last": "2026-10-30",
+      "sha256": "2f946d3bab12598825ea155b61c3c75e866e422c99f83e2c905489ee21c906c1"
+    },
+    {
+      "ticker": "ASII.JK",
+      "market": "Indonesia",
+      "rows": 6469,
+      "first": "2000-10-17",
+      "last": "2026-10-30",
+      "sha256": "fe32ad1fedcfee0fd44aef3dadfd9eb731218ac3d4e418770847add850e37d74"
+    },
+    {
+      "ticker": "UNVR.JK",
+      "market": "Indonesia",
+      "rows": 5719,
+      "first": "2003-09-03",
+      "last": "2026-10-30",
+      "sha256": "372885c47be1eb851f73ac1a86ac630f2ff53e0641260666b6af3ab2e69269a6"
+    },
+    {
+      "ticker": "BBNI.JK",
+      "market": "Indonesia",
+      "rows": 5640,
+      "first": "2003-12-23",
+      "last": "2026-10-30",
+      "sha256": "38b552296372a9f19e31a4427e421a5e5c5ba61244f9328feaff8778e736dce4"
+    },
+    {
+      "ticker": "ICBP.JK",
+      "market": "Indonesia",
+      "rows": 6480,
+      "first": "2000-10-02",
+      "last": "2026-10-30",
+      "sha256": "b2ba44da364f844f3785414ee7ba8908f55fdf015e15717c64904be49c12e6df"
+    },
+    {
+      "ticker": "KLBF.JK",
+      "market": "Indonesia",
+      "rows": 5646,
+      "first": "2003-12-15",
+      "last": "2026-10-30",
+      "sha256": "c98a9330bd85f5f851efa514a27d2733eee66beaa0cf85d0f8c8207e1c58f0df"
+    },
+    {
+      "ticker": "ADRO.JK",
+      "market": "Indonesia",
+      "rows": 4488,
+      "first": "2008-07-16",
+      "last": "2026-10-30",
+      "sha256": "25f3b1db14c36b18b27148b37dd954a3a637505f29e481a7d83cf06a187a09b2"
+    },
+    {
+      "ticker": "PGAS.JK",
+      "market": "Indonesia",
+      "rows": 5645,
+      "first": "2003-12-15",
+      "last": "2026-10-30",
+      "sha256": "d953811a724c246001f13b17d60b9751c512b96d6ad58599278db6339440ed23"
+    },
+    {
+      "ticker": "UNTR.JK",
+      "market": "Indonesia",
+      "rows": 6499,
+      "first": "2000-09-05",
+      "last": "2026-10-30",
+      "sha256": "a532253299a16bde5afaf8fd0cee67cbd20c6bf101144db75c4dd670f61974fc"
+    },
+    {
+      "ticker": "INDF.JK",
+      "market": "Indonesia",
+      "rows": 6481,
+      "first": "2000-10-02",
+      "last": "2026-10-30",
+      "sha256": "c8988c1dd5bff1d3b8f1f4517e60a4e71ecf747bcd62ba47a05d3b9b2060c424"
+    },
+    {
+      "ticker": "GGRM.JK",
+      "market": "Indonesia",
+      "rows": 6302,
+      "first": "2001-06-07",
+      "last": "2026-10-30",
+      "sha256": "148cf7ac0a62538c4609b666a360f9b86ca8dbc94d3bde1813b47204d8576533"
+    },
+    {
+      "ticker": "CPIN.JK",
+      "market": "Indonesia",
+      "rows": 5187,
+      "first": "2005-09-29",
+      "last": "2026-10-30",
+      "sha256": "0e07c1e131f0ba2e1bce0e0fe8564db4dd4c8862f74f0f5f4db238b4a587442d"
+    },
+    {
+      "ticker": "SMGR.JK",
+      "market": "Indonesia",
+      "rows": 5188,
+      "first": "2005-09-29",
+      "last": "2026-10-30",
+      "sha256": "c71d947085989b980968c16e284a47557722f541d79f46437d945965b081a2ca"
+    },
+    {
+      "ticker": "INCO.JK",
+      "market": "Indonesia",
+      "rows": 5187,
+      "first": "2005-09-29",
+      "last": "2026-10-30",
+      "sha256": "e8b95e4d013dcac4ad5eda9888c6d01a8f7ae6442c7ec9eab15321e3d129d4cc"
+    },
+    {
+      "ticker": "ANTM.JK",
+      "market": "Indonesia",
+      "rows": 5188,
+      "first": "2005-09-29",
+      "last": "2026-10-30",
+      "sha256": "e1fe9b2b34df3fc76bf1dac1fcfbb4b02d276d15d3ad34eff6419a209fb51097"
+    },
+    {
+      "ticker": "^JKSE",
+      "market": "Indonesia",
+      "rows": 6658,
+      "first": "1999-06-01",
+      "last": "2026-10-30",
+      "sha256": "687ef20783ab8490ca45355bc69092e1c86d5c2b5466b98edd3a59a18931fae5"
+    }
+  ],
+  "missing": [
+    {
+      "ticker": "ELET3.SA",
+      "market": "Brazil",
+      "reason": "download missing"
+    },
+    {
+      "ticker": "JBSS3.SA",
+      "market": "Brazil",
+      "reason": "download missing"
+    },
+    {
+      "ticker": "EMBR3.SA",
+      "market": "Brazil",
+      "reason": "download missing"
+    },
+    {
+      "ticker": "ROG.SW",
+      "market": "Switzerland",
+      "reason": "download missing"
+    },
+    {
+      "ticker": "0011.HK",
+      "market": "HongKong",
+      "reason": "download missing"
+    },
+    {
+      "ticker": "3333.HK",
+      "market": "HongKong",
+      "reason": "download missing"
+    },
+    {
+      "ticker": "AMS.JO",
+      "market": "SouthAfrica",
+      "reason": "download missing"
+    },
+    {
+      "ticker": "^TASI.SR",
+      "market": "Saudi",
+      "reason": "download missing"
+    }
+  ],
+  "large_daily_log_moves": 268,
+  "rates": [
+    {
+      "file": "backtest/data/research_raw/DGS1.csv",
+      "sha256": "7127aa4c194352864cb7314016b4ffc18af2404d50874b08740ac5df0c58b3fb"
+    },
+    {
+      "file": "backtest/data/research_raw/DGS3.csv",
+      "sha256": "a794f34332e7d18c4878bd19111c17a85ef5e4d38c7b0261f111264349ad528c"
+    },
+    {
+      "file": "backtest/data/research_raw/DGS5.csv",
+      "sha256": "f366c3433086159f7f51dff16b84a35d0f93dd6274fb79d8473b7d0c9ca432e9"
+    },
+    {
+      "file": "backtest/data/research_raw/DTB3.csv",
+      "sha256": "582523ab614f655f19481dbab4b1cf4246ac533a95611fa9c54e2dcc551349f6"
+    },
+    {
+      "file": "backtest/data/research_raw/feds200628.csv",
+      "sha256": "3130a6f0c7af3bf85d3b6076db19085a45c09932745a56cc3c45b60f496c4051"
+    }
+  ]
+}

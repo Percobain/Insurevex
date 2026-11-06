@@ -1,0 +1,455 @@
+{
+  "recorded_at": "2026-11-06T20:50:12.232363+00:00",
+  "scope": "Saved-output snapshot, not a historical rerun or a test-suite result",
+  "custom_pro_return_target": null,
+  "custom_pro_drawdown_limit": null,
+  "source_sha256": {
+    "backtest/results/principal_research/summary.json": "68671453519b1319635174ef73ff1858b021b24f35971cbd3dbb51a7ffbea9f8",
+    "backtest/results/principal_research/verification.json": "0eaa71e8e1a9192beba8b2cd84e83fe21c00139f17adab4ce9e98d204f9e39ea",
+    "backtest/results/principal_research/insurance_cohorts.csv": "21d201bab9bd61b4253f3244295b703feffcffcd1324bf9533a8b377ea8607fc",
+    "backtest/results/principal_research/holding_floor_summary.json": "19c0897b59dce991096444b7387a3a9b0599f480bc6f161139b14d6c89eff7b2",
+    "backtest/results/principal_research/model_sensitivity_summary.json": "0eebe670ee1f81241deaee9362653d03eff130e5c4429116d848a621a600bb63",
+    "backtest/results/stress_book.json": "cb80abe8fe02bfcaad32f096a2b9711d30d6f33d94717c264aabe56a2fa6cdd4",
+    "contracts/deployments/hederaTestnet.stress.json": "01ae75521d94bf08a127f96fac16def83fc9cd704a6ba70e36134687cee99ab5",
+    "contracts/stress/book.json": "57417989edaeee30701003f9fb46ea16669689a3f0d5ae3127c5503b2f78846a",
+    "app/public/data/stress_backtest.json": "b20dc1fcd25dcad2220d1057869fdc542198a9fb8832663d653222888cc9008a",
+    "app/public/data/stress_run.json": "aeef35e400fee7a17235ba2e5d7203a53f75ed1eebc3c79cfad327d4282ce752"
+  },
+  "gaps": [
+    {
+      "id": "PRINCIPAL-01",
+      "status": "OPEN",
+      "expected": "Legacy floor maturity >= 1 per dollar of face",
+      "observed": {
+        "period": "since_1999",
+        "term": 3,
+        "cohorts": 293,
+        "first": "1999-06-01",
+        "last": "2023-10-01",
+        "legacy_shortfall_share": 0.6791808873720137,
+        "legacy_worst_shortfall": 0.097643220505096,
+        "worst_issue": "2007-07-01",
+        "legacy_median_maturity": 0.9832975315900679,
+        "matched_budget_min": 0.0015838355247744262,
+        "matched_budget_median": 0.05353024463687911,
+        "matched_budget_max": 0.17666801639380597,
+        "matched_infeasible_share": 0.0
+      },
+      "scope": "Floor asset alone, overlapping 3-year cohorts since June 1999; not whole-note losses"
+    },
+    {
+      "id": "PRO-01",
+      "status": "OPEN",
+      "expected": "Measure Pro net loss separately from gross claims and pool return",
+      "observed": {
+        "initial_pro_usd": 650000000,
+        "final_pro_usd": 452928650.534688,
+        "pro_profit_usd": -197071349.465312,
+        "pro_return": -0.3031866914850954,
+        "senior_profit_including_coupons_usd": 8024602.688508954,
+        "premium_usd": 36578253.223197,
+        "claims_usd": 225625000,
+        "combined_profit_usd": -189046746.77680302,
+        "rounds": [
+          {
+            "label": "Round 1, a normal week: settled, $2.8M paid on $18.3M premiums",
+            "premium_usd": 18268920.580402,
+            "claims_usd": 2845000,
+            "pro_premium_usd": 14245412.91210103,
+            "pro_profit_usd": 11400412.91210103,
+            "pro_return": 0.017539096787847708
+          },
+          {
+            "label": "Round 2, the worst week in 21 years (COVID, Feb 2020): settled, $222.8M paid on $18.3M premiums",
+            "premium_usd": 18309332.642794997,
+            "claims_usd": 222780000,
+            "pro_premium_usd": 14308237.622586966,
+            "pro_profit_usd": -208471762.37741303,
+            "pro_return": -0.3151975086612451
+          }
+        ]
+      },
+      "scope": "Saved two-round testnet execution; test USD, not historical CAGR"
+    },
+    {
+      "id": "PRO-02",
+      "status": "OPEN",
+      "expected": "Continuous Pro investment performance with explicit capital flows",
+      "observed": {
+        "years": 22,
+        "negative_pro_years": 7,
+        "worst_pro_year": -0.6114190854217807,
+        "arithmetic_mean_pro_year": 0.15693743545254912,
+        "geometric_rebalanced_year_return": 0.10146096943671434,
+        "premium_usd": 16599223431.84679,
+        "claims_usd": 10643012051.635307,
+        "senior_profit_with_annual_resets_usd": 3712006053.240034,
+        "pro_profit_with_annual_resets_usd": 2244205326.9714527,
+        "continuous_unfunded_strategy_return": null,
+        "negative_years": [
+          {
+            "year": 2007,
+            "premium": 649950290.2370323,
+            "payout": 514746871.238659,
+            "loss_ratio": 0.7919788312594406,
+            "senior_ret": 0.08917701543671908,
+            "pro_ret": -0.012487360587797092
+          },
+          {
+            "year": 2008,
+            "premium": 415202796.87453234,
+            "payout": 440227831.42762005,
+            "loss_ratio": 1.0602718352127332,
+            "senior_ret": 0.06016518831427198,
+            "pro_ret": -0.1872601341554213
+          },
+          {
+            "year": 2011,
+            "premium": 861932090.5331243,
+            "payout": 844053960.9001476,
+            "loss_ratio": 0.979258076327198,
+            "senior_ret": 0.12798142758483433,
+            "pro_ret": -0.2889327808568244
+          },
+          {
+            "year": 2018,
+            "premium": 663948289.9264584,
+            "payout": 709222356.980983,
+            "loss_ratio": 1.068189146265501,
+            "senior_ret": 0.09897280257718233,
+            "pro_ret": -0.3143653842582341
+          },
+          {
+            "year": 2020,
+            "premium": 514332111.0406325,
+            "payout": 757846645.6933769,
+            "loss_ratio": 1.4734577706222713,
+            "senior_ret": 0.09576489743110161,
+            "pro_ret": -0.6114190854217807
+          },
+          {
+            "year": 2022,
+            "premium": 915840417.5558845,
+            "payout": 754521898.2634239,
+            "loss_ratio": 0.8238573924014257,
+            "senior_ret": 0.1418736751662193,
+            "pro_ret": -0.10260422210389797
+          },
+          {
+            "year": 2026,
+            "premium": 781062470.3776499,
+            "payout": 612916517.4037867,
+            "loss_ratio": 0.7847215051920708,
+            "senior_ret": 0.1145800680838367,
+            "pro_ret": -0.024616284643103392
+          }
+        ]
+      },
+      "scope": "Annual capital resets; continuous unfunded return remains unknown"
+    },
+    {
+      "id": "VERIFY-01",
+      "status": "MATCHED",
+      "expected": "Saved verification counts equal current cohort CSV counts",
+      "observed": {
+        "csv_accepted": 1045,
+        "csv_rejected": 85,
+        "saved_accepted": 1045,
+        "saved_rejected": 85
+      }
+    },
+    {
+      "id": "PRICE-01",
+      "status": "OPEN",
+      "expected": "Claims / premiums <= 0.95 before additional costs, given 5% execution charge",
+      "observed": [
+        {
+          "volatility_floor": 0.0025,
+          "markup": 1.5,
+          "utilisation": 0.1,
+          "accepted": 209,
+          "median_apy": 0.010995506008474765,
+          "worst_apy": 1.2126046795568612e-05,
+          "median_weekly_cover": 0.0037531489661588326,
+          "share_beating_bills": 0.6220095693779905,
+          "evaluation_book_loss_ratio": 1.2986107355384489,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.0025,
+          "markup": 1.5,
+          "utilisation": 0.25,
+          "accepted": 209,
+          "median_apy": 0.010751855198791738,
+          "worst_apy": 1.192165111740806e-05,
+          "median_weekly_cover": 0.009289200742335857,
+          "share_beating_bills": 0.6172248803827751,
+          "evaluation_book_loss_ratio": 1.2986107355384489,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.0025,
+          "markup": 1.5,
+          "utilisation": 0.5,
+          "accepted": 209,
+          "median_apy": 0.010295185889889202,
+          "worst_apy": 1.1578937349376872e-05,
+          "median_weekly_cover": 0.01841519429986551,
+          "share_beating_bills": 0.6076555023923444,
+          "evaluation_book_loss_ratio": 1.2986107355384489,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.005,
+          "markup": 1.5,
+          "utilisation": 0.1,
+          "accepted": 209,
+          "median_apy": 0.010995535200325257,
+          "worst_apy": 1.2125969774068324e-05,
+          "median_weekly_cover": 0.003752582217243072,
+          "share_beating_bills": 0.6220095693779905,
+          "evaluation_book_loss_ratio": 1.3001154310995404,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.005,
+          "markup": 1.5,
+          "utilisation": 0.25,
+          "accepted": 209,
+          "median_apy": 0.010751926532315492,
+          "worst_apy": 1.1921461767538943e-05,
+          "median_weekly_cover": 0.009288502229698441,
+          "share_beating_bills": 0.6172248803827751,
+          "evaluation_book_loss_ratio": 1.3001154310995404,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.005,
+          "markup": 1.5,
+          "utilisation": 0.5,
+          "accepted": 209,
+          "median_apy": 0.010293980288987425,
+          "worst_apy": 1.1578569395043203e-05,
+          "median_weekly_cover": 0.018407431943763982,
+          "share_beating_bills": 0.6076555023923444,
+          "evaluation_book_loss_ratio": 1.3001154310995404,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.005,
+          "markup": 2.0,
+          "utilisation": 0.1,
+          "accepted": 209,
+          "median_apy": 0.011130444880052881,
+          "worst_apy": 1.2216997953062858e-05,
+          "median_weekly_cover": 0.0037681741108785707,
+          "share_beating_bills": 0.6267942583732058,
+          "evaluation_book_loss_ratio": 0.9637242137778439,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.005,
+          "markup": 2.0,
+          "utilisation": 0.25,
+          "accepted": 209,
+          "median_apy": 0.01102427002104811,
+          "worst_apy": 1.214693711126813e-05,
+          "median_weekly_cover": 0.009376886368364559,
+          "share_beating_bills": 0.6267942583732058,
+          "evaluation_book_loss_ratio": 0.9637242137778439,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.005,
+          "markup": 2.0,
+          "utilisation": 0.5,
+          "accepted": 209,
+          "median_apy": 0.010750683296635977,
+          "worst_apy": 1.2022330688976623e-05,
+          "median_weekly_cover": 0.018748816342347593,
+          "share_beating_bills": 0.6220095693779905,
+          "evaluation_book_loss_ratio": 0.9637242137778439,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.005,
+          "markup": 2.5,
+          "utilisation": 0.1,
+          "accepted": 209,
+          "median_apy": 0.011254284526954983,
+          "worst_apy": 1.2310939534021514e-05,
+          "median_weekly_cover": 0.0037819096930928574,
+          "share_beating_bills": 0.6267942583732058,
+          "evaluation_book_loss_ratio": 0.7240847794467951,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.005,
+          "markup": 2.5,
+          "utilisation": 0.25,
+          "accepted": 209,
+          "median_apy": 0.011237752878280993,
+          "worst_apy": 1.2382357824858303e-05,
+          "median_weekly_cover": 0.009489137004090572,
+          "share_beating_bills": 0.6267942583732058,
+          "evaluation_book_loss_ratio": 0.7240847794467951,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.005,
+          "markup": 2.5,
+          "utilisation": 0.5,
+          "accepted": 209,
+          "median_apy": 0.011331299940727124,
+          "worst_apy": 1.2494805852636404e-05,
+          "median_weekly_cover": 0.019158303861267757,
+          "share_beating_bills": 0.6267942583732058,
+          "evaluation_book_loss_ratio": 0.7240847794467951,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.01,
+          "markup": 1.5,
+          "utilisation": 0.1,
+          "accepted": 209,
+          "median_apy": 0.010996153930526109,
+          "worst_apy": 1.2129709715980042e-05,
+          "median_weekly_cover": 0.003752394739231876,
+          "share_beating_bills": 0.6220095693779905,
+          "evaluation_book_loss_ratio": 1.3042835202123508,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.01,
+          "markup": 1.5,
+          "utilisation": 0.25,
+          "accepted": 209,
+          "median_apy": 0.010753424813553236,
+          "worst_apy": 1.1930656464098632e-05,
+          "median_weekly_cover": 0.009285758057056375,
+          "share_beating_bills": 0.6172248803827751,
+          "evaluation_book_loss_ratio": 1.3042835202123508,
+          "external_cost_funding_max": 0.0
+        },
+        {
+          "volatility_floor": 0.01,
+          "markup": 1.5,
+          "utilisation": 0.5,
+          "accepted": 209,
+          "median_apy": 0.010283508954640697,
+          "worst_apy": 1.1596438210803584e-05,
+          "median_weekly_cover": 0.018403337708784946,
+          "share_beating_bills": 0.6076555023923444,
+          "evaluation_book_loss_ratio": 1.3042835202123508,
+          "external_cost_funding_max": 0.0
+        }
+      ],
+      "scope": "Weekly model sensitivities; not the original headline experiment"
+    },
+    {
+      "id": "PRICE-02",
+      "status": "OPEN",
+      "expected": "Claims / premiums <= 0.95 before additional costs, given 5% execution charge",
+      "observed": [
+        {
+          "b": 0.0,
+          "c": 1.0,
+          "markup": 1.5,
+          "accepted": 215,
+          "rejected": 12,
+          "min_saver_maturity": 1.000009871973356,
+          "median_saver_apy": 0.011092407404531324,
+          "min_all_claims_max_maturity": 1.0000075208373553,
+          "median_cover_per_deposit": 0.007799615796566886,
+          "min_cover_per_deposit": 2.4458138537888398e-06,
+          "median_quoted_names": 131.0,
+          "median_holder_premium": 0.08298617081634842,
+          "median_quote_share": 0.25763358778625955,
+          "aggregate_loss_ratio": 1.2449353397628686
+        },
+        {
+          "b": 0.0,
+          "c": 1.0,
+          "markup": 2.0,
+          "accepted": 215,
+          "rejected": 12,
+          "min_saver_maturity": 1.0000099639494469,
+          "median_saver_apy": 0.011101189803597977,
+          "min_all_claims_max_maturity": 1.0000075331191407,
+          "median_cover_per_deposit": 0.0065877031959831085,
+          "min_cover_per_deposit": 0.0,
+          "median_quoted_names": 40.0,
+          "median_holder_premium": 0.08700353852573466,
+          "median_quote_share": 0.07858546168958742,
+          "aggregate_loss_ratio": 1.1484960384822966
+        },
+        {
+          "b": 0.0,
+          "c": 1.0,
+          "markup": 2.5,
+          "accepted": 215,
+          "rejected": 12,
+          "min_saver_maturity": 1.0000099397545221,
+          "median_saver_apy": 0.011075760740613116,
+          "min_all_claims_max_maturity": 1.0000079920795042,
+          "median_cover_per_deposit": 0.003318770920421971,
+          "min_cover_per_deposit": 0.0,
+          "median_quoted_names": 12.0,
+          "median_holder_premium": 0.08851679370645518,
+          "median_quote_share": 0.025974025974025976,
+          "aggregate_loss_ratio": 1.282279071976524
+        },
+        {
+          "b": 0.1,
+          "c": 0.9,
+          "markup": 1.5,
+          "accepted": 215,
+          "rejected": 12,
+          "min_saver_maturity": 1.0000098184955655,
+          "median_saver_apy": 0.011082686326097546,
+          "min_all_claims_max_maturity": 1.0000075100664152,
+          "median_cover_per_deposit": 0.009280167494666354,
+          "min_cover_per_deposit": 2.7175709486542657e-06,
+          "median_quoted_names": 273.0,
+          "median_holder_premium": 0.07022935781105472,
+          "median_quote_share": 0.5313725490196078,
+          "aggregate_loss_ratio": 1.3172873345064948
+        },
+        {
+          "b": 0.1,
+          "c": 0.9,
+          "markup": 2.0,
+          "accepted": 215,
+          "rejected": 12,
+          "min_saver_maturity": 1.000009881847396,
+          "median_saver_apy": 0.011136650806705006,
+          "min_all_claims_max_maturity": 1.0000075222480935,
+          "median_cover_per_deposit": 0.008567123869991375,
+          "min_cover_per_deposit": 2.7175709486542666e-06,
+          "median_quoted_names": 168.0,
+          "median_holder_premium": 0.07764561041211257,
+          "median_quote_share": 0.3215686274509804,
+          "aggregate_loss_ratio": 1.0545928218091887
+        },
+        {
+          "b": 0.1,
+          "c": 0.9,
+          "markup": 2.5,
+          "accepted": 215,
+          "rejected": 12,
+          "min_saver_maturity": 1.000009941257121,
+          "median_saver_apy": 0.01114402907463763,
+          "min_all_claims_max_maturity": 1.0000075301300708,
+          "median_cover_per_deposit": 0.008363345347720643,
+          "min_cover_per_deposit": 2.7175709486542666e-06,
+          "median_quoted_names": 92.0,
+          "median_holder_premium": 0.07995825972973747,
+          "median_quote_share": 0.18023255813953487,
+          "aggregate_loss_ratio": 0.9230612776804717
+        }
+      ],
+      "scope": "Fixed 156-week stock floors; overlapping cohorts and assumed demand"
+    }
+  ],
+  "reconciliation": "PASS: UI copies, annual loss ratios, tranche cash conservation, Pro mean and loss count, testnet cash conservation"
+}

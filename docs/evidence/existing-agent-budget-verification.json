@@ -1,0 +1,8 @@
+{
+  "verifiedAt": "2026-11-06T18:46:05.633Z",
+  "status": "passed",
+  "rejectedBeforePayment": true,
+  "reason": "Not enough remaining gas budget to complete approval, purchase and audit; no underwriting payment was made",
+  "budgetUnchanged": true,
+  "lockClear": true
+}

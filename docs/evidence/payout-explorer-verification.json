@@ -1,0 +1,26 @@
+{
+  "verifiedAt": "2026-11-06T18:31:45.011Z",
+  "checks": [
+    {
+      "chainId": 1874,
+      "hash": "0xe9951eda964e19bb3e73be59006ce14a434a30c97a7c0b8c1032e52ea9fe65e8",
+      "explorer": "https://explorer.testnet.whitechain.io/tx/0xe9951eda964e19bb3e73be59006ce14a434a30c97a7c0b8c1032e52ea9fe65e8",
+      "confirmed": true,
+      "status": "ok"
+    },
+    {
+      "chainId": 296,
+      "hash": "0x74b18bd99be96c6187df9029f84557c0d31b8ce65bfa986be8a8cbca8d031825",
+      "explorer": "https://hashscan.io/testnet/transaction/0x74b18bd99be96c6187df9029f84557c0d31b8ce65bfa986be8a8cbca8d031825",
+      "confirmed": true,
+      "status": "SUCCESS"
+    },
+    {
+      "chainId": 5042002,
+      "hash": "0x549e0b2f6716d17794d831c7457de15743a58ee3c5a320439bb3d751eb17c303",
+      "explorer": "https://explorer.testnet.arc.io/tx/0x549e0b2f6716d17794d831c7457de15743a58ee3c5a320439bb3d751eb17c303",
+      "confirmed": true,
+      "status": "ok"
+    }
+  ]
+}

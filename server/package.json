@@ -9,6 +9,7 @@
     "dev": "node --watch src/index.js",
     "selftest": "node --test test/*.test.js",
     "test": "node --test test/*.test.js",
+    "chainlink:e2e": "node scripts/test-chainlink-e2e.js",
     "agent:setup": "node scripts/setup-agent-testnet.js",
     "agent:plan": "node scripts/agent.js",
     "agent:run": "node scripts/agent.js --execute"

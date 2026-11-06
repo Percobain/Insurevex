@@ -67,9 +67,12 @@ class MultiRpcProvider extends ethers.JsonRpcProvider {
   }
   async _send(payload) {
     let lastErr;
+    let pendingReceipt;
     for (const url of this.order()) {
       const req = new ethers.FetchRequest(url);
       req.timeout = this.timeoutMs;
+      // Fail over on HTTP 429 instead of ethers silently backing off on the same relay.
+      req.setThrottleParams({ maxAttempts: 1 });
       req.body = JSON.stringify(payload);
       req.setHeader("content-type", "application/json");
       try {
@@ -79,6 +82,13 @@ class MultiRpcProvider extends ethers.JsonRpcProvider {
         const list = Array.isArray(body) ? body : [body];
         const bad = list.find((r) => r?.error && INFRA.test(`${r.error.message || ""} ${r.error.code || ""}`) && !/revert/i.test(r.error.message || ""));
         if (bad) throw new Error(`${mask(url)}: ${bad.error.message}`);
+        const requests = Array.isArray(payload) ? payload : [payload];
+        if (requests.length === 1 && requests[0].method === "eth_getTransactionReceipt" && list[0]?.result === null) {
+          // A lagging relay's null is not proof that a known transaction is unmined.
+          // Look up the same hash on the remaining relays; this never resubmits it.
+          pendingReceipt = list;
+          continue;
+        }
         if (url !== this.lastGood && process.env.RPC_LOG !== "0") console.log(`[rpc] chain ${this._network?.chainId ?? ""} now using ${mask(url)}`);
         this.lastGood = url;
         return list;
@@ -87,11 +97,21 @@ class MultiRpcProvider extends ethers.JsonRpcProvider {
         this.benchedUntil.set(url, Date.now() + this.cooldownMs);
       }
     }
+    if (pendingReceipt) return pendingReceipt;
     throw lastErr;
   }
 }
 
 const ctx = new Map();
+// Reuse the bounded failover transport for non-privileged agent wallets too.
+export function testnetProvider(chainId, { rpc, batchMaxCount = 20 } = {}) {
+  chainId = Number(chainId);
+  const cfg = CHAINS[chainId];
+  if (!cfg) throw new Error("Unsupported testnet chain");
+  const urls = (rpc ? rpc.split(",") : cfg.rpcs).map((u) => u.trim()).filter(Boolean);
+  if (!urls.length) throw new Error("No testnet RPC configured");
+  return new MultiRpcProvider(urls, chainId, { staticNetwork: true, batchMaxCount });
+}
 export function chain(chainId) {
   chainId = Number(chainId);
   if (ctx.has(chainId)) return ctx.get(chainId);
@@ -100,8 +120,7 @@ export function chain(chainId) {
   const dep = loadDeployment(cfg.key);
   const need = ["stable", "IdentityRegistry", "PriceOracle", "TBillVault", "UnderwritingPool", "CoverMarket"];
   if (!dep || need.some((k) => !dep.contracts?.[k])) return null; // missing or still being written
-  const urls = cfg.rpcs.map((u) => u.trim()).filter(Boolean);
-  const provider = new MultiRpcProvider(urls, chainId, { staticNetwork: true, batchMaxCount: 20 });
+  const provider = testnetProvider(chainId);
   const signer = quoterKey ? new ethers.Wallet(quoterKey, provider) : null; // fresh pending nonce per tx (keeper txs are sequential)
   const runner = signer || provider;
   const c = dep.contracts;

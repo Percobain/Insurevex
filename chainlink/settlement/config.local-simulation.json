@@ -1,0 +1,9 @@
+{
+  "schedule": "0 */5 * * * *",
+  "jobsUrl": "http://localhost:8082/api/chainlink/jobs?chainId=1874",
+  "reportUrl": "http://localhost:8082/api/chainlink/reports",
+  "deliveryEnabled": false,
+  "chains": [
+    { "chainId": 1874, "rpc": "https://rpc.testnet.whitechain.io", "market": "0x0B19a2C1042874dFe0374814464f89537519dDF0", "oracle": "0x3FCD2023FfE7E1d41dA07A96B47C3B9912033AD4" }
+  ]
+}

@@ -5,9 +5,9 @@ import { ethers } from "ethers";
 import { AgentState } from "./state.js";
 import { audit } from "./audit.js";
 import { prepareUnderwriting } from "./underwriting.js";
-import { validateAgentPolicy, checkStop, insurancePreflight, buyUnderwriting, buyInsurance, publishAgentAudit } from "./client.js";
+import { validateAgentPolicy, checkStop, insurancePreflight, runGasPreflight, buyUnderwriting, buyInsurance, publishAgentAudit } from "./client.js";
 import { CHAIN_ID, NETWORK, insist, normalizeIntent, units, validateQuote } from "./policy.js";
-import { ERC20_ABI } from "../chain.js";
+import { ERC20_ABI, testnetProvider } from "../chain.js";
 
 export function parameters(raw = {}) {
   insist(raw && typeof raw === "object" && !Array.isArray(raw) && Object.keys(raw).every((k) => ["shares", "deductibleBps"].includes(k)), "Unexpected protection parameters");
@@ -41,7 +41,7 @@ export class AgentRuntime {
   }
   policy() { return validateAgentPolicy({ ...this.base, limits: { ...this.base.limits, ...this.state.settings() } }); }
   context() {
-    const provider = new ethers.JsonRpcProvider(this.env.HEDERA_RPC || "https://testnet.hashio.io/api", undefined, { batchMaxCount: 1 });
+    const provider = testnetProvider(CHAIN_ID, { rpc: this.env.HEDERA_RPC });
     return { provider, wallet: new ethers.Wallet(this.credentials.privateKey, provider), policy: this.policy() };
   }
   intent(p) {
@@ -74,6 +74,7 @@ export class AgentRuntime {
     try {
       checkStop(policy);
       const intent = this.intent(p);
+      await runGasPreflight({ wallet, policy, state: this.state });
       const { market, stable } = await insurancePreflight({ wallet, policy, intent });
       const report = await prepareUnderwriting(intent);
       validateQuote(report, intent, policy);
@@ -126,6 +127,7 @@ export class AgentRuntime {
     };
     try {
       progress("preflight", "Checking identity, ownership and policy limits");
+      await runGasPreflight({ wallet, policy, state: this.state });
       await insurancePreflight({ wallet, policy, intent });
       audit(this.state, "agent.started", { requestId: intent.requestId, buyer: this.address });
       progress("underwriting", "Discovering the service and paying the x402 challenge");

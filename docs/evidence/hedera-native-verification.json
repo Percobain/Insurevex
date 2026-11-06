@@ -1,0 +1,57 @@
+{
+  "startedAt": "2026-11-06T18:31:19.952Z",
+  "chainId": 296,
+  "transactions": [
+    {
+      "step": "ATS freezes a tiny amount on the isolated test holder",
+      "hash": "0x7093a562b61ca020cbf268d10c72ed3f5f9e8407b800cfd65c3e4d119c826d3a",
+      "status": "confirmed",
+      "explorer": "https://hashscan.io/testnet/transaction/0x7093a562b61ca020cbf268d10c72ed3f5f9e8407b800cfd65c3e4d119c826d3a",
+      "blockNumber": 42749332,
+      "fee": "201230920000000000"
+    },
+    {
+      "step": "ATS unfreezes the exact test amount",
+      "hash": "0xd6d817a5c92d75f190cc6ed9344323f426774069fcd9e41e50d0dee054c87fb0",
+      "status": "confirmed",
+      "explorer": "https://hashscan.io/testnet/transaction/0xd6d817a5c92d75f190cc6ed9344323f426774069fcd9e41e50d0dee054c87fb0",
+      "blockNumber": 42749379,
+      "fee": "152790320000000000"
+    },
+    {
+      "step": "Hedera native scheduleCall for an overdue coupon",
+      "hash": "0xd2e87947e8ef8c1d6934a656700ba286f2215252169d805abeeff7b0eaad0fff",
+      "status": "confirmed",
+      "explorer": "https://hashscan.io/testnet/transaction/0xd2e87947e8ef8c1d6934a656700ba286f2215252169d805abeeff7b0eaad0fff",
+      "blockNumber": 42749385,
+      "fee": "1775686200000000000"
+    },
+    {
+      "step": "Saver claims real scheduled coupon",
+      "hash": "0x0f487ce6970b195c9a556e8e8d4cf6e5094d23304c51f3a2d8c6e2b35784d13c",
+      "status": "confirmed",
+      "explorer": "https://hashscan.io/testnet/transaction/0x0f487ce6970b195c9a556e8e8d4cf6e5094d23304c51f3a2d8c6e2b35784d13c",
+      "blockNumber": 42749490,
+      "fee": "85772040000000000"
+    }
+  ],
+  "checks": [
+    "ATS compliance freeze/unfreeze restores the exact original holding",
+    "native scheduled transaction executed and advanced coupon state",
+    "scheduled coupon claim transferred exact test USD to Saver"
+  ],
+  "atsHolder": "0x767446E2e8b6A80658d6a3e58a93759Bc9Ffe18b",
+  "equity": "0xe77F4a19C336841643b7a671557fdBa2eFd0465E",
+  "finishedAt": "2026-11-06T18:36:51.695Z",
+  "frozenBefore": "0",
+  "holdingBefore": "1000000000000000000",
+  "schedule": {
+    "id": "0.0.11343812",
+    "address": "0x0000000000000000000000000000000000aD17C4",
+    "executeAt": 1793990103,
+    "status": "executed",
+    "executedTimestamp": "1793990103.102011988"
+  },
+  "couponClaimable": "210664",
+  "status": "passed"
+}

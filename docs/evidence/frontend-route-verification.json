@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-06T18:24:33.566Z",
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/"
+    },
+    {
+      "path": "/protect",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/protect"
+    },
+    {
+      "path": "/save",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/save"
+    },
+    {
+      "path": "/pool",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/pool"
+    },
+    {
+      "path": "/agent",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/agent"
+    },
+    {
+      "path": "/admin",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/admin"
+    },
+    {
+      "path": "/issuer",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/issuer"
+    },
+    {
+      "path": "/metrics",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/metrics"
+    },
+    {
+      "path": "/history",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/history"
+    },
+    {
+      "path": "/activity",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/activity"
+    },
+    {
+      "path": "/docs",
+      "status": 200,
+      "finalUrl": "http://localhost:3000/docs"
+    }
+  ]
+}

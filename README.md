@@ -1,5 +1,9 @@
 # InsureVEX
 
+**Latest verification:** [live end-to-end results and receipts](docs/END_TO_END_VERIFICATION.md) — 45 core/issuer transactions across Whitechain, Hedera and Arc, plus autonomous x402 payment, ATS compliance, HCS audit and an executed native coupon schedule. Live two-source CRE settlement remains blocked by the second price provider; the real CLI monitoring simulation passes.
+
+**Optional Chainlink CRE settlement:** set `CHAINLINK_ENABLED=1` in `server/.env` to enable two-provider close validation and the Agent page's settlement panel. It starts in **validation-only mode**; `CHAINLINK_SETTLEMENT_ENABLED=1` is a separate opt-in for keeper transactions. Scoped policies never fall back to the legacy price source. The official CRE workflow, setup and current relay limitations are documented in [docs/CHAINLINK_CRE.md](docs/CHAINLINK_CRE.md). A [real CRE CLI simulation](docs/evidence/chainlink-cre-local-simulation.txt) passed using deployed Whitechain policy reads and live Yahoo market data; this read-only monitoring run did not settle a policy.
+
 **New: Hedera x402 underwriting agent.** A dedicated testnet agent discovers and pays for underwriting through HTTP 402, validates a signed insurance quote, and pays the exact premium through `CoverMarket`. Persistent spending budgets, merchant and contract allowlists, on-chain ATS holdings checks, replay protection, an emergency stop, and an HCS spending-audit anchor bound its authority. The new `/agent` dashboard shows service limits and payment receipts. [Setup, architecture, guardrails and track requirements](docs/HEDERA_X402.md).
 
 The existing product comprises the notes, underwriting pool, crash policies, pricing research and ATS integrations below. The x402 agent, paid underwriting endpoint, persistent policy controls, HCS spending audit and Agent dashboard are the new integration.

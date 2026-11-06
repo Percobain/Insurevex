@@ -8,6 +8,7 @@ import { shortAddr } from "@/lib/format";
 import { useToasts } from "@/components/Toasts";
 import { PageHead, Section, SectionHead, Panel, Row, Notice, Placeholder, HeroCtas, HowItWorks, Faq } from "@/components/ui";
 import { AgentArt } from "@/components/IsoArt";
+import ChainlinkSettlement from "@/components/ChainlinkSettlement";
 
 const STAGES = [
   ["preflight", "Check the limits", "Your ID, the shares you own, and the budget"],
@@ -218,6 +219,7 @@ export default function AgentPage() {
         <div className="pt-5 border-t border-line flex flex-wrap items-center justify-between gap-4"><div className="max-w-xl"><div className="text-sm font-medium">Stop button</div><p className="text-xs text-muted mt-1">Blocks new payments at once. Payments already sent may still go through.</p></div><button className={`btn-ghost ${s?.stopped ? "" : "text-bad border-bad/30"}`} disabled={!authorised || Boolean(busy) || (s?.stopped && (s?.locked || s?.environmentStopped))} onClick={() => act(s?.stopped ? "resume" : "stop")}>{busy === "stop" || busy === "resume" ? "Signing…" : s?.stopped ? "Resume agent" : "Stop agent"}</button></div>
       </div>
 
+      <ChainlinkSettlement />
       <SectionHead eyebrow="Step 2" title="Watch it work">Each step leaves a receipt you can open on HashScan, Hedera's public explorer.</SectionHead>
       <div className="grid lg:grid-cols-[1.15fr_1fr] gap-6 items-start">
         <Panel title="Progress" desc="The selected run, step by step."><Execution run={selected} /></Panel>

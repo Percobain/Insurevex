@@ -61,7 +61,13 @@ Savers buy principal-protected notes. The notes' spare yield insures stock holde
 2. Configuration: SSI issuer + `grantKyc`, issue 100 tokenised NVDA to the holder, `CoverMarket.setSymbolToken(NVDA → ATS equity)`.
 3. Lifecycle: the holder buys NVDA cover. The contract reads the **ATS balance** as proof of ownership; try to cover more than held and it reverts. Then `setCoupon` on the bond, a freeze (`freezePartialTokens`), and settlement.
 
-## Track 3: Arc, Best DeFi / Onchain Finance App built in Arc Studio
+## Chainlink: Best workflow with CRE (optional integration)
+
+The optional workflow is implemented behind `CHAINLINK_ENABLED=0` by default. It reads expired policies over JSON-RPC, fetches Yahoo/Stooq closing prices, validates agreement and freshness, and can deliver reports to the authenticated settlement receiver. The existing keeper uses those reports only after `CHAINLINK_SETTLEMENT_ENABLED=1` is explicitly enabled. See [setup and trust boundaries](CHAINLINK_CRE.md).
+
+Verified: server guardrail/keeper tests, official CRE SDK workflow tests, TypeScript typecheck, WASM compilation, and a **successful real CRE CLI simulation**. See [staging output](evidence/chainlink-cre-staging-simulation.txt) and [repeatable local-target output](evidence/chainlink-cre-local-simulation.txt). The cron workflow read five policies from the deployed Whitechain CoverMarket and fetched NVDA's actual Yahoo close. With no expired scoped policies, it produced an explicitly non-authorising market observation; it did not settle or pay. The two-source settlement path retains its guardrails and is separately covered by the local EVM end-to-end test. A deployed DON workflow and a live two-source CRE settlement are not claimed. This targets the CRE bounty, not CCIP.
+
+## Historical Arc integration (not the current replacement target)
 
 | Requirement | Status |
 |---|---|

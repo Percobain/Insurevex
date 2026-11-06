@@ -2,6 +2,8 @@
 import { useQuery } from "@tanstack/react-query";
 
 export const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080").replace(/\/$/, "");
+export const AGENT_API_BASE = (process.env.NEXT_PUBLIC_AGENT_API_URL || API_BASE).replace(/\/$/, "");
+const baseFor = (path) => path.startsWith("/api/agent/") ? AGENT_API_BASE : API_BASE;
 
 async function withTimeout(promise, ms) {
   let t;
@@ -14,7 +16,7 @@ async function withTimeout(promise, ms) {
 }
 
 export async function apiGet(path, { timeout = 8000 } = {}) {
-  const res = await withTimeout(fetch(`${API_BASE}${path}`, { cache: "no-store" }), timeout);
+  const res = await withTimeout(fetch(`${baseFor(path)}${path}`, { cache: "no-store" }), timeout);
   const json = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
   return json;
@@ -22,7 +24,7 @@ export async function apiGet(path, { timeout = 8000 } = {}) {
 
 export async function apiPost(path, body, { timeout = 10000 } = {}) {
   const res = await withTimeout(
-    fetch(`${API_BASE}${path}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }),
+    fetch(`${baseFor(path)}${path}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }),
     timeout,
   );
   const json = await res.json().catch(() => ({}));

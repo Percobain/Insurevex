@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "source_price_files": 543,
+  "matched_weekly_cohorts": 1045,
+  "weekly_rejected": 85,
+  "matched_sensitivity_cases": 375,
+  "fixed_holding_cohorts": 1290,
+  "minimum_holding_max_claim_payout": 1.0000075100664152,
+  "caveat": "Cash-flow identities are conditional on floor payment. Cohorts overlap and do not estimate failure probability."
+}

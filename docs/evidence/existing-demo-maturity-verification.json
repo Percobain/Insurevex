@@ -1,0 +1,30 @@
+{
+  "verifiedAt": "2026-11-06T18:47:15.062Z",
+  "note": "Existing deployed demo notes; fresh 3Y subscriptions were not artificially matured",
+  "results": [
+    {
+      "chainId": 1874,
+      "note": "0x9Eb5877812594612c4F39b2B3a12EFF4F3CFb166",
+      "matured": true,
+      "maturity": 1793935067,
+      "operatorClaimable": "0",
+      "freshMaturityTransaction": false
+    },
+    {
+      "chainId": 296,
+      "note": "0xDE1fC6F88dc1BE86d744C0157a6fa472CccFF915",
+      "matured": true,
+      "maturity": 1793935188,
+      "operatorClaimable": "0",
+      "freshMaturityTransaction": false
+    },
+    {
+      "chainId": 5042002,
+      "note": "0x90D58a2B63Df22baFd8F6Ae3315D5728aAD9C0d6",
+      "matured": true,
+      "maturity": 1793935125,
+      "operatorClaimable": "0",
+      "freshMaturityTransaction": false
+    }
+  ]
+}

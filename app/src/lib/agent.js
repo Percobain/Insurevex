@@ -1,10 +1,10 @@
 import { canonicalJson, controlMessage } from "../shared/agent-control.mjs";
-import { API_BASE, apiPost } from "./api";
+import { AGENT_API_BASE, apiPost } from "./api";
 
 export async function authoriseAgentAction({ action, payload = {}, address, signMessageAsync }) {
   const { authorization: a, message } = await apiPost("/api/agent/control/challenge", { action, payload });
   if (!a || a.chainId !== 296 || a.controller?.toLowerCase() !== address?.toLowerCase() || a.action !== action ||
-    a.origin !== new URL(API_BASE).origin || canonicalJson(a.payload) !== canonicalJson(payload) ||
+    a.origin !== new URL(AGENT_API_BASE).origin || canonicalJson(a.payload) !== canonicalJson(payload) ||
     a.expiresAt <= Date.now() || a.expiresAt > Date.now() + 125000 || message !== controlMessage(a)) {
     throw new Error("The authorisation does not match the action you requested.");
   }

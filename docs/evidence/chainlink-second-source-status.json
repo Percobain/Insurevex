@@ -1,0 +1,8 @@
+{
+  "checkedAt": "2026-11-06T18:44:01.933Z",
+  "provider": "stooq",
+  "status": 403,
+  "validClosingPrice": false,
+  "error": "Invalid Stooq CSV",
+  "settlementAuthorised": false
+}

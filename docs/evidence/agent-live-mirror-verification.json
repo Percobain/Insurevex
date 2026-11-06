@@ -1,0 +1,11 @@
+{
+  "verifiedAt": "2026-11-06T18:31:26.899Z",
+  "merchantCreditTinybars": 1000000,
+  "agentDebitTinybars": -1000000,
+  "x402Transaction": "0.0.9185802@1793989802.202300975",
+  "insuranceTransaction": "0x8a37a6dd43f2fb1852459daff9e0a6bf167aa90fbdd5d2e9f1d73a153b7c6844",
+  "insuranceStatus": "SUCCESS",
+  "hcsTopic": "0.0.11343736",
+  "hcsSequence": 1,
+  "digestMatched": true
+}

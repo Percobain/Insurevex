@@ -1,0 +1,102 @@
+{
+  "startedAt": "2026-11-06T18:39:50.030Z",
+  "testnetOnly": true,
+  "custodianFundingPerChain": "0.0001",
+  "chains": [
+    {
+      "chainId": 1874,
+      "transactions": [
+        {
+          "step": "Approve exact custodian proceeds",
+          "hash": "0xa5bd19cf51a5c3c6e2ab297e3e1fe79e7f056ffad045a9ef94eefa431b8aaf8c",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0xa5bd19cf51a5c3c6e2ab297e3e1fe79e7f056ffad045a9ef94eefa431b8aaf8c",
+          "blockNumber": 12394025
+        },
+        {
+          "step": "Custodian funds 0.0001 test stablecoin yield",
+          "hash": "0x7e9031445f2b0e4fe28eca634d15d7a98a97632a8ec334738921f2ca4a0be45b",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0x7e9031445f2b0e4fe28eca634d15d7a98a97632a8ec334738921f2ca4a0be45b",
+          "blockNumber": 12394029
+        },
+        {
+          "step": "Roll NAV at unchanged rate and attest actual test-token cash reserve",
+          "hash": "0xe3bf03fc1a29afff4a5b08436f2eec72ca09cf8a35a2f2387823538b6222cc28",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.whitechain.io/tx/0xe3bf03fc1a29afff4a5b08436f2eec72ca09cf8a35a2f2387823538b6222cc28",
+          "blockNumber": 12394034
+        }
+      ],
+      "checks": [
+        "custodian proceeds received, NAV accrued without changing APY, physical test-token reserve attested",
+        "unverified transfers, premature maturity redemption and unauthorised oracle writes rejected without sending transactions"
+      ],
+      "status": "passed"
+    },
+    {
+      "chainId": 296,
+      "transactions": [
+        {
+          "step": "Approve exact custodian proceeds",
+          "hash": "0x8e771e02ee2f8f4a7136d738c2206e24c329747a1e30c85112344bb86d28fe32",
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0x8e771e02ee2f8f4a7136d738c2206e24c329747a1e30c85112344bb86d28fe32",
+          "blockNumber": 42749590
+        },
+        {
+          "step": "Custodian funds 0.0001 test stablecoin yield",
+          "hash": "0x69c736cb5dd195f7d556867250e772fe480e0829182b51f6093001066f956949",
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0x69c736cb5dd195f7d556867250e772fe480e0829182b51f6093001066f956949",
+          "blockNumber": 42749593
+        },
+        {
+          "step": "Roll NAV at unchanged rate and attest actual test-token cash reserve",
+          "hash": "0xf5b6d6d79fb984092eee7d49710c236b446101fd8b7bb5d76dc53988a1228426",
+          "status": "confirmed",
+          "explorer": "https://hashscan.io/testnet/transaction/0xf5b6d6d79fb984092eee7d49710c236b446101fd8b7bb5d76dc53988a1228426",
+          "blockNumber": 42749597
+        }
+      ],
+      "checks": [
+        "custodian proceeds received, NAV accrued without changing APY, physical test-token reserve attested",
+        "unverified transfers, premature maturity redemption and unauthorised oracle writes rejected without sending transactions",
+        "ATS on-chain ownership prevents oversized protection despite a signed broker-style holdings claim"
+      ],
+      "status": "passed"
+    },
+    {
+      "chainId": 5042002,
+      "transactions": [
+        {
+          "step": "Approve exact custodian proceeds",
+          "hash": "0xf7ab74c4577201fed21396572aa64905b6374adf34e28f3bc83ffb2969b3cefb",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0xf7ab74c4577201fed21396572aa64905b6374adf34e28f3bc83ffb2969b3cefb",
+          "blockNumber": 71071766
+        },
+        {
+          "step": "Custodian funds 0.0001 test stablecoin yield",
+          "hash": "0xba0bbe5806eaffe36f7b6563383f33d53568fe0c7156c4f491c54ae28a6fd8f9",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0xba0bbe5806eaffe36f7b6563383f33d53568fe0c7156c4f491c54ae28a6fd8f9",
+          "blockNumber": 71071769
+        },
+        {
+          "step": "Roll NAV at unchanged rate and attest actual test-token cash reserve",
+          "hash": "0xd48ce3b7b5b790d09fdb42eb70c9d9c8b029699d6c70481f74232698582776a7",
+          "status": "confirmed",
+          "explorer": "https://explorer.testnet.arc.io/tx/0xd48ce3b7b5b790d09fdb42eb70c9d9c8b029699d6c70481f74232698582776a7",
+          "blockNumber": 71071773
+        }
+      ],
+      "checks": [
+        "custodian proceeds received, NAV accrued without changing APY, physical test-token reserve attested",
+        "unverified transfers, premature maturity redemption and unauthorised oracle writes rejected without sending transactions"
+      ],
+      "status": "passed"
+    }
+  ],
+  "finishedAt": "2026-11-06T18:40:43.620Z"
+}

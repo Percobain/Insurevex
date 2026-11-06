@@ -11,11 +11,14 @@ import { chain, activeChains, CHAINS, symbolId, signQuote, quoterKey } from "./c
 import { startKeeper, rememberSymbol, tick } from "./keeper.js";
 import { store } from "./store.js";
 import { mountAgentRoutes } from "./agent/merchant.js";
+import { mountChainlinkRoutes } from "./chainlink/service.js";
+import { chainlinkConfig } from "./chainlink/config.js";
 
 const app = express();
 app.use(cors({ origin: process.env.CLIENT_ORIGIN?.split(",") || true }));
 app.use(express.json({ limit: "100kb" }));
 mountAgentRoutes(app);
+mountChainlinkRoutes(app);
 const wrap = (fn) => (req, res) => fn(req, res).catch((e) => res.status(e.status || 500).json({ ok: false, error: e.message }));
 const bad = (msg) => Object.assign(new Error(msg), { status: 400 });
 const fmt6 = (x) => Number(ethers.formatUnits(x, 6));
@@ -24,6 +27,7 @@ app.get("/api/health", (req, res) => res.json({
   ok: true, quoter: quoterKey ? new ethers.Wallet(quoterKey).address : null,
   chains: activeChains().map((id) => ({ chainId: id, name: CHAINS[id].name, contracts: chain(id).dep.contracts })),
   engine: { ...ENGINE_INFO, markup: PARAMS.markup, recommended: RECOMMENDED },
+  features: { chainlink: { enabled: chainlinkConfig().enabled, settlementEnabled: chainlinkConfig().settlementEnabled } },
 }));
 
 // ------------------------------------------------------------------ markets and prices
@@ -328,6 +332,7 @@ if (!process.env.VERCEL) {
   app.listen(port, () => {
     console.log(`InsureVEX server on :${port}; chains: ${activeChains().map((i) => CHAINS[i].name).join(", ") || "none"}`);
     if (process.env.KEEPER !== "0" && quoterKey) startKeeper();
-    warmActivity();
+    // Dedicated payment/CRE services need not scan every chain on startup.
+    if (process.env.ACTIVITY_WARMUP !== "0") warmActivity();
   });
 }

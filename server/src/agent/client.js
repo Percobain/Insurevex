@@ -8,6 +8,7 @@ import { CHAIN_ID, NETWORK, PATH, DEFAULT_LIMITS, insist, units, validateRequire
 import { FACILITATOR, FEE_PAYER } from "./protocol.js";
 import { audit, anchorHcs } from "./audit.js";
 import { ABI, ERC20_ABI, QUOTE_TYPES } from "../chain.js";
+import { confirmedReceipt } from "../receipts.js";
 
 export function validateAgentPolicy(policy) {
   insist(policy?.chainId === CHAIN_ID && policy.network === NETWORK, "Policy must pin Hedera testnet");
@@ -104,6 +105,26 @@ export async function insurancePreflight({ wallet, policy, intent, quote = null 
   return { market, stable };
 }
 
+// Check that an entire bounded run can fit BEFORE paying for an underwriting quote.
+// The purchase reserves its per-transaction ceiling; approval is estimated without sending it.
+export async function runGasPreflight({ wallet, policy, state }) {
+  checkStop(policy);
+  const used = units(state.budget().used.gas);
+  const ceiling = units(policy.limits.gasPerTransaction);
+  const auditGas = policy.hcsTopic ? 10000000n : 0n;
+  const message = "Not enough remaining gas budget to complete approval, purchase and audit; no underwriting payment was made";
+  insist(used + ceiling + auditGas <= units(policy.limits.gasDaily), message);
+  const data = new ethers.Interface(ERC20_ABI).encodeFunctionData("approve", [policy.market, units(policy.limits.premiumPerPolicy)]);
+  const gas = await wallet.estimateGas({ to: policy.stable, data });
+  const gasPrice = BigInt(await wallet.provider.send("eth_gasPrice", []));
+  insist(gasPrice > 0n, "Gas price unavailable");
+  const approval = (gas * 12n / 10n * gasPrice + 9999999999n) / 10000000000n;
+  insist(approval <= ceiling, "Premium approval exceeds the per-transaction gas limit");
+  const required = approval + ceiling + auditGas;
+  insist(used + required <= units(policy.limits.gasDaily), message);
+  return required.toString();
+}
+
 export async function sendBounded({ wallet, policy, state, id, transaction }) {
   checkStop(policy);
   insist(!transaction.value || BigInt(transaction.value) === 0n, "Agent cannot send native value through insurance calls");
@@ -120,19 +141,26 @@ export async function sendBounded({ wallet, policy, state, id, transaction }) {
   const gasLimit = await wallet.estimateGas(transaction);
   // A little relay headroom, but an absolute fee ceiling; no unbounded automatic retries.
   const boundedGas = gasLimit * 12n / 10n;
-  const gasPrice = (await wallet.provider.getFeeData()).gasPrice;
+  // These are explicitly legacy transactions; avoid extra unsupported fee-method probes on relays.
+  const gasPrice = BigInt(await wallet.provider.send("eth_gasPrice", []));
   insist(gasPrice && gasPrice > 0n, "Gas price unavailable");
   const maxCostWei = boundedGas * gasPrice;
   const tinybars = (maxCostWei + 9999999999n) / 10000000000n;
   state.reserve(id, "gas", policy.market, tinybars, units(policy.limits.gasPerTransaction), units(policy.limits.gasDaily));
   insist(await wallet.provider.getBalance(wallet.address) >= maxCostWei, "Insufficient test HBAR for insurance gas");
   checkStop(policy);
-  const sent = await wallet.sendTransaction({ ...transaction, gasLimit: boundedGas, gasPrice, type: 0 });
-  state.spent(id, "submitted", sent.hash);
-  audit(state, "insurance.submitted", { transaction: sent.hash, maxGasTinybars: tinybars.toString() });
-  const receipt = await sent.wait(1, 60000);
+  const prepared = await wallet.populateTransaction({ ...transaction, gasLimit: boundedGas, gasPrice, type: 0 });
+  insist(Number(prepared.chainId) === CHAIN_ID, "Wrong insurance transaction chain");
+  const signed = await wallet.signTransaction(prepared);
+  const txHash = ethers.keccak256(signed);
+  // Persist the deterministic hash BEFORE broadcasting, including if the relay loses its response.
+  state.spent(id, "submitted", txHash);
+  audit(state, "insurance.submitted", { transaction: txHash, maxGasTinybars: tinybars.toString() });
+  try { await wallet.provider.broadcastTransaction(signed); }
+  catch { /* The relay may have accepted it. Reconcile only this exact hash, never resubmit. */ }
+  const receipt = await confirmedReceipt(wallet.provider, txHash, { timeoutMs: 60000 });
   insist(receipt?.status === 1, "Insurance transaction not confirmed; reconcile before retrying");
-  state.spent(id, "confirmed", sent.hash);
+  state.spent(id, "confirmed", txHash);
   return receipt;
 }
 

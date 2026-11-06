@@ -1,0 +1,47 @@
+{
+  "cutoff": "2026-10-30",
+  "universe": "all recoverable names from existing 23-market universe",
+  "start": "2005-01-07",
+  "evaluation_start": "2016-01-01",
+  "history_start": "1999-06-01",
+  "tenor": "weekly",
+  "sessions": 5,
+  "volatility_floor_daily": 0.005,
+  "markup": 1.5,
+  "max_weekly_fee": 0.01,
+  "min_fee": 0.0001,
+  "utilisation": 0.25,
+  "per_name_weight": 0.05,
+  "per_market_weight": 0.25,
+  "annual_operating_cost_per_deposit": 0.0025,
+  "premium_execution_cost": 0.05,
+  "matched_zero_cost_policy": "Entire fixed-term operating budget segregated at issue, outside claim collateral",
+  "bill_term_days": 91,
+  "rate_quote_convention": "same-date indicative secondary-market rate, not an executable ask",
+  "tail_information_lag_buckets": 2,
+  "curve_price_convention": "same-date fitted zero curve as an execution-price proxy, not a predictive input",
+  "products": [
+    [
+      0.03,
+      0.1
+    ],
+    [
+      0.05,
+      0.1
+    ],
+    [
+      0.1,
+      0.2
+    ],
+    [
+      0.1,
+      0.9
+    ],
+    [
+      0.0,
+      1.0
+    ]
+  ],
+  "missing_expiry_rule": "pay the contractual maximum; omit unknown underlying return from holder metrics",
+  "note": "Fixed research assumptions, not parameter estimates, broker quotes, or launch approval"
+}

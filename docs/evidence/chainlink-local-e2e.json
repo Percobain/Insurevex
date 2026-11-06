@@ -1,0 +1,35 @@
+{
+  "verifiedAt": "2026-11-06T18:30:46.852Z",
+  "environment": "ephemeral local Hardhat EVM; not testnet or DON evidence",
+  "workflow": "official CRE SDK test runtime with local HTTP transport and fixture market data",
+  "chainId": 1874,
+  "market": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+  "oracle": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+  "symbol": "NASDAQ:NVDA",
+  "startPrice": "100.00",
+  "fixturePrices": [
+    "80.00",
+    "80.10"
+  ],
+  "validatedPrice": "80.05",
+  "notional": "1000",
+  "deductibleBps": 1000,
+  "payout": "99.5",
+  "payoutUnits": "99500000",
+  "localSettlementTransaction": "0x5a96972e7a0b8d52a633e5d61dc6dd3ef397989f12239d80b99ad6ad887fa02c",
+  "checks": [
+    "actual on-chain signed quote and premium",
+    "actual SDK handler and on-chain policy reread",
+    "authenticated HTTP report delivery",
+    "SQLite reopen durability",
+    "missing report blocks fallback",
+    "validation-only moves no funds",
+    "keeper posts oracle and settles",
+    "holder receives exact payout",
+    "Pro absorbs loss; senior assets unchanged",
+    "collateral released",
+    "repeat keeper does not pay twice",
+    "settled report replay rejected",
+    "disabled feature preserves legacy settlement"
+  ]
+}

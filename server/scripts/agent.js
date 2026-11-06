@@ -5,8 +5,9 @@ import { randomUUID } from "node:crypto";
 import { ethers } from "ethers";
 import { AgentState } from "../src/agent/state.js";
 import { normalizeIntent, DEFAULT_LIMITS, NETWORK, CHAIN_ID, insist } from "../src/agent/policy.js";
-import { validateAgentPolicy, insurancePreflight, buyUnderwriting, buyInsurance, publishAgentAudit } from "../src/agent/client.js";
+import { validateAgentPolicy, insurancePreflight, runGasPreflight, buyUnderwriting, buyInsurance, publishAgentAudit } from "../src/agent/client.js";
 import { audit } from "../src/agent/audit.js";
+import { testnetProvider } from "../src/chain.js";
 
 const root = path.resolve(process.env.AGENT_STATE_DIR || ".agent-state");
 const execute = process.argv.includes("--execute");
@@ -27,13 +28,14 @@ try {
     // POSIX mode bits are not enforced on Windows (Node reports 0o666); there the per-user profile ACL protects the file.
     insist(process.platform === "win32" || (fs.statSync(credentialFile).mode & 0o077) === 0, "Agent credentials must have mode 600");
     const credentials = JSON.parse(fs.readFileSync(credentialFile));
-    const provider = new ethers.JsonRpcProvider(process.env.HEDERA_RPC || "https://testnet.hashio.io/api", undefined, { batchMaxCount: 1 });
+    const provider = testnetProvider(CHAIN_ID, { rpc: process.env.HEDERA_RPC });
     const wallet = new ethers.Wallet(credentials.privateKey, provider);
     const quoter = process.env.QUOTER_PRIVATE_KEY ? new ethers.Wallet(process.env.QUOTER_PRIVATE_KEY).address : null;
     insist(wallet.address !== quoter, "Agent must never use the privileged quoter wallet");
     const intent = normalizeIntent({ chainId: CHAIN_ID, buyer: wallet.address, symbol: "NASDAQ:NVDA", shares: process.env.AGENT_SHARES || "0.01",
       deductibleBps: Number(process.env.AGENT_DEDUCTIBLE_BPS || 1000), capBps: 1000, tenorDays: 7,
       requestId: randomUUID(), deadline: Math.floor(Date.now() / 1000) + 600 });
+    await runGasPreflight({ wallet, policy, state });
     await insurancePreflight({ wallet, policy, intent });
     if (!execute) {
       console.log(JSON.stringify({ mode: "plan", intent, limits: policy.limits, merchant: policy.merchant,
