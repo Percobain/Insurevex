@@ -148,12 +148,9 @@ function NoteCard({ note, chainId, account, kycOk }) {
         {subOpen && !matured && (
           <div className="space-y-2">
             <label className="label block" htmlFor={`amt-${note.address}`}>How much to save</label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted">$</span>
-                <input id={`amt-${note.address}`} className="input pl-7" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
-              </div>
-              <button className="btn-primary shrink-0" disabled={Boolean(saveBlocked) || Boolean(busy) || overBalance} onClick={subscribe}>Save {usd(amt)}</button>
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">$</span>
+              <input id={`amt-${note.address}`} className="input h-12 w-full pl-8 text-lg tabular" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
             </div>
             {account && walletUnits !== undefined && (
               <p className={`text-xs ${overBalance ? "text-bad" : "text-muted"}`}>
@@ -161,6 +158,7 @@ function NoteCard({ note, chainId, account, kycOk }) {
                 {walletUnits > 0n && <button type="button" className="underline underline-offset-2" onClick={() => setAmount(String(fromUnits(walletUnits)))}>Use all</button>}
               </p>
             )}
+            <button className="btn-primary w-full h-11" disabled={Boolean(saveBlocked) || Boolean(busy) || overBalance} onClick={subscribe}>Save {usd(amt)}</button>
             {saveBlocked && <p className="text-xs text-muted">{saveBlocked}</p>}
             {units > 0n && floor1000 !== undefined && (
               <p className="text-sm text-ink2">

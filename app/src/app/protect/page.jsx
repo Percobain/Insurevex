@@ -22,8 +22,55 @@ function Step({ n, title, children, done }) {
         <span className={`h-7 w-7 rounded-full grid place-items-center text-xs font-semibold ${done ? "bg-good text-white" : "bg-sunk text-ink2"}`}>{done ? "✓" : n}</span>
         <h3 className="font-semibold">{title}</h3>
       </div>
-      <div className="mt-4">{children}</div>
+      <div className="mt-4 pt-4 border-t border-line">{children}</div>
     </div>
+  );
+}
+
+/** One form field: a label on top, the control, and an optional hint under it. */
+function Field({ label, htmlFor, hint, children }) {
+  return (
+    <div className="min-w-0">
+      <label className="label" htmlFor={htmlFor}>{label}</label>
+      <div className="mt-1.5">{children}</div>
+      {hint && <div className="mt-1.5 text-xs text-muted min-h-[1rem]">{hint}</div>}
+    </div>
+  );
+}
+
+/** A number input with its unit shown inside the box on the right. */
+function UnitInput({ id, value, onChange, unit, label }) {
+  return (
+    <div className="relative">
+      <input id={id} className="input h-12 w-full pr-20 text-lg tabular" inputMode="decimal" value={value} onChange={(e) => onChange(e.target.value)} aria-label={label} />
+      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted truncate max-w-[4.5rem]">{unit}</span>
+    </div>
+  );
+}
+
+/** One setting in the settings list: name and a short explanation, then the choices. */
+function Setting({ name, hint, children }) {
+  return (
+    <div className="p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+        <div className="text-sm font-medium">{name}</div>
+        <div className="text-xs text-muted">{hint}</div>
+      </div>
+      <div className="mt-2.5">{children}</div>
+    </div>
+  );
+}
+
+/** A big choice card with a radio dot. */
+function Choice({ on, title, body, onClick }) {
+  return (
+    <button type="button" role="radio" aria-checked={on} onClick={onClick} className={`text-left rounded-xl border p-4 flex gap-3 transition-colors ${on ? "border-ink bg-card shadow-sm" : "border-line hover:bg-sunk"}`}>
+      <span className={`mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 grid place-items-center ${on ? "border-ink" : "border-line"}`}>{on && <span className="h-1.5 w-1.5 rounded-full bg-ink" />}</span>
+      <span>
+        <span className="block text-sm font-semibold">{title}</span>
+        <span className="block text-xs text-muted mt-1">{body}</span>
+      </span>
+    </button>
   );
 }
 
@@ -295,104 +342,112 @@ export default function ProtectPage() {
             </Step>
 
             <Step n="2" title="How much to protect" done={Boolean(quote?.ok)}>
-              {/* what you own: verified (broker statement / tokenised balance) or typed for now */}
-              {verifiedOwned !== null ? (
-                <div className="rounded-xl bg-sunk px-4 py-3 text-sm flex flex-wrap items-center justify-between gap-2">
-                  <span>You own <b className="tabular">{fmtNum(verifiedOwned, 4)}</b> {tick}</span>
-                  <span className="chip text-good border-good/40">checked {tokenShares !== null ? "in your wallet" : "with your broker"}</span>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Field
+                  label="Shares you own"
+                  htmlFor="shares-owned"
+                  hint={verifiedOwned !== null ? <span className="text-good">Checked {tokenShares !== null ? "in your wallet" : "with your broker"}</span> : "We check this in step 3."}
+                >
+                  {verifiedOwned !== null ? (
+                    <div className="input h-12 w-full flex items-center justify-between bg-sunk text-lg tabular">
+                      {fmtNum(verifiedOwned, 4)}
+                      <span className="text-sm text-muted">{tick}</span>
+                    </div>
+                  ) : (
+                    <UnitInput id="shares-owned" value={sharesHeld} onChange={setSharesHeld} unit={tick} label="Shares you own" />
+                  )}
+                </Field>
+                <Field
+                  label="Shares to protect"
+                  htmlFor="shares-to-protect"
+                  hint={usdClose > 0 && S > 0 ? <>= <b className="text-ink tabular">{fmtMoney(N, { sym: "" })} {stable}</b> at {fmtNum(symbol.lastClose, 2)} {symbol.currency || "USD"} each</> : symbol ? "" : "Pick a stock to see the value."}
+                >
+                  <UnitInput id="shares-to-protect" value={sharesCover} onChange={setSharesCover} unit={tick} label="Shares to protect" />
+                </Field>
+              </div>
+
+              {symbol && (
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  {[
+                    ["Half of mine", owned / 2, owned > 0],
+                    ["All I own", owned, owned > 0],
+                    ["Most we can protect", maxShares === null ? 0 : Math.min(maxShares, owned || maxShares), !demo && maxShares !== null && maxShares > 0],
+                  ].filter(([, , ok]) => ok).map(([t, x]) => (
+                    <button key={t} type="button" className="chip hover:bg-sunk" onClick={() => setShares(x)}>{t}</button>
+                  ))}
                 </div>
-              ) : (
-                <label className="flex flex-wrap items-center gap-3 text-sm">
-                  <span className="text-ink2">How many {tick} do you own?</span>
-                  <input className="input h-10 w-28" inputMode="decimal" value={sharesHeld} onChange={(e) => setSharesHeld(e.target.value)} aria-label="Shares you own" />
-                  <span className="text-xs text-muted">We check this in step 3.</span>
-                </label>
+              )}
+              {!usdClose && symbol && (
+                <div className="mt-4 max-w-xs">
+                  <Field label={`Value to protect (we can't convert ${symbol.currency} right now)`} htmlFor="manual-value">
+                    <UnitInput id="manual-value" value={manualValue} onChange={setManualValue} unit={stable} label="Value to protect" />
+                  </Field>
+                </div>
+              )}
+              {/* the one thing in the way, in plain words */}
+              {symbol && overOwned && <p className="text-sm text-bad mt-3">You own {fmtNum(owned, 4)}. You can protect up to that many.</p>}
+              {symbol && !overOwned && tooBig && (
+                <p className="text-sm text-bad mt-3">
+                  We can protect up to <b>{fmtNum(maxShares, 4)}</b> {tick} (about {fmtMoney(maxNotional, { sym: "" })} {stable}) right now.{" "}
+                  <button type="button" className="underline underline-offset-2 text-ink" onClick={() => setShares(maxShares)}>Use that</button>
+                </p>
+              )}
+              {symbol && symbol.currency && symbol.currency !== "USD" && usdClose > 0 && (
+                <p className="text-xs text-muted mt-2">Paid in {stable}. 1 {symbol.ticker} is about {fmtMoney(usdClose, { sym: "" })} {stable} today.</p>
               )}
 
-              <div className="mt-5">
-                <label className="label" htmlFor="shares-to-protect">How many do you want to protect?</label>
-                <div className="mt-1.5 flex flex-wrap items-center gap-3">
-                  <input id="shares-to-protect" className="input h-12 w-40 text-lg tabular" inputMode="decimal" value={sharesCover} onChange={(e) => setSharesCover(e.target.value)} />
-                  <span className="text-sm text-ink2">{tick}</span>
-                  {usdClose > 0 && S > 0 && <span className="text-sm">= <b className="tabular">{fmtMoney(N, { sym: "" })} {stable}</b> <span className="text-muted">at {fmtNum(symbol.lastClose, 2)} {symbol.currency || "USD"} each</span></span>}
-                </div>
-                {symbol && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {[
-                      ["Half of mine", owned / 2, owned > 0],
-                      ["All I own", owned, owned > 0],
-                      ["Most we can protect", maxShares === null ? 0 : Math.min(maxShares, owned || maxShares), !demo && maxShares !== null && maxShares > 0],
-                    ].filter(([, , ok]) => ok).map(([t, x]) => (
-                      <button key={t} type="button" className="chip hover:bg-sunk" onClick={() => setShares(x)}>{t}</button>
-                    ))}
-                  </div>
-                )}
-                {!usdClose && symbol && (
-                  <label className="flex flex-wrap items-center gap-3 mt-3 text-sm">
-                    <span className="text-ink2">We can&apos;t convert {symbol.currency} right now. Value to protect:</span>
-                    <input className="input h-10 w-32" inputMode="decimal" value={manualValue} onChange={(e) => setManualValue(e.target.value)} aria-label="Value to protect" />
-                    <span>{stable}</span>
-                  </label>
-                )}
-                {/* the one thing in the way, in plain words */}
-                {symbol && overOwned && <p className="text-sm text-bad mt-3">You own {fmtNum(owned, 4)}. You can protect up to that many.</p>}
-                {symbol && !overOwned && tooBig && (
-                  <p className="text-sm text-bad mt-3">
-                    We can protect up to <b>{fmtNum(maxShares, 4)}</b> {tick} (about {fmtMoney(maxNotional, { sym: "" })} {stable}) right now.{" "}
-                    <button type="button" className="underline underline-offset-2 text-ink" onClick={() => setShares(maxShares)}>Use that</button>
-                  </p>
-                )}
-                {symbol && symbol.currency && symbol.currency !== "USD" && usdClose > 0 && (
-                  <p className="text-xs text-muted mt-2">Paid in {stable}. 1 {symbol.ticker} is about {fmtMoney(usdClose, { sym: "" })} {stable} today.</p>
-                )}
+              <div className="mt-6 rounded-xl border border-line divide-y divide-line">
+                <Setting name="How long" hint="Protection ends on this date">
+                  <Seg full value={tenor} onChange={setTenor} options={[{ value: 7, label: "1 week" }, { value: 14, label: "2 weeks" }, { value: 28, label: "1 month" }, { value: "10m", label: "10 min (test)" }]} />
+                </Setting>
+                <Setting name="Starts paying after a drop of" hint="Higher = cheaper">
+                  <Seg value={b} onChange={setB} options={[300, 500, 750, 1000, 1500, 2000, 2500].map((v) => ({ value: v, label: `${v / 100}%` }))} />
+                </Setting>
+                <Setting name="Pays up to" hint="Of the value you protect">
+                  <Seg full value={c} onChange={setC} options={[{ value: 1000, label: "10%" }, { value: 2000, label: "20%" }, { value: 3000, label: "30%" }]} />
+                </Setting>
+                <p className="p-4 text-sm text-ink2 bg-sunk/60 rounded-b-xl">
+                  If {symbol?.ticker || "the stock"} drops more than <b className="text-ink">{fmtPct(b / 10000, 0)}</b>, you get the extra drop, up to <b className="text-ink">{fmtPct(c / 10000, 0)}</b> of the value{N > 0 ? <> (<b className="text-ink">{fmtMoney(maxPayout, { sym: "" })} {stable}</b> at most)</> : null}.
+                </p>
               </div>
-              <div className="grid gap-4 mt-5">
-                <div className="space-y-1.5"><div className="label">How long</div><Seg value={tenor} onChange={setTenor} options={[{ value: 7, label: "1 week" }, { value: 14, label: "2 weeks" }, { value: 28, label: "1 month" }, { value: "10m", label: "10 min (test)" }]} /></div>
-                <div className="space-y-1.5"><div className="label">Starts paying after a drop of</div><div className="flex flex-wrap gap-2"><Seg value={b} onChange={setB} options={[300, 500, 750, 1000, 1500, 2000, 2500].map((v) => ({ value: v, label: `${v / 100}%` }))} /></div></div>
-                <div className="space-y-1.5"><div className="label">Pays up to</div><Seg value={c} onChange={setC} options={[{ value: 1000, label: "10%" }, { value: 2000, label: "20%" }, { value: 3000, label: "30%" }]} /></div>
-              </div>
-              <p className="mt-4 rounded-xl bg-sunk px-4 py-3 text-sm text-ink2">
-                If {symbol?.ticker || "the stock"} drops more than <b className="text-ink">{fmtPct(b / 10000, 0)}</b>, you get the extra drop, up to <b className="text-ink">{fmtPct(c / 10000, 0)}</b> of the value{N > 0 ? <> (<b className="text-ink">{fmtMoney(maxPayout, { sym: "" })} {stable}</b> at most)</> : null}.
-              </p>
             </Step>
 
             <Step n="3" title="Show you own it" done={Boolean(attest?.heldShares) || atsHeld > 0}>
               <p className="text-sm text-ink2">You can only protect shares you own. Where are they?</p>
-              <div className="grid sm:grid-cols-2 gap-3 mt-3">
-                <button onClick={() => setPath("broker")} className={`text-left rounded-xl border p-4 ${path === "broker" ? "border-accent bg-accentSoft" : "border-line hover:bg-sunk"}`}>
-                  <div className="text-sm font-semibold">At a broker</div>
-                  <div className="text-xs text-muted mt-1">Zerodha, IBKR, Robinhood or any other. Upload a statement or connect.</div>
-                </button>
-                <button onClick={() => setPath("token")} className={`text-left rounded-xl border p-4 ${path === "token" ? "border-accent bg-accentSoft" : "border-line hover:bg-sunk"}`}>
-                  <div className="text-sm font-semibold">In your wallet</div>
-                  <div className="text-xs text-muted mt-1">A tokenised share. We read your wallet balance.</div>
-                </button>
+              <div className="grid sm:grid-cols-2 gap-3 mt-3" role="radiogroup">
+                <Choice on={path === "broker"} onClick={() => setPath("broker")} title="At a broker" body="Zerodha, IBKR, Robinhood or any other. Upload a statement or connect." />
+                <Choice on={path === "token"} onClick={() => setPath("token")} title="In your wallet" body="A tokenised share. We read your wallet balance." />
               </div>
-              {path === "broker" ? (
-                <>
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {[["statement", "Upload statement"], ["kite", "Connect Zerodha Kite"], ["ibkr", "Connect IBKR"]].map(([v, t]) => (
-                      <button key={v} onClick={() => setSource(v)} className={`chip ${source === v ? "bg-ink text-paper border-ink" : "hover:bg-sunk"}`}>{t}</button>
-                    ))}
+              <div className="mt-4 rounded-xl border border-line p-4">
+                {path === "broker" ? (
+                  <>
+                    <div className="label">How to check</div>
+                    <div className="mt-2">
+                      <Seg full value={source} onChange={setSource} options={[{ value: "statement", label: "Statement" }, { value: "kite", label: "Zerodha" }, { value: "ibkr", label: "IBKR" }]} />
+                    </div>
+                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                      <button className="btn-primary btn-sm" disabled={!symbol || !address || attesting} onClick={doAttest}>
+                        {attesting ? "Checking…" : source === "statement" ? "Check my shares" : "Connect and check (test)"}
+                      </button>
+                      {attest?.heldShares ? (
+                        <span className="text-sm text-good" title={attest.ref ? `Reference ${attest.ref}` : undefined}>Done: you own {fmtNum(Number(attest.heldShares) / 1e18, 4)} shares</span>
+                      ) : attest?.error ? (
+                        <span className="text-sm text-bad" title={attest.error}>We couldn&apos;t check that. Try again or pick another option.</span>
+                      ) : (!symbol || !address) ? (
+                        <span className="text-xs text-muted">{!symbol ? "Pick a stock first." : "Connect your wallet first."}</span>
+                      ) : null}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-sm">
+                    {!symbol ? <span className="text-muted">Pick a stock first.</span> : atsToken ? (
+                      <span title={atsToken}>Your wallet holds <span className="font-semibold">{fmtNum(atsHeld, 4)}</span> {tick}. We check again when you buy.</span>
+                    ) : (
+                      <>There is no tokenised {symbol.ticker || symbol.symbol} on this network. Choose “At a broker” instead.</>
+                    )}
                   </div>
-                  <div className="flex flex-wrap items-center gap-3 mt-4">
-                    <button className="btn-ghost" disabled={!symbol || !address || attesting} onClick={doAttest}>
-                      {attesting ? "Checking…" : source === "statement" ? "Check my shares" : "Connect and check (test)"}
-                    </button>
-                    {attest?.heldShares && <span className="text-sm text-good" title={attest.ref ? `Reference ${attest.ref}` : undefined}>Done: you own {fmtNum(Number(attest.heldShares) / 1e18, 4)} shares</span>}
-                    {attest?.error && <span className="text-sm text-bad" title={attest.error}>We couldn&apos;t check that. Try again or pick another option.</span>}
-                  </div>
-                  {(!symbol || !address) && <p className="text-xs text-muted mt-2">{!symbol ? "Pick a stock first." : "Connect your wallet first."}</p>}
-                </>
-              ) : (
-                <div className="mt-4 rounded-xl bg-sunk p-4 text-sm">
-                  {!symbol ? "Pick a stock first." : atsToken ? (
-                    <span title={atsToken}>Your wallet holds <span className="font-semibold">{fmtNum(atsHeld, 4)}</span> {tick}. We check again when you buy.</span>
-                  ) : (
-                    <>There is no tokenised {symbol.ticker || symbol.symbol} on this network. Choose “At a broker” instead.</>
-                  )}
-                </div>
-              )}
+                )}
+              </div>
             </Step>
           </div>
 

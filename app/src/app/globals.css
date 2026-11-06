@@ -297,3 +297,71 @@ body {
 .iso-screen-paid { fill: var(--iso-good); }
 .iso-screen-text { font: 700 13px var(--font-mono), ui-monospace, monospace; fill: #fff; letter-spacing: 0.06em; }
 @keyframes sp-in { from { opacity: 0; transform: translateY(-4px) scale(.985); } to { opacity: 1; transform: none; } }
+
+/* Real-object pieces: links on the ground, bank, piggy bank, coin pool, bar chart, monitor */
+.iso-link-bed { fill: none; stroke: var(--iso-side2); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; }
+.iso-link { fill: none; stroke: var(--iso-muted); stroke-width: 1.3; stroke-dasharray: 5 6; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.3s; }
+.iso-link.is-on { stroke-width: 2; }
+.iso-link.is-good { stroke: var(--iso-good); }
+.iso-link.is-accent { stroke: var(--iso-accent); }
+.iso-link.is-ink { stroke: var(--iso-ink); }
+.iso-link-node { fill: var(--iso-bg); stroke: var(--iso-ink); stroke-width: 1.1; }
+.iso-link-node.is-good { fill: var(--iso-good); }
+.iso-link-node.is-accent { fill: var(--iso-accent); }
+.iso-link-node.is-ink { fill: var(--iso-ink); }
+.iso-roof { fill: var(--iso-side2); stroke: var(--iso-ink); stroke-width: 1.1; stroke-linejoin: round; }
+.iso-roof.is-lit { fill: var(--iso-side); }
+.iso-bank-wall .iso-face, .iso-bank-wall .iso-side { fill: #d6d3ca; }
+.iso-door { fill: var(--iso-ink); opacity: 0.85; }
+.iso-column .iso-side { fill: #fff; }
+.iso-bank-sign { font: 700 7.5px var(--font-sans), ui-sans-serif, system-ui; fill: var(--iso-ink); letter-spacing: 0.1em; }
+.iso-pig { fill: url(#iso-pig-grad); stroke: var(--iso-ink); stroke-width: 1.1; stroke-linejoin: round; }
+.iso-pig-dk { fill: #eeab96; stroke: var(--iso-ink); stroke-width: 1.1; }
+.iso-pig-tail { fill: none; stroke: var(--iso-ink); stroke-width: 1.3; stroke-linecap: round; }
+.iso-pig-crease { fill: none; stroke: var(--iso-ink); stroke-width: 0.8; opacity: 0.25; }
+.iso-pool-well { fill: var(--iso-good-dk); stroke: var(--iso-ink); stroke-width: 1; }
+.iso-pool-surface { fill: var(--iso-good); stroke: #fff; stroke-width: 0.6; stroke-opacity: 0.25; }
+.iso-pool-coin { fill: #fff; stroke: var(--iso-ink); stroke-width: 0.9; }
+.iso-trend { fill: none; stroke: var(--iso-good); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.iso-trend.is-bad { stroke: var(--iso-bad); }
+.iso-trend-head { fill: var(--iso-good); }
+.iso-trend-head.is-bad { fill: var(--iso-bad); }
+.iso-monitor-glass { fill: #2f4e4c; stroke: #0e1d1c; stroke-width: 0.6; }
+.iso-sign-board { fill: #fff; stroke: var(--iso-ink); stroke-width: 1.1; stroke-linejoin: round; }
+.iso-sign-post { fill: var(--iso-side2); stroke: var(--iso-ink); stroke-width: 1; }
+.iso-chest-lid { fill: var(--iso-side); stroke: var(--iso-ink); stroke-width: 1.1; stroke-linejoin: round; }
+.iso-chest-latch { fill: var(--iso-ink); }
+.iso-safe-dial { fill: #fff; stroke: var(--iso-ink); stroke-width: 1.2; }
+
+/* Full-figure pieces: rounded bodies, trays, floor, piggy, share certificates */
+.iso-rside { fill: url(#iso-soft-side); stroke: var(--iso-ink); stroke-width: 1.1; stroke-linejoin: round; }
+.iso-redge { stroke: #fff; stroke-width: 1; opacity: 0.7; }
+.iso-rbox .iso-face { stroke-width: 1.1; }
+.iso-tray .iso-face { fill: #fbfaf7; }
+.iso-groove { fill: none; stroke: var(--iso-ink); stroke-width: 0.7; opacity: 0.28; }
+.iso-screw { fill: #fff; stroke: var(--iso-ink); stroke-width: 0.7; opacity: 0.6; }
+.iso-floor line { stroke: var(--iso-ink); stroke-width: 0.6; opacity: 0.09; }
+.iso-teal .iso-rside { fill: #182c2b; }
+.iso-pig-leg .iso-side { fill: #eeab96; }
+.iso-pig-leg .iso-face { fill: #f6cdbf; }
+.iso-pig-ear-back { fill: #eeab96; }
+.iso-pig-belly { fill: #e9a690; opacity: 0.28; stroke: none; }
+.iso-pig-snout { fill: #f3b6a2; stroke: var(--iso-ink); stroke-width: 1.1; }
+.iso-pig-slot { stroke: var(--iso-ink); stroke-linecap: round; }
+.iso-certs .iso-face { fill: #fffdf8; }
+.iso-page-edge { stroke: var(--iso-ink); stroke-width: 0.5; opacity: 0.22; }
+.iso-cert-border { fill: none; stroke: var(--iso-ink); stroke-width: 0.7; opacity: 0.5; }
+.iso-cert-title { font: 700 8px var(--font-sans), ui-sans-serif, system-ui; fill: var(--iso-ink); letter-spacing: 0.08em; }
+.iso-cert-line { stroke: var(--iso-ink); stroke-width: 0.8; opacity: 0.3; stroke-linecap: round; }
+.iso-cert-seal { fill: var(--iso-good); stroke: var(--iso-ink); stroke-width: 0.8; }
+.iso-cert-seal.is-bad { fill: var(--iso-bad); }
+
+/* Coin pool */
+.iso-pool-base .iso-face { fill: #fbfaf7; }
+.iso-pool-fill { fill: #eee8d8; stroke: var(--iso-ink); stroke-width: 0.9; }
+.iso-pool-bed { fill: #fffdf6; stroke: var(--iso-ink); stroke-width: 0.6; opacity: 0.85; }
+.iso-pool-lip { fill: none; stroke: var(--iso-ink); stroke-width: 0.6; opacity: 0.35; }
+.iso-pool-window { fill: #f3f1ec; stroke: var(--iso-ink); stroke-width: 1; }
+.iso-pool-level { fill: var(--iso-good); }
+.iso-pool-stack .iso-face { fill: #fff; }
+.iso-pool-stack .iso-side { fill: #ece9e1; }
