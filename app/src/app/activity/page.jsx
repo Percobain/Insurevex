@@ -68,9 +68,9 @@ const KIND = {
 const TONE = { cover: "text-accent border-accent/40", notes: "text-good border-good/40", compliance: "" };
 
 const STEPS = [
-  ["Official close is posted", "At expiry, the exchange's official closing price is written on-chain."],
-  ["Anyone can settle", "Settlement is open to everyone, so no one can hold a payout back."],
-  ["Vault pays, or keeps the premium", "A crash pays the holder from locked money. A calm month leaves the premium with savers."],
+  { icon: "chart", title: "Official close posted", body: "At expiry, the exchange's official closing price is written on-chain.", stat: "One price, no disputes" },
+  { icon: "hand", title: "Anyone can settle", body: "Settlement is open to everyone, so no one can hold a payout back.", stat: "Permissionless" },
+  { icon: "check", title: "Paid, or premium kept", body: "A crash pays the holder from locked money. A calm month leaves the premium with savers.", stat: "Shows up in the feed below" },
 ];
 
 const FAQ = [

@@ -23,9 +23,9 @@ const when = (v) => v ? new Date(v).toLocaleString() : "—";
 const txUrl = (tx) => `https://hashscan.io/testnet/transaction/${encodeURIComponent(tx)}`;
 
 const STEPS = [
-  ["You set the rules", "Which stock, how many shares, and a daily budget. One wallet signature approves one run."],
-  ["The agent checks, then pays", "It confirms your identity, holdings and price for free, then pays the underwriting fee and the premium."],
-  ["Every step leaves a receipt", "Payments and the policy settle on Hedera. An audit log is anchored on-chain you can open on HashScan."],
+  { icon: "sliders", title: "You set the rules", body: "Which stock, how many shares and a daily budget. One signature approves one run.", stat: "You stay in control" },
+  { icon: "bolt", title: "It checks, then pays", body: "Identity, holdings and price are checked for free. Then it pays the fee and the premium.", stat: "0.01 HBAR fee via x402" },
+  { icon: "receipt", title: "Every step has a receipt", body: "Payments, the policy and an audit log all settle on Hedera.", stat: "Open any of it on HashScan" },
 ];
 
 function Rules() {

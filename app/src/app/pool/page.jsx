@@ -21,9 +21,9 @@ function Meter({ label, value, max, sub }) {
 }
 
 const STEPS = [
-  ["Holders pay premiums", "Every protection fee lands in the vault. That income is what savers and Pro LPs earn."],
-  ["Payouts are set aside first", "Before a policy is sold, its maximum payout is locked in the vault. No policy is ever unfunded."],
-  ["Crash or calm", "If a stock crashes, the locked money pays the holder. If not, it is released and the premium stays with the vault."],
+  { icon: "pay", title: "Premiums come in", body: "Every protection fee lands in the vault. That is what savers and Pro LPs earn.", stat: "Income for the vault" },
+  { icon: "lock", title: "Payouts set aside first", body: "Before a policy is sold, its maximum payout is locked. No policy is ever unfunded.", stat: "100% collateralised" },
+  { icon: "check", title: "Crash or calm", body: "A crash pays the holder from the locked money. Calm releases it and the vault keeps the premium.", stat: "Settled on the official close" },
 ];
 
 const LOSS_ORDER = [

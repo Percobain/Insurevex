@@ -157,9 +157,9 @@ function NoteCard({ note, chainId, account, kycOk }) {
 }
 
 const STEPS = [
-  ["You deposit $1,000", "One transaction, from a verified wallet. Your money goes into a note with a fixed end date."],
-  ["It splits in two", "About $952 buys T-bills that grow back to exactly $1,000 by maturity. The rest, about $48, buys vault units."],
-  ["You get $1,000 back, plus more", "Your $1,000 is locked in by the T-bills. The vault units grow every time a stock holder pays for protection."],
+  { icon: "coin", title: "Deposit", body: "One transaction from a verified wallet, into a note with a fixed end date.", stat: "$1,000 in" },
+  { icon: "split", title: "It splits in two", body: "Most buys T-bills that grow back to your full deposit. The rest buys vault units.", stat: "$952 T-bills · $48 units" },
+  { icon: "growth", title: "Get it all back, plus more", body: "Your deposit is locked in. The units grow every time a holder pays a premium.", stat: "$1,000 + vault units" },
 ];
 
 const FAQ = [

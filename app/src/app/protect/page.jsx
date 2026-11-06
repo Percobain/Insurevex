@@ -27,9 +27,9 @@ function Step({ n, title, children, done }) {
 }
 
 const STEPS = [
-  ["Pick your stock", "Any of 23 exchanges. Shares at your broker or tokenised on-chain both work."],
-  ["Pay a small fee", "For example about $90 to protect $10,000 of NVIDIA for a month. The most you can be paid is fixed before you buy."],
-  ["Paid if it crashes", "If the official closing price at expiry has fallen past your threshold, the vault pays you the difference. Automatically."],
+  { icon: "search", title: "Pick your stock", body: "From your broker or tokenised on-chain. You keep your shares.", stat: "23 exchanges" },
+  { icon: "pay", title: "Pay a small fee", body: "The most you can be paid is fixed before you buy.", stat: "≈ $90 per $10k a month" },
+  { icon: "shield", title: "Paid if it crashes", body: "If the official close falls past your threshold, the vault pays the difference.", stat: "Paid automatically" },
 ];
 
 const FAQ = [

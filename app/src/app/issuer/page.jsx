@@ -29,9 +29,9 @@ function Panel({ title, role, allowed, children, sub }) {
 }
 
 const DUTIES = [
-  ["Verify people", "Approve KYC requests, freeze a wallet, or block a country. Only verified wallets can hold notes or buy cover."],
-  ["Post closing prices", "Write each stock's official close at expiry, then settle the policies that were waiting on it."],
-  ["Run the products", "Pay note coupons, pause transfers, update the T-bill value and set the vault's risk limits."],
+  { icon: "user", title: "Verify people", body: "Approve KYC, freeze a wallet or block a country.", stat: "Only verified wallets can hold" },
+  { icon: "chart", title: "Post closing prices", body: "Write each stock's official close at expiry, then settle waiting policies.", stat: "Decides every payout" },
+  { icon: "sliders", title: "Run the products", body: "Pay note coupons, update the T-bill value and set the vault's risk limits.", stat: "Within contract bounds" },
 ];
 
 const Field = ({ label, children }) => <label className="block space-y-1.5"><span className="label">{label}</span>{children}</label>;
