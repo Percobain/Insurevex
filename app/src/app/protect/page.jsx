@@ -406,7 +406,7 @@ export default function ProtectPage() {
                   {ready && <span className="text-xs text-muted flex items-center gap-1.5"><span className={`h-1.5 w-1.5 rounded-full ${quoting ? "bg-accent animate-pulse" : fresh && quote?.ok ? "bg-good" : "bg-muted"}`} />{quoting ? "Updating price…" : fresh && quote?.ok ? "Live price" : ""}</span>}
                 </div>
                 <div className="mt-1 text-3xl font-semibold tracking-tight tabular">{prem !== null ? `${fmtMoney(prem, { sym: "" })} ${stable}` : "—"}</div>
-                <div className="text-xs text-muted mt-1">{prem !== null ? `${fmtPct(prem / (N || 1), 2)} of the value, paid once` : !symbol ? "Pick a stock to see the price" : !ready ? "Fix the highlighted number to see the price" : "Pricing…"}</div>
+                <div className="text-xs text-muted mt-1">{prem !== null ? `${fmtPct(prem / (N || 1), 2)} of the value, paid once` : !symbol ? "Pick a stock to see the price" : !ready ? "Fix the highlighted number to see the price" : fresh && quoteErr && !quoting ? "Not sold at these settings, see below" : "Pricing…"}</div>
               </div>
               <div className="mt-3">
                 <Row k="Value protected" v={fmtMoney(N, { sym: "" }) + ` ${stable}`} />
@@ -439,7 +439,13 @@ export default function ProtectPage() {
               <button className="btn-primary w-full mt-4" disabled={!fresh || !quote?.ok || quote?.pricing?.refused || quoting || !isConnected || !deployed || !kyc.verified || Boolean(busy) || Boolean(blockReason)} onClick={buy}>
                 {busy || (prem !== null ? `Buy for ${fmtMoney(prem, { sym: "" })} ${stable}` : "Buy cover")}
               </button>
-              {symbol && blockReason && <p className="text-xs text-bad mt-3">{blockReason}</p>}
+              {(() => {
+                // say why Buy is greyed out, one reason at a time
+                if (!fresh || !quote?.ok || quoting || busy) return null;
+                const why = !isConnected ? "Connect your wallet to buy." : !deployed ? "Switch your wallet to a supported network to buy."
+                  : !kyc.verified ? "Verify your identity first (button at the top of the page)." : blockReason;
+                return why ? <p className="text-xs text-bad mt-3">{why}</p> : null;
+              })()}
               {isConnected && walletBal !== null && (
                 <p className="text-xs text-muted mt-3">Wallet: {fmtMoney(walletBal, { sym: "" })} {stable}.{fresh && quote?.ok ? " The price refreshes by itself; you pay exactly what is shown." : ""}</p>
               )}
