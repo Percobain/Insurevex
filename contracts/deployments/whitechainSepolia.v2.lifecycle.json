@@ -106,5 +106,17 @@
     "tx": "0x4749de7a2e3f334117572724ec88fcf4380e23eab4f3fad0e2fe022edab44c1b",
     "url": "https://explorer.testnet.whitechain.io/tx/0x4749de7a2e3f334117572724ec88fcf4380e23eab4f3fad0e2fe022edab44c1b",
     "at": "2026-11-05T21:59:46.384Z"
+  },
+  {
+    "step": "Demo note matures (T-bill floor + sleeve pulled back)",
+    "tx": "0x57a6e53bf0a0c82735d02cff3389ee661a97ce5d39944ec9046916b36f0a7d69",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x57a6e53bf0a0c82735d02cff3389ee661a97ce5d39944ec9046916b36f0a7d69",
+    "at": "2026-11-06T00:45Z"
+  },
+  {
+    "step": "Saver redeems demo note: 8 USDT in, 8.000113 USDT back (principal protected)",
+    "tx": "0x2000f6b1f4a00931ca299c9f13e92d10f75b7153670dad3ecded867d6fc41eff",
+    "url": "https://explorer.testnet.whitechain.io/tx/0x2000f6b1f4a00931ca299c9f13e92d10f75b7153670dad3ecded867d6fc41eff",
+    "at": "2026-11-06T00:45Z"
   }
 ]

@@ -59,6 +59,7 @@ Settlement token (official test USDT): [`0xcedfB56113143d55b2358b8CFbB0dEB5Ad2f5
 | Holder buys a monthly Toyota floor (TSE:7203) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0x937a8670096337fdd5f74144e3340763520930adcd2e2c942cb536080ec60ea8) |
 | Holder buys a 15-minute SPY floor (settled by the keeper from the official price) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0xafb5abf660385f4c2d5fe525f456858abf101f1f5a211b51af064e6adb6d903c) |
 | T-bill custodian proceeds in USDT, then NAV and reserve attested | Issuer | [tx](https://explorer.testnet.whitechain.io/tx/0xf09b9ef9abbdc3512f574ee4a657225c7945ad1e8528844445fac18dcdf77695) · [NAV](https://explorer.testnet.whitechain.io/tx/0x4c99a0247d62b16af3c83d5afd31bde78f0c9912c7ede8a8535de757bf9db15a) |
+| **Maturity:** a full-term demo note (contracts v2) matured and the Saver redeemed **8 USDT in, 8.000113 USDT back**: principal protected, plus the T-bill accrual | Saver | [mature](https://explorer.testnet.whitechain.io/tx/0x57a6e53bf0a0c82735d02cff3389ee661a97ce5d39944ec9046916b36f0a7d69) · [redeem](https://explorer.testnet.whitechain.io/tx/0x2000f6b1f4a00931ca299c9f13e92d10f75b7153670dad3ecded867d6fc41eff) |
 
 ### Hedera testnet (chain 296): with Asset Tokenization Studio
 
