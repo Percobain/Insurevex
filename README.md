@@ -1,5 +1,17 @@
 # InsureVEX
 
+**New: Hedera x402 underwriting agent.** A dedicated testnet agent discovers and pays for underwriting through HTTP 402, validates a signed insurance quote, and pays the exact premium through `CoverMarket`. Persistent spending budgets, merchant and contract allowlists, on-chain ATS holdings checks, replay protection, an emergency stop, and an HCS spending-audit anchor bound its authority. The new `/agent` dashboard shows service limits and payment receipts. [Setup, architecture, guardrails and track requirements](docs/HEDERA_X402.md).
+
+The existing product comprises the notes, underwriting pool, crash policies, pricing research and ATS integrations below. The x402 agent, paid underwriting endpoint, persistent policy controls, HCS spending audit and Agent dashboard are the new integration.
+
+**Recorded autonomous Hedera testnet run (6 November 2026):**
+- x402 underwriting fee, **0.01 HBAR**, settled by the official facilitator: [`0.0.9185802@1793930226.658562707`](https://hashscan.io/testnet/transaction/0.0.9185802%401793930226.658562707).
+- Insurance premium, **0.002091 test USD**, issued policy **#4** protecting **1.816 test USD** of tokenised NVIDIA: [premium + policy transaction](https://hashscan.io/testnet/transaction/0x55a420aa99da3be5f0296ec3ff7bec6de018aa9ca79a297baff3cb4674085b49).
+- HCS spending-audit anchor, topic **0.0.11332661**: [transaction](https://hashscan.io/testnet/transaction/0.0.11332658%401793930247.715859731).
+- [42.5-second live-run demo video](docs/evidence/hedera-x402-demo.mp4), [sanitised receipts](docs/evidence/hedera-x402.json), and [independent Mirror Node verification](docs/evidence/hedera-x402-verification.json).
+
+Reproduce with `cd server`, `npm ci`, `npm run agent:setup`, start the merchant as described in [the integration guide](docs/HEDERA_X402.md), then run `npm run agent:plan` and `npm run agent:run`. All funds are test assets; agent payments are disabled by default.
+
 **Two scared people protect each other.**
 
 - A **Saver** is scared of losing money. They buy a note that always repays its full face value, plus whatever the note earns.

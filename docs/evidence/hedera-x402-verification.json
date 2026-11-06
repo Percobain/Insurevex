@@ -1,0 +1,36 @@
+{
+  "servicePayment": {
+    "transaction": "0.0.9185802@1793930226.658562707",
+    "result": "SUCCESS",
+    "transactions": [
+      {
+        "name": "CRYPTOTRANSFER",
+        "result": "SUCCESS",
+        "chargedTxFee": 295890
+      }
+    ]
+  },
+  "hcs": {
+    "transaction": "0.0.11332658@1793930247.715859731",
+    "result": "SUCCESS",
+    "transactions": [
+      {
+        "name": "CONSENSUSSUBMITMESSAGE",
+        "result": "SUCCESS",
+        "chargedTxFee": 258547
+      }
+    ]
+  },
+  "insurance": {
+    "transaction": "0x55a420aa99da3be5f0296ec3ff7bec6de018aa9ca79a297baff3cb4674085b49",
+    "result": "SUCCESS",
+    "contractId": "0.0.11332029",
+    "gasUsed": 483081
+  },
+  "hcsMessage": {
+    "topic": "0.0.11332661",
+    "sequenceNumber": 1,
+    "consensusTimestamp": "1793930255.989563868",
+    "digest": "387c703842fb2f8a059d2702893554e0343206c86da368e3afcfeae2b6660471"
+  }
+}
