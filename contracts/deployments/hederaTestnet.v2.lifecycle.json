@@ -1,0 +1,194 @@
+[
+  {
+    "step": "ATS Factory.deployEquity (equityNVDA)",
+    "tx": "0x1ad148f2f7b736a34777294c02d6b16b2c4512f9a0b19e14d73e2d0e6e31365c",
+    "url": "https://hashscan.io/testnet/transaction/0x1ad148f2f7b736a34777294c02d6b16b2c4512f9a0b19e14d73e2d0e6e31365c",
+    "at": "2026-11-05T23:06:16.256Z"
+  },
+  {
+    "step": "ATS equity: addIssuer (SSI)",
+    "tx": "0x82418986f4877ae33763db6469eab6785521f12d2742c1068e6d2f87abba8b23",
+    "url": "https://hashscan.io/testnet/transaction/0x82418986f4877ae33763db6469eab6785521f12d2742c1068e6d2f87abba8b23",
+    "at": "2026-11-05T23:06:21.247Z"
+  },
+  {
+    "step": "ATS equity: grantKyc to holder",
+    "tx": "0x228eac96c26683c50a43e45ddc13d461c3fc71499e1db99346aebe3270cb0a03",
+    "url": "https://hashscan.io/testnet/transaction/0x228eac96c26683c50a43e45ddc13d461c3fc71499e1db99346aebe3270cb0a03",
+    "at": "2026-11-05T23:06:25.854Z"
+  },
+  {
+    "step": "ATS equity: issue 100 vxNVDA to holder",
+    "tx": "0x4f2b2a9486856f02b0deb317daa80f7062daf28e53e55b0bcdf7d06244360806",
+    "url": "https://hashscan.io/testnet/transaction/0x4f2b2a9486856f02b0deb317daa80f7062daf28e53e55b0bcdf7d06244360806",
+    "at": "2026-11-05T23:06:30.501Z"
+  },
+  {
+    "step": "CoverMarket.setSymbolToken(NASDAQ:NVDA -> ATS equity)",
+    "tx": "0xe759b8f7b0d36b6149cba35f5500157a66ad649c3f9233e5f158dacd7a563107",
+    "url": "https://hashscan.io/testnet/transaction/0xe759b8f7b0d36b6149cba35f5500157a66ad649c3f9233e5f158dacd7a563107",
+    "at": "2026-11-05T23:06:39.072Z"
+  },
+  {
+    "step": "ATS Factory.deployBond (noteBond3Y)",
+    "tx": "0xff29c0bf6dda7f39c99d6e1d1676c1884fe87d2f13f18130cc2a37663aa57600",
+    "url": "https://hashscan.io/testnet/transaction/0xff29c0bf6dda7f39c99d6e1d1676c1884fe87d2f13f18130cc2a37663aa57600",
+    "at": "2026-11-05T23:06:47.347Z"
+  },
+  {
+    "step": "ATS bond: addIssuer (SSI)",
+    "tx": "0xf4c486ee9c504ee502b1085a7ae351338ab351f177c2ca30a1774e8d9382b73d",
+    "url": "https://hashscan.io/testnet/transaction/0xf4c486ee9c504ee502b1085a7ae351338ab351f177c2ca30a1774e8d9382b73d",
+    "at": "2026-11-05T23:06:55.887Z"
+  },
+  {
+    "step": "ATS bond: grantKyc to saver",
+    "tx": "0x658dfe0e354f98be456b366103709d4ff022a010be816284f096f3dc11173198",
+    "url": "https://hashscan.io/testnet/transaction/0x658dfe0e354f98be456b366103709d4ff022a010be816284f096f3dc11173198",
+    "at": "2026-11-05T23:07:00.571Z"
+  },
+  {
+    "step": "ATS bond: issue 1,000 note units",
+    "tx": "0x6b2ee636a8837de2b0792bce393dde69a796bc8291d6468dae0038424b03dab1",
+    "url": "https://hashscan.io/testnet/transaction/0x6b2ee636a8837de2b0792bce393dde69a796bc8291d6468dae0038424b03dab1",
+    "at": "2026-11-05T23:07:04.879Z"
+  },
+  {
+    "step": "ATS bond: setCoupon (underwriting coupon)",
+    "tx": "0x7d19657c49d5749c2b36d71f5af853a1bfbb1f86b6fbd1f157a99887593f08f2",
+    "url": "https://hashscan.io/testnet/transaction/0x7d19657c49d5749c2b36d71f5af853a1bfbb1f86b6fbd1f157a99887593f08f2",
+    "at": "2026-11-05T23:07:09.063Z"
+  },
+  {
+    "step": "pool.setRiskParams(R=50%, m=25%) testnet depth",
+    "tx": "0x3dddaf5f9402475fff9a27332ed322350439e91e85615ebef3c88498c82addec",
+    "url": "https://hashscan.io/testnet/transaction/0x3dddaf5f9402475fff9a27332ed322350439e91e85615ebef3c88498c82addec",
+    "at": "2026-11-05T23:07:25.351Z"
+  },
+  {
+    "step": "tUSD approve -> 3Y note",
+    "tx": "0x254b0827fbfa8ba243f8e842fdde42e62f98157c0e3c2c33b3077c29d48d4ec0",
+    "url": "https://hashscan.io/testnet/transaction/0x254b0827fbfa8ba243f8e842fdde42e62f98157c0e3c2c33b3077c29d48d4ec0",
+    "at": "2026-11-05T23:07:29.489Z"
+  },
+  {
+    "step": "Saver subscribes 5000.0 tUSD to 3Y note",
+    "tx": "0x3de32ebfa4094403cdf6767af5cde4cc1c8e30a2b862087c912d26eeaef71819",
+    "url": "https://hashscan.io/testnet/transaction/0x3de32ebfa4094403cdf6767af5cde4cc1c8e30a2b862087c912d26eeaef71819",
+    "at": "2026-11-05T23:07:32.861Z"
+  },
+  {
+    "step": "tUSD approve -> demo note",
+    "tx": "0x51858c2ca32b3b663e2203acf3977e124aca2b939d4ad48bf752b59bda50746c",
+    "url": "https://hashscan.io/testnet/transaction/0x51858c2ca32b3b663e2203acf3977e124aca2b939d4ad48bf752b59bda50746c",
+    "at": "2026-11-05T23:09:12.773Z"
+  },
+  {
+    "step": "Saver subscribes 1000.0 tUSD to 3h demo note",
+    "tx": "0xe8fc6d86725337f231273a338bab39f20905bb9b8fb108be5290252b9f86d603",
+    "url": "https://hashscan.io/testnet/transaction/0xe8fc6d86725337f231273a338bab39f20905bb9b8fb108be5290252b9f86d603",
+    "at": "2026-11-05T23:09:16.694Z"
+  },
+  {
+    "step": "tUSD approve -> pool (Pro LP)",
+    "tx": "0x4abd659de4e938bb20288aecddbff2a34822584a6633b63554001a72bebd7c68",
+    "url": "https://hashscan.io/testnet/transaction/0x4abd659de4e938bb20288aecddbff2a34822584a6633b63554001a72bebd7c68",
+    "at": "2026-11-05T23:09:20.671Z"
+  },
+  {
+    "step": "Pro LP deposits 2000.0 tUSD first-loss capital",
+    "tx": "0xd16023a95197f3c8cffddf03a3d849f92beaffd17c9162625de4cf0c54d0e32f",
+    "url": "https://hashscan.io/testnet/transaction/0xd16023a95197f3c8cffddf03a3d849f92beaffd17c9162625de4cf0c54d0e32f",
+    "at": "2026-11-05T23:09:29.008Z"
+  },
+  {
+    "step": "tUSD approve premium (NASDAQ:NVDA)",
+    "tx": "0xd56e26a994936585453dba4dfa9fc4c73016412fdcecd334e8b2124faace2471",
+    "url": "https://hashscan.io/testnet/transaction/0xd56e26a994936585453dba4dfa9fc4c73016412fdcecd334e8b2124faace2471",
+    "at": "2026-11-05T23:09:33.959Z"
+  },
+  {
+    "step": "Holder buys NASDAQ:NVDA floor, premium 0.4395 tUSD",
+    "tx": "0xf9679e281bce8fa20bedcd00e194696d69b096444807bdcae3805a2cc7f1db99",
+    "url": "https://hashscan.io/testnet/transaction/0xf9679e281bce8fa20bedcd00e194696d69b096444807bdcae3805a2cc7f1db99",
+    "at": "2026-11-05T23:09:38.153Z"
+  },
+  {
+    "step": "tUSD approve premium (NSE:RELIANCE)",
+    "tx": "0xd76fe2911da15350216ef77650910e47e96bc0ac41a3e9a805a13185f4d484c9",
+    "url": "https://hashscan.io/testnet/transaction/0xd76fe2911da15350216ef77650910e47e96bc0ac41a3e9a805a13185f4d484c9",
+    "at": "2026-11-05T23:09:47.538Z"
+  },
+  {
+    "step": "Holder buys NSE:RELIANCE floor, premium 2.725 tUSD",
+    "tx": "0xba439ab5a198b29f3371f88811b1761977f360e65166aab07f604606cdcd0966",
+    "url": "https://hashscan.io/testnet/transaction/0xba439ab5a198b29f3371f88811b1761977f360e65166aab07f604606cdcd0966",
+    "at": "2026-11-05T23:09:52.029Z"
+  },
+  {
+    "step": "tUSD approve premium (XETRA:SAP)",
+    "tx": "0xfdf05918e01acb12881aed237db5eb041aaf9b9e461051ba1e2a949f9ec0e9ca",
+    "url": "https://hashscan.io/testnet/transaction/0xfdf05918e01acb12881aed237db5eb041aaf9b9e461051ba1e2a949f9ec0e9ca",
+    "at": "2026-11-05T23:09:55.907Z"
+  },
+  {
+    "step": "Holder buys XETRA:SAP floor, premium 3.8214 tUSD",
+    "tx": "0x01a66b7e57f3708bc8878561bd9022c7a97349a49da8eaecdd374a7d9a04cbcf",
+    "url": "https://hashscan.io/testnet/transaction/0x01a66b7e57f3708bc8878561bd9022c7a97349a49da8eaecdd374a7d9a04cbcf",
+    "at": "2026-11-05T23:10:00.028Z"
+  },
+  {
+    "step": "tUSD approve premium (NYSEARCA:SPY)",
+    "tx": "0x19acc6f1c6cedad1f3b444adc53ea953e2ab73c86f8ba3c3beed3efc8addc3dd",
+    "url": "https://hashscan.io/testnet/transaction/0x19acc6f1c6cedad1f3b444adc53ea953e2ab73c86f8ba3c3beed3efc8addc3dd",
+    "at": "2026-11-05T23:10:04.884Z"
+  },
+  {
+    "step": "Holder buys NYSEARCA:SPY floor, premium 0.051 tUSD",
+    "tx": "0x340ef482c8a904580117aaa453537eeab1ff2343a08d340ddf3e2b4f2943769a",
+    "url": "https://hashscan.io/testnet/transaction/0x340ef482c8a904580117aaa453537eeab1ff2343a08d340ddf3e2b4f2943769a",
+    "at": "2026-11-05T23:10:13.644Z"
+  },
+  {
+    "step": "tUSD approve -> T-bill custodian proceeds",
+    "tx": "0x22357e45ebfcf6a4c07b76a157eded0bcc9262ab70893dc5a9ee7ab71c47002f",
+    "url": "https://hashscan.io/testnet/transaction/0x22357e45ebfcf6a4c07b76a157eded0bcc9262ab70893dc5a9ee7ab71c47002f",
+    "at": "2026-11-05T23:10:18.015Z"
+  },
+  {
+    "step": "T-bill vault: custodian funds yield",
+    "tx": "0x92cf9e17489c0d768f0d6a2358e50b14a28f756ce881bbd3c64a72de804b26d5",
+    "url": "https://hashscan.io/testnet/transaction/0x92cf9e17489c0d768f0d6a2358e50b14a28f756ce881bbd3c64a72de804b26d5",
+    "at": "2026-11-05T23:10:22.590Z"
+  },
+  {
+    "step": "T-bill NAV update + reserve attestation",
+    "tx": "0x1287b18ca4a13a17726ee31268db87ce4f96f13359a205559e46c4a692ee6dc3",
+    "url": "https://hashscan.io/testnet/transaction/0x1287b18ca4a13a17726ee31268db87ce4f96f13359a205559e46c4a692ee6dc3",
+    "at": "2026-11-05T23:10:27.032Z"
+  },
+  {
+    "step": "Hedera Schedule Service: coupon scheduled for 2026-11-06T00:06:34.000Z",
+    "tx": "0xb9f4678ae47afcc84b4103d76e6339b43edde85c40593b4f5cf696c90c4fd3f3",
+    "url": "https://hashscan.io/testnet/transaction/0xb9f4678ae47afcc84b4103d76e6339b43edde85c40593b4f5cf696c90c4fd3f3",
+    "at": "2026-11-05T23:11:20.139Z"
+  },
+  {
+    "step": "CoverMarket refuses cover on 150 NVDA when the ATS balance is 100 ([Request ID: 04cf1ca0-ab9c-4a67-b4ed-ffc6bf88b70f] execution reverted: cover exceeds holdings)",
+    "tx": null,
+    "url": null,
+    "at": "2026-11-05T23:18:28.731Z"
+  },
+  {
+    "step": "ATS equity: freeze 10 vxNVDA (compliance lifecycle op)",
+    "tx": "0xd97f70ae0eb6f61fa73faa3ae66d4e328d25c59cdc49f8655a34efa1a29ad5a7",
+    "url": "https://hashscan.io/testnet/transaction/0xd97f70ae0eb6f61fa73faa3ae66d4e328d25c59cdc49f8655a34efa1a29ad5a7",
+    "at": "2026-11-05T23:18:33.737Z"
+  },
+  {
+    "step": "Schedule 0.0.11331278 executed natively at 00:06:34 UTC: distributeCoupon() paid 0.498395 tUSD to note holders (no keeper)",
+    "tx": "0.0.7314364-1793920264-913958545",
+    "url": "https://hashscan.io/testnet/schedule/0.0.11331278",
+    "at": "2026-11-06T00:06:34Z"
+  }
+]

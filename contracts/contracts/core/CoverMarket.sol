@@ -114,7 +114,7 @@ contract CoverMarket is AccessControl, Pausable, ReentrancyGuard, EIP712 {
         require(block.timestamp <= q.validUntil, "quote expired");
         require(q.expiry > block.timestamp && q.expiry <= block.timestamp + maxTenor, "tenor");
         require(!nonceUsed[q.nonce], "nonce used");
-        require(q.notional > 0 && q.capBps > 0 && q.capBps <= 10_000 && q.deductibleBps < 10_000, "terms");
+        require(q.notional > 0 && q.startPrice > 0 && q.capBps > 0 && q.capBps <= 10_000 && q.deductibleBps < 10_000, "terms");
         require(hasRole(QUOTER_ROLE, ECDSA.recover(hashQuote(q), signature)), "bad quote signature");
         nonceUsed[q.nonce] = true;
 
@@ -140,15 +140,16 @@ contract CoverMarket is AccessControl, Pausable, ReentrancyGuard, EIP712 {
     /// @notice Anyone can settle once the official close at expiry is on the oracle.
     function settle(uint256 id) public nonReentrant {
         Policy storage p = policies[id];
-        uint256 px = oracle.priceAt(p.symbol, p.expiry);
-        require(px > 0, "no official close yet");
+        (bool posted, uint256 px) = oracle.closeAt(p.symbol, p.expiry);
+        require(posted, "no official close yet");
         _settle(id, px);
     }
 
     function settleMany(uint256[] calldata ids) external {
         for (uint256 i; i < ids.length; ++i) {
             Policy storage p = policies[ids[i]];
-            if (p.status == Status.Open && oracle.priceAt(p.symbol, p.expiry) > 0) settle(ids[i]);
+            (bool posted, ) = oracle.closeAt(p.symbol, p.expiry);
+            if (p.status == Status.Open && posted) settle(ids[i]);
         }
     }
 
@@ -157,7 +158,8 @@ contract CoverMarket is AccessControl, Pausable, ReentrancyGuard, EIP712 {
     function settleWithAttestedPrice(uint256 id, uint256 px) external onlyRole(SETTLER_ROLE) nonReentrant {
         Policy storage p = policies[id];
         require(block.timestamp >= p.expiry + settleGrace, "grace");
-        require(oracle.priceAt(p.symbol, p.expiry) == 0, "oracle has a price");
+        (bool posted, ) = oracle.closeAt(p.symbol, p.expiry);
+        require(!posted, "oracle has a price");
         _settle(id, px);
     }
 

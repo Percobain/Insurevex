@@ -28,7 +28,7 @@ async function main() {
   } catch (e) {
     const reason = e.reason || e.shortMessage || e.message;
     console.log("oversized cover refused on-chain:", reason);
-    life.push({ step: `CoverMarket refuses cover on 150 NVDA when the ATS balance is 100 (${reason})`, tx: null, url: null, at: new Date().toISOString() });
+    life.push({ step: `CoverMarket refuses cover on 150 NVDA when the ATS balance is ${ethers.formatEther(bal)} (${reason})`, tx: null, url: null, at: new Date().toISOString() });
   }
 
   // 2) ATS compliance: freeze 10 of the holder's tokenised shares

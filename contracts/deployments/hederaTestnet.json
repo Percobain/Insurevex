@@ -2,22 +2,22 @@
   "chainId": 296,
   "network": "hederaTestnet",
   "deployer": "0x1d83F122EF31885B83139ABCb4f8fB4eF319DDF9",
-  "deployedAt": "2026-11-05T23:04:03.644Z",
+  "deployedAt": "2026-11-06T00:19:12.170Z",
   "contracts": {
-    "TestUSD": "0xB5297E51C700EcE40912C0857F866eCd09348484",
-    "stable": "0xB5297E51C700EcE40912C0857F866eCd09348484",
-    "IdentityRegistry": "0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4",
-    "PriceOracle": "0x6ea034B50D2053A83c0d8193F907F91691a03601",
-    "TBillVault": "0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8",
-    "UnderwritingPool": "0x167a116213EfE0Be71A3CB1d31802559b65db71b",
-    "CoverMarket": "0x1019DE31d6710DfE1B33A87c31a4b65f4B803306",
-    "Note3Y": "0xA64f0E730399de66fA6278c64BBb4A708d6d17f3",
-    "NoteDemo": "0xa0DaaFe98808145f717a764C940e4F3c26248651"
+    "TestUSD": "0xDF7DE17d60876a32b902dc4f4698633C7d849e1f",
+    "stable": "0xDF7DE17d60876a32b902dc4f4698633C7d849e1f",
+    "IdentityRegistry": "0x75cfAe23c84ADaF29e93ee804e7C2456f3c433df",
+    "PriceOracle": "0x5AadEb63aac4c26A399FA043Aec7A2Ab0da1FF75",
+    "TBillVault": "0xe4bf04d81a232C9F4c20488d7654A6d54490b463",
+    "UnderwritingPool": "0x31687E1D34CA89d720d6E9aaB85923b1584fBD32",
+    "CoverMarket": "0x65420A913Fa66038102DB7A609b98E99c11A519c",
+    "Note3Y": "0x1Af616c5dafB146FCDc93b31200a2a568ed1c561",
+    "NoteDemo": "0xDE1fC6F88dc1BE86d744C0157a6fa472CccFF915"
   },
   "notes": [
     {
       "key": "Note3Y",
-      "address": "0xA64f0E730399de66fA6278c64BBb4A708d6d17f3",
+      "address": "0x1Af616c5dafB146FCDc93b31200a2a568ed1c561",
       "name": "InsureVEX 3Y Protected Note",
       "termDays": 1095,
       "floorRateBps": 400,
@@ -26,7 +26,7 @@
     },
     {
       "key": "NoteDemo",
-      "address": "0xa0DaaFe98808145f717a764C940e4F3c26248651",
+      "address": "0xDE1fC6F88dc1BE86d744C0157a6fa472CccFF915",
       "name": "InsureVEX Demo Note (3h)",
       "termSeconds": 10800,
       "floorRateBps": 400,
@@ -34,9 +34,9 @@
       "couponInterval": 600
     }
   ],
-  "startBlock": 42715184,
   "ats": {
     "equityNVDA": "0xe77F4a19C336841643b7a671557fdBa2eFd0465E",
     "noteBond3Y": "0x2bCfC2Bb864f651d78a0838ae2068141B2F57703"
-  }
+  },
+  "startBlock": 42717392
 }

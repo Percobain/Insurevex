@@ -23,91 +23,101 @@ Holders' premiums become the Savers' coupons. Every payment is a stablecoin tran
 
 Plain-English numbers for the pitch: [`docs/PITCH_NUMBERS.md`](docs/PITCH_NUMBERS.md). Full research: [`docs/BACKTEST.md`](docs/BACKTEST.md), and the app's `/docs` page.
 
-## Live deployments (testnets)
+## Live deployments (testnets, contracts v3)
 
-### Whitechain Sepolia (chain 1874): live, verified, settling in the official test USDT
+All three chains run the same v3 contracts. v3 includes the four fixes from the Arc Studio security review, each with a regression test (12 passing):
+- Pro shares are per epoch, so a wiped-out tranche can't claim new deposits.
+- Undeliverable payouts are owed and claimable instead of blocking settlement.
+- A frozen T-bill holder can't redeem to another address.
+- A stock that closes at zero settles at the full cap.
+
+Every contract is verified (Blockscout on Whitechain and Arc; Sourcify exact match, shown on HashScan, on Hedera). The earlier v1/v2 deployments and their transactions are archived in `contracts/deployments/*.v1*.json` and `*.v2*.json`.
+
+### Whitechain Sepolia (chain 1874): settling in the official test USDT
+
+Settlement token (official test USDT): [`0xcedfB56113143d55b2358b8CFbB0dEB5Ad2f55a7`](https://explorer.testnet.whitechain.io/address/0xcedfB56113143d55b2358b8CFbB0dEB5Ad2f55a7)
 
 | Contract | Address |
 |---|---|
-| Settlement token (official test USDT) | [`0xcedfB56113143d55b2358b8CFbB0dEB5Ad2f55a7`](https://explorer.testnet.whitechain.io/address/0xcedfB56113143d55b2358b8CFbB0dEB5Ad2f55a7) |
-| IdentityRegistry (KYC, freeze, country) | [`0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4`](https://explorer.testnet.whitechain.io/address/0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4#code) |
-| PriceOracle (official closes) | [`0x6ea034B50D2053A83c0d8193F907F91691a03601`](https://explorer.testnet.whitechain.io/address/0x6ea034B50D2053A83c0d8193F907F91691a03601#code) |
-| TBillVault (tokenised T-bill, NAV + reserve) | [`0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8`](https://explorer.testnet.whitechain.io/address/0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8#code) |
-| UnderwritingPool (senior ERC-4626 + Pro first-loss) | [`0x3eD15ce2936909016D6767d9D109D839E4E40B52`](https://explorer.testnet.whitechain.io/address/0x3eD15ce2936909016D6767d9D109D839E4E40B52#code) |
-| CoverMarket | [`0x8f80d31BaF2AbFC91fF4837107871Ed0930B091C`](https://explorer.testnet.whitechain.io/address/0x8f80d31BaF2AbFC91fF4837107871Ed0930B091C#code) |
-| ProtectedNote, 3-year series (vx3Y) | [`0x6a1D6a53D8886c4F94ddc5BBC975ef1B1850B4Ba`](https://explorer.testnet.whitechain.io/address/0x6a1D6a53D8886c4F94ddc5BBC975ef1B1850B4Ba#code) |
-| ProtectedNote, 3-hour demo series (vxDEMO) | [`0x4597b0f5Ae9fd15f374726C5F916f2F841a38F20`](https://explorer.testnet.whitechain.io/address/0x4597b0f5Ae9fd15f374726C5F916f2F841a38F20#code) |
+| IdentityRegistry (KYC, freeze, country) | [`0x2185E034040735187ad1480ec34a412A7127D737`](https://explorer.testnet.whitechain.io/address/0x2185E034040735187ad1480ec34a412A7127D737#code) |
+| PriceOracle (official closes, zero-close aware) | [`0x3FCD2023FfE7E1d41dA07A96B47C3B9912033AD4`](https://explorer.testnet.whitechain.io/address/0x3FCD2023FfE7E1d41dA07A96B47C3B9912033AD4#code) |
+| TBillVault (tokenised T-bill, NAV + reserve) | [`0xBdB8e50a25F9717Cb5B2C8ED0dCE71A89bCA10B2`](https://explorer.testnet.whitechain.io/address/0xBdB8e50a25F9717Cb5B2C8ED0dCE71A89bCA10B2#code) |
+| UnderwritingPool (senior ERC-4626 + Pro first-loss, epochs, owed payouts) | [`0x915669bf64F4839c027ADAce51366534809de876`](https://explorer.testnet.whitechain.io/address/0x915669bf64F4839c027ADAce51366534809de876#code) |
+| CoverMarket | [`0x0B19a2C1042874dFe0374814464f89537519dDF0`](https://explorer.testnet.whitechain.io/address/0x0B19a2C1042874dFe0374814464f89537519dDF0#code) |
+| ProtectedNote, 3-year series (vx3Y) | [`0x857C551AeD884F7104a3557183aaC8F588D5F4A5`](https://explorer.testnet.whitechain.io/address/0x857C551AeD884F7104a3557183aaC8F588D5F4A5#code) |
+| ProtectedNote, 3-hour demo series (vxDEMO) | [`0x9Eb5877812594612c4F39b2B3a12EFF4F3CFb166`](https://explorer.testnet.whitechain.io/address/0x9Eb5877812594612c4F39b2B3a12EFF4F3CFb166#code) |
 
-**USDT payments in the main flow.** Every step of the lifecycle is a USDT transfer. The full list is in [`contracts/deployments/whitechainSepolia.lifecycle.json`](contracts/deployments/whitechainSepolia.lifecycle.json).
+**USDT payments in the main flow** (full list in [`contracts/deployments/whitechainSepolia.lifecycle.json`](contracts/deployments/whitechainSepolia.lifecycle.json)):
 
 | Step | Party | Explorer |
 |---|---|---|
-| Saver subscribes 25 USDT to the 3-year note (split into T-bill floor + pool sleeve in one tx) | Saver | [tx](https://explorer.testnet.whitechain.io/tx/0xc88c0d3ace047800850e18e2508b00286c2075e3236a8a9d538f04ee053f5dfb) |
-| Saver subscribes 8 USDT to the 3-hour demo note | Saver | [tx](https://explorer.testnet.whitechain.io/tx/0x1cf178787d6291cddd6e0eebadc3e6dda0d1f9b680804eab37fbea8db585a565) |
-| Pro LP deposits 8 USDT of first-loss capital | Pro LP | [tx](https://explorer.testnet.whitechain.io/tx/0xff8700f460ae97a73a26461d7e9c340d1bd147ed9b6a0791bacff524599f10bd) |
-| Holder buys a weekly MSFT floor (Nasdaq, brokerage shares) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0xa34d1543eb98e185d537fa2398e2cbf445637c6b932c3284d80a76f90dfc2cc4) |
-| Holder buys a 2-week NIFTY 50 floor (NSE) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0x0a004bb9e5b1176de2cbdbaae8b77f60d0fdaf466e25a058b0176a73958fc0f9) |
-| Holder buys a monthly Toyota floor (TSE:7203) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0xbaec2af322ca3ed46433f6346f57330840946ae879ab97ee7eee863ba432cca4) |
-| Holder buys a 15-minute SPY floor (settled by the keeper from the official price) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0x68ea88252364ea539a9ef2babf716cd66a7fcfe196a74b522607497784dff12a) |
-| Keeper posts SPY's official price at expiry, then anyone settles the policy (flat market: no payout, collateral released) | Keeper | [price](https://explorer.testnet.whitechain.io/tx/0x338629e6aaa886e0412a9f549b50683316926bfb50d164c8c2a16d8b53c90d1c) · [settle](https://explorer.testnet.whitechain.io/tx/0x172472041094b6741217c402b04c387fa64ad67f99b4dc6dbd7e9a265b8c16ce) |
-| T-bill custodian proceeds paid in USDT, NAV and reserve attested | Issuer | [tx](https://explorer.testnet.whitechain.io/tx/0x12dc01385d6dba151d0920363a94e35dc7886cc0648c81844161a33385b60f82) · [NAV](https://explorer.testnet.whitechain.io/tx/0x4749de7a2e3f334117572724ec88fcf4380e23eab4f3fad0e2fe022edab44c1b) |
+| Saver subscribes 6 USDT to the 3-year note (split into T-bill floor + pool sleeve in one tx) | Saver | [tx](https://explorer.testnet.whitechain.io/tx/0x0f223d1724218845e34f555cbf85b632358a97808e33e99b43c02a8a8cbd8845) |
+| Saver subscribes 2 USDT to the 3-hour demo note | Saver | [tx](https://explorer.testnet.whitechain.io/tx/0xc2d461791fdbd8cafa4bada38a80e457b98f6126c064e3677bd49d9791b72b69) |
+| Pro LP deposits 4 USDT of first-loss capital | Pro LP | [tx](https://explorer.testnet.whitechain.io/tx/0xddc254bcc75422d987df89a87ad47041c1a70a524794c264b8979ebf77059c1f) |
+| Holder buys a weekly MSFT floor (Nasdaq, brokerage shares) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0xc781ea23763d835b60669ddbc66826778064467f30dfb7cf0e0148385a23ad62) |
+| Holder buys a 2-week NIFTY 50 floor (NSE) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0x78bce3b1cda9150244947edebdf7cf5f74ca22f772fc1906167ee51e4b36e7f5) |
+| Holder buys a monthly Toyota floor (TSE:7203) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0x937a8670096337fdd5f74144e3340763520930adcd2e2c942cb536080ec60ea8) |
+| Holder buys a 15-minute SPY floor (settled by the keeper from the official price) | Holder | [tx](https://explorer.testnet.whitechain.io/tx/0xafb5abf660385f4c2d5fe525f456858abf101f1f5a211b51af064e6adb6d903c) |
+| T-bill custodian proceeds in USDT, then NAV and reserve attested | Issuer | [tx](https://explorer.testnet.whitechain.io/tx/0xf09b9ef9abbdc3512f574ee4a657225c7945ad1e8528844445fac18dcdf77695) · [NAV](https://explorer.testnet.whitechain.io/tx/0x4c99a0247d62b16af3c83d5afd31bde78f0c9912c7ede8a8535de757bf9db15a) |
+| **Maturity:** a full-term demo note (contracts v2) matured and the Saver redeemed **8 USDT in, 8.000113 USDT back**: principal protected, plus the T-bill accrual | Saver | [mature](https://explorer.testnet.whitechain.io/tx/0x57a6e53bf0a0c82735d02cff3389ee661a97ce5d39944ec9046916b36f0a7d69) · [redeem](https://explorer.testnet.whitechain.io/tx/0x2000f6b1f4a00931ca299c9f13e92d10f75b7153670dad3ecded867d6fc41eff) |
 
-The keeper then settles each policy against the official close at expiry, pays coupons hourly (monthly in production) and matures the 3-hour note. Each settlement, coupon and redemption is another USDT transfer; see `/activity` in the app. The v1 deployment (before the Pro tranche and the per-market cap) is kept in `contracts/deployments/whitechainSepolia.v1.*.json`.
+### Hedera testnet (chain 296): with Asset Tokenization Studio
 
-### Hedera testnet (chain 296): live, verified (Sourcify, shown on HashScan), with Asset Tokenization Studio
+**ATS securities**, issued through the live ATS Factory v8.0.0 (`0xd1F118A40f3b02883D35909eF2517e7EDd78379d`):
 
-**Asset Tokenization Studio (ATS)**, issued through the live ATS Factory v8.0.0 (`0xd1F118A40f3b02883D35909eF2517e7EDd78379d`):
-
-| ATS security | Address | What it does in InsureVEX |
+| ATS security | Address | Role in InsureVEX |
 |---|---|---|
 | Tokenised NVIDIA equity (ERC-1400, ISIN US67066G1040, KYC, freeze, controller, pause) | [`0xe77F4a19C336841643b7a671557fdBa2eFd0465E`](https://hashscan.io/testnet/contract/0xe77F4a19C336841643b7a671557fdBa2eFd0465E) | `CoverMarket` reads the holder's ATS balance on-chain as proof they own what they insure |
 | InsureVEX 3Y Protected Note as an ATS bond (ISIN, 3-year maturity, KYC via SSI issuer, coupons) | [`0x2bCfC2Bb864f651d78a0838ae2068141B2F57703`](https://hashscan.io/testnet/contract/0x2bCfC2Bb864f651d78a0838ae2068141B2F57703) | The note issued as a regulated bond with an on-chain coupon schedule |
 
-| InsureVEX contract | Address |
-|---|---|
-| Settlement token (InsureVEX test USD) | [`0xB5297E51C700EcE40912C0857F866eCd09348484`](https://hashscan.io/testnet/contract/0xB5297E51C700EcE40912C0857F866eCd09348484) |
-| IdentityRegistry | [`0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4`](https://hashscan.io/testnet/contract/0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4) |
-| PriceOracle | [`0x6ea034B50D2053A83c0d8193F907F91691a03601`](https://hashscan.io/testnet/contract/0x6ea034B50D2053A83c0d8193F907F91691a03601) |
-| TBillVault | [`0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8`](https://hashscan.io/testnet/contract/0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8) |
-| UnderwritingPool | [`0x167a116213EfE0Be71A3CB1d31802559b65db71b`](https://hashscan.io/testnet/contract/0x167a116213EfE0Be71A3CB1d31802559b65db71b) |
-| CoverMarket | [`0x1019DE31d6710DfE1B33A87c31a4b65f4B803306`](https://hashscan.io/testnet/contract/0x1019DE31d6710DfE1B33A87c31a4b65f4B803306) |
-| ProtectedNote 3Y / 3-hour demo | [`0xA64f…9cE2`](https://hashscan.io/testnet/contract/0xA64f0E730399de66fA6278c64BBb4A708d6d17f3) · [`0xa0Da…8651`](https://hashscan.io/testnet/contract/0xa0DaaFe98808145f717a764C940e4F3c26248651) |
-
-**Lifecycle on Hedera** (full list in [`contracts/deployments/hederaTestnet.lifecycle.json`](contracts/deployments/hederaTestnet.lifecycle.json)):
-
-| Step | Explorer |
-|---|---|
-| ATS issuance: equity via `deployEquity` | [tx](https://hashscan.io/testnet/transaction/0x1ad148f2f7b736a34777294c02d6b16b2c4512f9a0b19e14d73e2d0e6e31365c) |
-| ATS configuration: SSI issuer, `grantKyc`, issue 100 tokenised NVDA to the holder | [issuer](https://hashscan.io/testnet/transaction/0x82418986f4877ae33763db6469eab6785521f12d2742c1068e6d2f87abba8b23) · [KYC](https://hashscan.io/testnet/transaction/0x228eac96c26683c50a43e45ddc13d461c3fc71499e1db99346aebe3270cb0a03) · [issue](https://hashscan.io/testnet/transaction/0x4f2b2a9486856f02b0deb317daa80f7062daf28e53e55b0bcdf7d06244360806) |
-| ATS bond: issue the note bond, KYC, issue 1,000 units, `setCoupon` | [bond](https://hashscan.io/testnet/transaction/0xff29c0bf6dda7f39c99d6e1d1676c1884fe87d2f13f18130cc2a37663aa57600) · [issue](https://hashscan.io/testnet/transaction/0x6b2ee636a8837de2b0792bce393dde69a796bc8291d6468dae0038424b03dab1) · [coupon](https://hashscan.io/testnet/transaction/0x7d19657c49d5749c2b36d71f5af853a1bfbb1f86b6fbd1f157a99887593f08f2) |
-| Holder buys NVDA cover; insurable interest proven by the **ATS balance on-chain** | [tx](https://hashscan.io/testnet/transaction/0xf9679e281bce8fa20bedcd00e194696d69b096444807bdcae3805a2cc7f1db99) |
-| Cover on 150 NVDA with only 100 held: **reverted on-chain** (`cover exceeds holdings`) | `scripts/hedera-demo-checks.js` |
-| ATS compliance: freeze 10 of the holder's tokenised shares | [tx](https://hashscan.io/testnet/transaction/0xd97f70ae0eb6f61fa73faa3ae66d4e328d25c59cdc49f8655a34efa1a29ad5a7) |
-| **Hedera Schedule Service** (HIP-1215): the note's next coupon scheduled natively, no keeper | [tx](https://hashscan.io/testnet/transaction/0xb9f4678ae47afcc84b4103d76e6339b43edde85c40593b4f5cf696c90c4fd3f3) |
-| Saver subscribes 5,000 to the 3Y note · Pro LP deposits 2,000 · tradfi covers on Reliance (NSE), SAP (Xetra), SPY | [sub](https://hashscan.io/testnet/transaction/0x3de32ebfa4094403cdf6767af5cde4cc1c8e30a2b862087c912d26eeaef71819) · [Pro](https://hashscan.io/testnet/transaction/0xd16023a95197f3c8cffddf03a3d849f92beaffd17c9162625de4cf0c54d0e32f) · [RELIANCE](https://hashscan.io/testnet/transaction/0xba439ab5a198b29f3371f88811b1761977f360e65166aab07f604606cdcd0966) · [SAP](https://hashscan.io/testnet/transaction/0x01a66b7e57f3708bc8878561bd9022c7a97349a49da8eaecdd374a7d9a04cbcf) |
-| T-bill NAV + reserve attestation | [tx](https://hashscan.io/testnet/transaction/0x1287b18ca4a13a17726ee31268db87ce4f96f13359a205559e46c4a692ee6dc3) |
-
-### Arc testnet (chain 5042002): live, verified, settling in USDC
-
-USDC is both the settlement token (`0x3600…0000`) and the gas token, so a Saver needs nothing but USDC.
-
-**Built in Arc Studio:** https://studio.arc.io/app/7356f9d2-e713-4576-a2f0-4acfd62806e4. Studio was prompted with the InsureVEX spec and pointed at the live Arc deployment below.
+Settlement token (InsureVEX test USD): [`0xDF7DE17d60876a32b902dc4f4698633C7d849e1f`](https://hashscan.io/testnet/contract/0xDF7DE17d60876a32b902dc4f4698633C7d849e1f)
 
 | Contract | Address |
 |---|---|
-| IdentityRegistry | [`0xB5297E51C700EcE40912C0857F866eCd09348484`](https://explorer.testnet.arc.io/address/0xB5297E51C700EcE40912C0857F866eCd09348484) |
-| PriceOracle | [`0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4`](https://explorer.testnet.arc.io/address/0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4) |
-| TBillVault | [`0x6ea034B50D2053A83c0d8193F907F91691a03601`](https://explorer.testnet.arc.io/address/0x6ea034B50D2053A83c0d8193F907F91691a03601) |
-| UnderwritingPool | [`0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8`](https://explorer.testnet.arc.io/address/0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8) |
-| CoverMarket | [`0x167a116213EfE0Be71A3CB1d31802559b65db71b`](https://explorer.testnet.arc.io/address/0x167a116213EfE0Be71A3CB1d31802559b65db71b) |
-| ProtectedNote 3Y / 3-hour demo | [`0x1019…3306`](https://explorer.testnet.arc.io/address/0x1019DE31d6710DfE1B33A87c31a4b65f4B803306) · [`0xA64f…9cE2`](https://explorer.testnet.arc.io/address/0xA64f0E730399de66fA6278c64BBb4A708d6d17f3) |
+| IdentityRegistry (KYC, freeze, country) | [`0x75cfAe23c84ADaF29e93ee804e7C2456f3c433df`](https://hashscan.io/testnet/contract/0x75cfAe23c84ADaF29e93ee804e7C2456f3c433df) |
+| PriceOracle (official closes, zero-close aware) | [`0x5AadEb63aac4c26A399FA043Aec7A2Ab0da1FF75`](https://hashscan.io/testnet/contract/0x5AadEb63aac4c26A399FA043Aec7A2Ab0da1FF75) |
+| TBillVault (tokenised T-bill, NAV + reserve) | [`0xe4bf04d81a232C9F4c20488d7654A6d54490b463`](https://hashscan.io/testnet/contract/0xe4bf04d81a232C9F4c20488d7654A6d54490b463) |
+| UnderwritingPool (senior ERC-4626 + Pro first-loss, epochs, owed payouts) | [`0x31687E1D34CA89d720d6E9aaB85923b1584fBD32`](https://hashscan.io/testnet/contract/0x31687E1D34CA89d720d6E9aaB85923b1584fBD32) |
+| CoverMarket | [`0x65420A913Fa66038102DB7A609b98E99c11A519c`](https://hashscan.io/testnet/contract/0x65420A913Fa66038102DB7A609b98E99c11A519c) |
+| ProtectedNote, 3-year series (vx3Y) | [`0x1Af616c5dafB146FCDc93b31200a2a568ed1c561`](https://hashscan.io/testnet/contract/0x1Af616c5dafB146FCDc93b31200a2a568ed1c561) |
+| ProtectedNote, 3-hour demo series (vxDEMO) | [`0xDE1fC6F88dc1BE86d744C0157a6fa472CccFF915`](https://hashscan.io/testnet/contract/0xDE1fC6F88dc1BE86d744C0157a6fa472CccFF915) |
+
+**Lifecycle on Hedera** (full list in [`contracts/deployments/hederaTestnet.lifecycle.json`](contracts/deployments/hederaTestnet.lifecycle.json); ATS issuance history in `hederaTestnet.v2.lifecycle.json`):
+
+| Step | Explorer |
+|---|---|
+| ATS issuance: equity `deployEquity`, SSI issuer, `grantKyc`, issue 100 tokenised NVDA | [equity](https://hashscan.io/testnet/transaction/0x1ad148f2f7b736a34777294c02d6b16b2c4512f9a0b19e14d73e2d0e6e31365c) · [KYC](https://hashscan.io/testnet/transaction/0x228eac96c26683c50a43e45ddc13d461c3fc71499e1db99346aebe3270cb0a03) · [issue](https://hashscan.io/testnet/transaction/0x4f2b2a9486856f02b0deb317daa80f7062daf28e53e55b0bcdf7d06244360806) |
+| ATS bond: issue the note bond, KYC, 1,000 units, `setCoupon` | [bond](https://hashscan.io/testnet/transaction/0xff29c0bf6dda7f39c99d6e1d1676c1884fe87d2f13f18130cc2a37663aa57600) · [issue](https://hashscan.io/testnet/transaction/0x6b2ee636a8837de2b0792bce393dde69a796bc8291d6468dae0038424b03dab1) · [coupon](https://hashscan.io/testnet/transaction/0x7d19657c49d5749c2b36d71f5af853a1bfbb1f86b6fbd1f157a99887593f08f2) |
+| v3 CoverMarket linked to the ATS equity (`setSymbolToken`) | [tx](https://hashscan.io/testnet/transaction/0xf5f64933226fd8a5218088466fcd44d504711ed32439f0809097d098666c0263) |
+| Holder buys NVDA cover; insurable interest proven by the **ATS balance on-chain** | [tx](https://hashscan.io/testnet/transaction/0xc2052f731865cbaa9bbf3cf8c8d1c96b8babfcb1d6450f1115a2f24459c4634d) |
+| Cover on 150 NVDA with only 90 transferable: **reverted on-chain** (`cover exceeds holdings`) | `scripts/hedera-demo-checks.js` |
+| ATS compliance: freeze 10 of the holder's tokenised shares | [tx](https://hashscan.io/testnet/transaction/0xb6df323782b41dc637c037ffc71cbd7c4b2d7af43db7a2b240704d1c5ba7b9bf) |
+| **Hedera Schedule Service** (HIP-1215): next coupon scheduled natively. Proven on v2: schedule 0.0.11331278 was **executed by the network at 00:06:34 UTC, paying 0.498 tUSD with no keeper** | [v3 schedule](https://hashscan.io/testnet/transaction/0xbcc84e157f4a2764b12c994b4cfea36e6bec4998fc439299156b6745b6956cb6) · [v2 executed](https://hashscan.io/testnet/schedule/0.0.11331278) |
+| Saver subscribes 5,000 · Pro LP 2,000 · tradfi covers on Reliance (NSE), SAP (Xetra), SPY | [sub](https://hashscan.io/testnet/transaction/0x56bc968679c1dc7161ea7d80e8961211d4e2342b64ad1d2a0406b55124a1743b) · [Pro](https://hashscan.io/testnet/transaction/0xe6c35fb5025b3bfa3aa50c37d4913b8daa761d1338c438dd4fd66f7186cb9ecf) · [RELIANCE](https://hashscan.io/testnet/transaction/0x4cd1830afdf7755f3da209355061798e310009dc428365f65cb899c5cd5514ad) · [SAP](https://hashscan.io/testnet/transaction/0x2231bccba3a39aa05303d7d6be8f0655815d0810181bcf4647e6b0a2561d4ebb) |
+| T-bill NAV + reserve attestation | [tx](https://hashscan.io/testnet/transaction/0x0ebeb0a8d869fbca57d1fb74808549a8c768884adce69ddf5afd3b4b95fbbdda) |
+
+### Arc testnet (chain 5042002): settling in USDC
+
+USDC is both the settlement token (`0x3600…0000`) and the gas token, so a Saver needs nothing but USDC.
+
+**Built in Arc Studio:** https://studio.arc.io/app/7356f9d2-e713-4576-a2f0-4acfd62806e4. Studio wrote and tested its own version of the six contracts (263 forge tests, two security reviews, Slither) and a Saver / Holder / Pool / Issuer app that reads these live v3 contracts and gets signed quotes from the InsureVEX API.
+
+| Contract | Address |
+|---|---|
+| IdentityRegistry (KYC, freeze, country) | [`0x8Ed59B01a488373554C64fC2280d67a067D8d3bF`](https://explorer.testnet.arc.io/address/0x8Ed59B01a488373554C64fC2280d67a067D8d3bF#code) |
+| PriceOracle (official closes, zero-close aware) | [`0x29f0fD47cc181eFCbEb52e49daF0317E8C4Db46b`](https://explorer.testnet.arc.io/address/0x29f0fD47cc181eFCbEb52e49daF0317E8C4Db46b#code) |
+| TBillVault (tokenised T-bill, NAV + reserve) | [`0x5eCb935e504678a1fAfDd587C1d8f026980A7449`](https://explorer.testnet.arc.io/address/0x5eCb935e504678a1fAfDd587C1d8f026980A7449#code) |
+| UnderwritingPool (senior ERC-4626 + Pro first-loss, epochs, owed payouts) | [`0x4513E017E0C77D82e920DAEDD47F653510Bb52c5`](https://explorer.testnet.arc.io/address/0x4513E017E0C77D82e920DAEDD47F653510Bb52c5#code) |
+| CoverMarket | [`0x7832f47D5b13255d5F745F83837Bd4ffA8f2a9F4`](https://explorer.testnet.arc.io/address/0x7832f47D5b13255d5F745F83837Bd4ffA8f2a9F4#code) |
+| ProtectedNote, 3-year series (vx3Y) | [`0x519F2841905FB4c3e6Cf4D7D4FE0793dBcf4b602`](https://explorer.testnet.arc.io/address/0x519F2841905FB4c3e6Cf4D7D4FE0793dBcf4b602#code) |
+| ProtectedNote, 3-hour demo series (vxDEMO) | [`0x90D58a2B63Df22baFd8F6Ae3315D5728aAD9C0d6`](https://explorer.testnet.arc.io/address/0x90D58a2B63Df22baFd8F6Ae3315D5728aAD9C0d6#code) |
 
 | Step (USDC) | Explorer |
 |---|---|
-| Saver subscribes 6 USDC to the 3Y note | [tx](https://explorer.testnet.arc.io/tx/0x327c5789c69639c5caf98037f25c979edce6fc2515ccd9f2dd26d150d2946043) |
-| Pro LP deposits 3 USDC first-loss capital | [tx](https://explorer.testnet.arc.io/tx/0x1a90dc898e25f7a938a64bc21e7285346d2a14243a5ddf8505c7fd12dab18495) |
-| Holder covers MSFT (weekly) and Tencent (HKEX, 2 weeks) | [MSFT](https://explorer.testnet.arc.io/tx/0x8ecd92dc0fc0780efd81bf4771a570d5a386e96d66f683f48819b8eddd89230f) · [Tencent](https://explorer.testnet.arc.io/tx/0x187277a97abfe6956d0bd312aed741b9a354e403a0a7bb2836b1737b22c3c0d9) |
-| T-bill NAV + reserve attestation | [tx](https://explorer.testnet.arc.io/tx/0x4b70ccaa878a96d640060060dac8d227649a14ae61afd146dbeaa957fbb4d736) |
+| Saver subscribes 4 USDC to the 3-year note | [tx](https://explorer.testnet.arc.io/tx/0x493681cc37a8c3733300b7357c2162ed6130d33094b07d5f9372503b26606f56) |
+| Pro LP deposits 2 USDC of first-loss capital | [tx](https://explorer.testnet.arc.io/tx/0x6ea31a9823dabbf7c7ee5c72723f9ad4196a8d33583e34f011100f515283b3fb) |
+| Holder covers MSFT (weekly), Tencent (HKEX, 2 weeks) and SPY (15 minutes) | [MSFT](https://explorer.testnet.arc.io/tx/0xcc9e6b5d5cbdbffbcb9c1b455cb0a440dba53198ee651f29e8429c1b44218197) · [Tencent](https://explorer.testnet.arc.io/tx/0xe1062700cea4a7b1fa714ba1e6768ffbe7b9d23e50743318c7797320276bb90f) · [SPY](https://explorer.testnet.arc.io/tx/0xfc2713e2883a06d28ba01a2f61db5c9dc3ab62698b91ba0f508adf73e7a64a16) |
+| T-bill NAV + reserve attestation | [tx](https://explorer.testnet.arc.io/tx/0xfb98dfacc62bd8af34fa00c52ea154775d04e9f33ff4b266d45ee82e8ffe46c5) |
 
 ## How it works
 
@@ -127,7 +137,7 @@ Diagram and every compliance control: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE
 
 | Path | What |
 |---|---|
-| `contracts/` | Hardhat 2 project: Solidity contracts, 8 tests, deploy, verify, lifecycle and ATS scripts, deployments |
+| `contracts/` | Hardhat 2 project: Solidity contracts, 12 tests, deploy, verify (Blockscout + Sourcify), lifecycle, ATS and schedule-service scripts, deployments |
 | `server/` | Node.js pricing engine (backtest winner), EIP-712 quoter, keeper and API |
 | `app/` | Next.js frontend: Holder, Saver, Pool (with Pro), Research, Issuer console, Activity |
 | `backtest/` | Python research: 23-market walk-forward backtest; exports the engine tables and the app's JSON |
@@ -137,7 +147,7 @@ Diagram and every compliance control: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE
 
 ```bash
 # contracts
-cd contracts && npm i && npx hardhat test          # 8 passing
+cd contracts && npm i && npx hardhat test          # 12 passing
 echo "PRIVATE_KEY=<testnet key>" > .env
 npx hardhat run scripts/deploy.js --network whitechainSepolia   # or hederaTestnet / arcTestnet
 npx hardhat run scripts/verify.js --network whitechainSepolia

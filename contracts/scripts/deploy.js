@@ -21,6 +21,7 @@ async function main() {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const save = () => fs.writeFileSync(file, JSON.stringify(out, null, 2));
   const prev = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : { contracts: {} };
+  if (prev.ats) out.ats = prev.ats; // ATS securities (Hedera) outlive suite redeploys
 
   async function deploy(name, args = [], key = name) {
     if (prev.contracts?.[key] && process.env.REUSE !== "0") {

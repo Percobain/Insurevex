@@ -2,21 +2,21 @@
   "chainId": 1874,
   "network": "whitechainSepolia",
   "deployer": "0x1d83F122EF31885B83139ABCb4f8fB4eF319DDF9",
-  "deployedAt": "2026-11-05T21:55:57.228Z",
+  "deployedAt": "2026-11-06T00:17:14.851Z",
   "contracts": {
     "stable": "0xcedfB56113143d55b2358b8CFbB0dEB5Ad2f55a7",
-    "IdentityRegistry": "0x59205D7a546Bd28bbE3A8C8BE4Eec256d9c34bC4",
-    "PriceOracle": "0x6ea034B50D2053A83c0d8193F907F91691a03601",
-    "TBillVault": "0x7A0aA73824cE1E523c903af8fDF8D67a249FD2a8",
-    "UnderwritingPool": "0x3eD15ce2936909016D6767d9D109D839E4E40B52",
-    "CoverMarket": "0x8f80d31BaF2AbFC91fF4837107871Ed0930B091C",
-    "Note3Y": "0x6a1D6a53D8886c4F94ddc5BBC975ef1B1850B4Ba",
-    "NoteDemo": "0x4597b0f5Ae9fd15f374726C5F916f2F841a38F20"
+    "IdentityRegistry": "0x2185E034040735187ad1480ec34a412A7127D737",
+    "PriceOracle": "0x3FCD2023FfE7E1d41dA07A96B47C3B9912033AD4",
+    "TBillVault": "0xBdB8e50a25F9717Cb5B2C8ED0dCE71A89bCA10B2",
+    "UnderwritingPool": "0x915669bf64F4839c027ADAce51366534809de876",
+    "CoverMarket": "0x0B19a2C1042874dFe0374814464f89537519dDF0",
+    "Note3Y": "0x857C551AeD884F7104a3557183aaC8F588D5F4A5",
+    "NoteDemo": "0x9Eb5877812594612c4F39b2B3a12EFF4F3CFb166"
   },
   "notes": [
     {
       "key": "Note3Y",
-      "address": "0x6a1D6a53D8886c4F94ddc5BBC975ef1B1850B4Ba",
+      "address": "0x857C551AeD884F7104a3557183aaC8F588D5F4A5",
       "name": "InsureVEX 3Y Protected Note",
       "termDays": 1095,
       "floorRateBps": 400,
@@ -25,7 +25,7 @@
     },
     {
       "key": "NoteDemo",
-      "address": "0x4597b0f5Ae9fd15f374726C5F916f2F841a38F20",
+      "address": "0x9Eb5877812594612c4F39b2B3a12EFF4F3CFb166",
       "name": "InsureVEX Demo Note (3h)",
       "termSeconds": 10800,
       "floorRateBps": 400,
@@ -33,5 +33,5 @@
       "couponInterval": 600
     }
   ],
-  "startBlock": 12319388
+  "startBlock": 12327865
 }

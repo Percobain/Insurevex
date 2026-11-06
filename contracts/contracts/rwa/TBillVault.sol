@@ -80,7 +80,8 @@ contract TBillVault is ERC20, AccessControl, Pausable, ReentrancyGuard {
 
     function redeem(uint256 shares, address receiver, address owner) external nonReentrant whenNotPaused returns (uint256 assets) {
         if (msg.sender != owner) _spendAllowance(owner, msg.sender, shares);
-        require(identity.isVerified(receiver), "KYC");
+        // both sides must be clean: a frozen owner cannot route its redemption to another address
+        require(identity.isVerified(owner) && identity.isVerified(receiver), "KYC");
         assets = convertToAssets(shares);
         require(asset.balanceOf(address(this)) >= assets, "liquidity: T-bills settling");
         _burn(owner, shares);

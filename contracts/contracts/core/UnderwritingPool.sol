@@ -47,10 +47,18 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable, ReentrancyGuard {
     uint256 public totalPayouts;
     uint256 public totalProLosses;
 
-    // junior (Pro) tranche
+    // junior (Pro) tranche. Shares are per epoch: if a crash wipes the tranche out (juniorAssets == 0), a new epoch
+    // starts on the next deposit and the old, worthless shares can never claim the new money.
     uint256 public juniorAssets;
     uint256 public proSupply;
-    mapping(address => uint256) public proBalanceOf;
+    uint64 public proEpoch;
+    mapping(address => uint256) internal _proShares;
+    mapping(address => uint64) internal _proEpochOf;
+
+    // payouts whose transfer failed (e.g. the holder is blocklisted by the stablecoin). Kept out of pool capital and
+    // claimable later, so a settlement can never be blocked and collateral can never be trapped.
+    uint256 public totalOwed;
+    mapping(address => uint256) public owed;
 
     event Locked(bytes32 indexed symbol, uint256 amount, uint256 totalLocked);
     event Unlocked(bytes32 indexed symbol, uint256 amount, uint256 totalLocked);
@@ -58,6 +66,9 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable, ReentrancyGuard {
     event ClaimPaid(bytes32 indexed symbol, address indexed to, uint256 amount, uint256 fromPro, uint256 fromSenior);
     event ProDeposit(address indexed lp, uint256 assets, uint256 shares);
     event ProWithdraw(address indexed lp, uint256 assets, uint256 shares);
+    event ProEpochReset(uint64 epoch);
+    event PayoutOwed(bytes32 indexed symbol, address indexed to, uint256 amount);
+    event OwedClaimed(address indexed holder, address indexed receiver, uint256 amount);
     event RiskParams(uint16 reserveBps, uint16 symbolCapBps, uint16 marketCapBps, uint16 proFeeBps);
     event IdleInvested(uint256 assets);
     event IdleDivested(uint256 assets);
@@ -88,7 +99,13 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable, ReentrancyGuard {
     /// @notice Senior (Saver sleeve) assets: the ERC-4626 NAV.
     function totalAssets() public view override returns (uint256) {
         uint256 p = physicalAssets();
-        return p > juniorAssets ? p - juniorAssets : 0;
+        uint256 claims = juniorAssets + totalOwed;
+        return p > claims ? p - claims : 0;
+    }
+
+    /// @notice Pro shares an LP holds in the current epoch (shares from a wiped-out epoch are worth nothing).
+    function proBalanceOf(address lp) public view returns (uint256) {
+        return _proEpochOf[lp] == proEpoch ? _proShares[lp] : 0;
     }
 
     function capacityTotal() public view returns (uint256) {
@@ -165,16 +182,27 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable, ReentrancyGuard {
     function depositPro(uint256 assets) external nonReentrant whenNotPaused returns (uint256 shares) {
         require(identity.isVerified(msg.sender), "KYC");
         require(assets > 0, "zero");
-        shares = proSupply == 0 || juniorAssets == 0 ? assets : (assets * proSupply) / juniorAssets;
+        if (proSupply > 0 && juniorAssets == 0) {
+            // previous Pro capital was wiped out: retire its shares
+            proEpoch += 1;
+            proSupply = 0;
+            emit ProEpochReset(proEpoch);
+        }
+        if (_proEpochOf[msg.sender] != proEpoch) {
+            _proEpochOf[msg.sender] = proEpoch;
+            _proShares[msg.sender] = 0;
+        }
+        shares = proSupply == 0 ? assets : (assets * proSupply) / juniorAssets;
+        require(shares > 0, "shares");
         IERC20(asset()).safeTransferFrom(msg.sender, address(this), assets);
         juniorAssets += assets;
         proSupply += shares;
-        proBalanceOf[msg.sender] += shares;
+        _proShares[msg.sender] += shares;
         emit ProDeposit(msg.sender, assets, shares);
     }
 
     function maxProWithdraw(address lp) public view returns (uint256) {
-        uint256 own = proSupply == 0 ? 0 : (proBalanceOf[lp] * juniorAssets) / proSupply;
+        uint256 own = proSupply == 0 ? 0 : (proBalanceOf(lp) * juniorAssets) / proSupply;
         uint256 free = capacity(); // Pro can only leave with what is not backing open policies
         if (free > juniorAssets) free = juniorAssets;
         return own < free ? own : free;
@@ -183,7 +211,8 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable, ReentrancyGuard {
     function withdrawPro(uint256 assets) external nonReentrant whenNotPaused returns (uint256 shares) {
         require(assets > 0 && assets <= maxProWithdraw(msg.sender), "Pro capital backing open policies");
         shares = (assets * proSupply + juniorAssets - 1) / juniorAssets; // round shares up
-        proBalanceOf[msg.sender] -= shares;
+        require(shares <= proBalanceOf(msg.sender), "shares");
+        _proShares[msg.sender] -= shares;
         proSupply -= shares;
         juniorAssets -= assets;
         _ensureCash(assets);
@@ -223,9 +252,30 @@ contract UnderwritingPool is ERC4626, AccessControl, Pausable, ReentrancyGuard {
             totalProLosses += fromPro;
             _ensureCash(payout);
             totalPayouts += payout;
-            IERC20(asset()).safeTransfer(to, payout);
             emit ClaimPaid(symbol, to, payout, fromPro, payout - fromPro);
+            if (!_tryTransfer(to, payout)) {
+                owed[to] += payout;
+                totalOwed += payout;
+                emit PayoutOwed(symbol, to, payout);
+            }
         }
+    }
+
+    /// @notice Claim a payout that could not be delivered at settlement, to any receiver the holder chooses.
+    function claimOwed(address receiver) external nonReentrant {
+        require(identity.isVerified(msg.sender), "KYC");
+        uint256 amt = owed[msg.sender];
+        require(amt > 0, "nothing owed");
+        owed[msg.sender] = 0;
+        totalOwed -= amt;
+        _ensureCash(amt);
+        IERC20(asset()).safeTransfer(receiver, amt);
+        emit OwedClaimed(msg.sender, receiver, amt);
+    }
+
+    function _tryTransfer(address to, uint256 amount) internal returns (bool) {
+        (bool ok, bytes memory ret) = asset().call(abi.encodeCall(IERC20.transfer, (to, amount)));
+        return ok && (ret.length == 0 || abi.decode(ret, (bool)));
     }
 
     // ---------------------------------------------------------------- idle cash in T-bills

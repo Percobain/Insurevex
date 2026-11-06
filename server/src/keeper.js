@@ -24,8 +24,9 @@ async function settleDue(c) {
     if (Number(p.expiry) > now) continue;
     const sym = BY_ID.get(p.symbol) || store.get(`sym:${p.symbol}`);
     if (!sym) { log("unknown symbol for policy", id); continue; }
-    let px = await c.oracle.priceAt(p.symbol, p.expiry);
-    if (px === 0n) {
+    const [posted] = await c.oracle.closeAt(p.symbol, p.expiry);
+    let px;
+    if (!posted) {
       const close = await closeAt(sym.yahoo, Number(p.expiry));
       px = BigInt(Math.round(close.price * 1e8));
       const tx = await c.oracle.post(p.symbol, p.expiry, px, gas(c));

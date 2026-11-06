@@ -385,6 +385,31 @@
   "anonymous": false,
   "inputs": [
    {
+    "indexed": true,
+    "internalType": "address",
+    "name": "holder",
+    "type": "address"
+   },
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "receiver",
+    "type": "address"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "amount",
+    "type": "uint256"
+   }
+  ],
+  "name": "OwedClaimed",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
     "indexed": false,
     "internalType": "address",
     "name": "account",
@@ -392,6 +417,31 @@
    }
   ],
   "name": "Paused",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "bytes32",
+    "name": "symbol",
+    "type": "bytes32"
+   },
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "to",
+    "type": "address"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "amount",
+    "type": "uint256"
+   }
+  ],
+  "name": "PayoutOwed",
   "type": "event"
  },
  {
@@ -448,6 +498,19 @@
    }
   ],
   "name": "ProDeposit",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "uint64",
+    "name": "epoch",
+    "type": "uint64"
+   }
+  ],
+  "name": "ProEpochReset",
   "type": "event"
  },
  {
@@ -855,6 +918,19 @@
    }
   ],
   "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "receiver",
+    "type": "address"
+   }
+  ],
+  "name": "claimOwed",
+  "outputs": [],
+  "stateMutability": "nonpayable",
   "type": "function"
  },
  {
@@ -1303,6 +1379,25 @@
   "type": "function"
  },
  {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "name": "owed",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
   "inputs": [],
   "name": "pause",
   "outputs": [],
@@ -1415,7 +1510,7 @@
   "inputs": [
    {
     "internalType": "address",
-    "name": "",
+    "name": "lp",
     "type": "address"
    }
   ],
@@ -1425,6 +1520,19 @@
     "internalType": "uint256",
     "name": "",
     "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "proEpoch",
+  "outputs": [
+   {
+    "internalType": "uint64",
+    "name": "",
+    "type": "uint64"
    }
   ],
   "stateMutability": "view",
@@ -1714,6 +1822,19 @@
  {
   "inputs": [],
   "name": "totalAssets",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "totalOwed",
   "outputs": [
    {
     "internalType": "uint256",
