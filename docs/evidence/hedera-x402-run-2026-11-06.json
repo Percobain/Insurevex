@@ -1,0 +1,35 @@
+{
+  "at": "2026-11-06T08:16:20.293Z",
+  "network": "hedera:testnet",
+  "agent": "0.0.11336321",
+  "buyer": "0x3B8272A491cC31d08E267806488982d2C9e0b42D",
+  "requestId": "883f4b69-ace9-4ac5-be5c-2216fd2866c8",
+  "servicePayment": {
+    "amount": "1000000",
+    "transaction": "0.0.9185802@1793952958.766762097",
+    "hashscan": "https://hashscan.io/testnet/transaction/0.0.9185802%401793952958.766762097"
+  },
+  "insurance": {
+    "policyId": "5",
+    "transaction": "0xc5b036824490691df0a8bc3ebb53203a4d666965d152649d0f23fc23352e0a70",
+    "hashscan": "https://hashscan.io/testnet/transaction/0xc5b036824490691df0a8bc3ebb53203a4d666965d152649d0f23fc23352e0a70",
+    "premium": "4290",
+    "notional": "1816000"
+  },
+  "hcs": {
+    "topic": "0.0.11336329",
+    "digest": "6552aefba64cf856e83a8bac58ee67a3a03fec2ceb4498a6f9150d75fe293b77",
+    "transaction": "0.0.11336321@1793952975.070273435",
+    "hashscan": "https://hashscan.io/testnet/transaction/0.0.11336321%401793952975.070273435"
+  },
+  "guardrails": {
+    "apiPerCall": "1000000",
+    "apiDaily": "5000000",
+    "premiumPerPolicy": "1000000",
+    "premiumDaily": "2000000",
+    "gasPerTransaction": "100000000",
+    "gasDaily": "200000000",
+    "notionalPerPolicy": "25000000",
+    "maxOpenPolicies": 3
+  }
+}

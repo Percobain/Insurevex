@@ -24,7 +24,8 @@ export class AgentRuntime {
     this.base.killFile = config.killFile;
     insist(this.base.origin === config.origin && this.base.merchant === config.merchant, "Runtime policy must match this merchant");
     const file = path.join(this.root, "credentials.json");
-    insist((fs.statSync(file).mode & 0o077) === 0, "Agent credentials must have mode 600");
+    // POSIX mode bits are not enforced on Windows (Node reports 0o666); there the per-user profile ACL protects the file.
+    insist(process.platform === "win32" || (fs.statSync(file).mode & 0o077) === 0, "Agent credentials must have mode 600");
     this.credentials = JSON.parse(fs.readFileSync(file));
     this.address = new ethers.Wallet(this.credentials.privateKey).address;
     insist(!env.QUOTER_PRIVATE_KEY || this.address !== new ethers.Wallet(env.QUOTER_PRIVATE_KEY).address, "Dedicated agent wallet required");

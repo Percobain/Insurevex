@@ -63,10 +63,11 @@ test("persistent spending reservations, duplicate IDs, and locks survive reopeni
   assert.throws(() => s.acquire("agent"), /reconciliation/);
   s.release("agent"); s.acquire("agent");
   const file = s.db.location();
-  const other = new AgentState(file); t.after(() => other.close());
+  const other = new AgentState(file);
   assert.equal(other.spending()[0].amount, "3");
   assert.throws(() => other.acquire("agent"), /reconciliation/);
   assert.throws(() => other.reserve("two", "api", "other-merchant", 3n, 3n, 5n), /budget/);
+  other.close(); // close before the fixture deletes its folder (Windows cannot delete an open SQLite file)
 });
 
 test("emergency stop and audit chain", (t) => {

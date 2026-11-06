@@ -24,7 +24,8 @@ try {
     const policy = validateAgentPolicy({ ...base, limits: { ...base.limits, ...state.settings() },
       killFile: process.env.AGENT_KILL_FILE ? path.resolve(process.env.AGENT_KILL_FILE) : base.killFile });
     const credentialFile = path.join(root, "credentials.json");
-    insist((fs.statSync(credentialFile).mode & 0o077) === 0, "Agent credentials must have mode 600");
+    // POSIX mode bits are not enforced on Windows (Node reports 0o666); there the per-user profile ACL protects the file.
+    insist(process.platform === "win32" || (fs.statSync(credentialFile).mode & 0o077) === 0, "Agent credentials must have mode 600");
     const credentials = JSON.parse(fs.readFileSync(credentialFile));
     const provider = new ethers.JsonRpcProvider(process.env.HEDERA_RPC || "https://testnet.hashio.io/api", undefined, { batchMaxCount: 1 });
     const wallet = new ethers.Wallet(credentials.privateKey, provider);
