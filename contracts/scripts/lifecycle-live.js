@@ -88,9 +88,10 @@ async function main() {
     if (now < Number(await noteD.maturity())) console.log("demo note not matured yet; maturity", new Date(Number(await noteD.maturity()) * 1000).toISOString());
     else {
       if (!(await noteD.matured())) await rec("Demo note matures (T-bill floor + sleeve pulled back)", noteD.mature(O));
-      const before = await usd.balanceOf(me.address);
-      await rec(`Saver redeems demo note: face + sleeve in ${SYMB}`, noteD.redeem(O));
-      console.log("redeemed", ethers.formatUnits((await usd.balanceOf(me.address)) - before, 6), SYMB);
+      // read the paid amount from the note's MaturityClaimed event (a balance delta would include gas on Arc, where USDC is the gas token)
+      const rr = await rec(`Saver redeems demo note: face + sleeve in ${SYMB}`, noteD.redeem(O));
+      const ev = rr.logs.map((l) => { try { return noteD.interface.parseLog(l); } catch { return null; } }).find((x) => x && x.name === "MaturityClaimed");
+      console.log("redeemed", ethers.formatUnits(ev.args.amount, 6), SYMB);
     }
   }
   console.log("pool", { totalAssets: ethers.formatUnits(await pool.totalAssets(), 6), locked: ethers.formatUnits(await pool.locked(), 6), capacity: ethers.formatUnits(await pool.capacity(), 6) });

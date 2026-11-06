@@ -94,5 +94,29 @@
     "tx": "0xfb98dfacc62bd8af34fa00c52ea154775d04e9f33ff4b266d45ee82e8ffe46c5",
     "url": "https://explorer.testnet.arc.io/tx/0xfb98dfacc62bd8af34fa00c52ea154775d04e9f33ff4b266d45ee82e8ffe46c5",
     "at": "2026-11-06T00:23:04.043Z"
+  },
+  {
+    "step": "USDC approve -> pool (Pro LP)",
+    "tx": "0x3e1b990f627a1bbb7858c9d012ff799ba0011ebf849f4eb21de3dd1a56b1ece5",
+    "url": "https://explorer.testnet.arc.io/tx/0x3e1b990f627a1bbb7858c9d012ff799ba0011ebf849f4eb21de3dd1a56b1ece5",
+    "at": "2026-11-06T00:39:13.738Z"
+  },
+  {
+    "step": "Pro LP deposits 17.0 USDC first-loss capital",
+    "tx": "0x6206c611faaadcda51844c4ba78ce5ab524cdc100750eca90e077ab77882e0f4",
+    "url": "https://explorer.testnet.arc.io/tx/0x6206c611faaadcda51844c4ba78ce5ab524cdc100750eca90e077ab77882e0f4",
+    "at": "2026-11-06T00:39:15.677Z"
+  },
+  {
+    "step": "Saver claims USDC coupon (3Y note)",
+    "tx": "0x74dfd1ac034c5b4ce469c2eac18b04c194ad390baa91e7ac07f9238c12f9db59",
+    "url": "https://explorer.testnet.arc.io/tx/0x74dfd1ac034c5b4ce469c2eac18b04c194ad390baa91e7ac07f9238c12f9db59",
+    "at": "2026-11-06T08:07:10.506Z"
+  },
+  {
+    "step": "Saver redeems demo note at maturity: 1 USDC in, 1.000012 USDC back (gas paid separately in USDC)",
+    "tx": "0x399fed68ff961778d29dbe3c1a67b21fd64dc5eec5cb092792e0ae7eb676056b",
+    "url": "https://explorer.testnet.arc.io/tx/0x399fed68ff961778d29dbe3c1a67b21fd64dc5eec5cb092792e0ae7eb676056b",
+    "at": "2026-11-06T08:07:14.150Z"
   }
 ]

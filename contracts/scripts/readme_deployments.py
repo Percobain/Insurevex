@@ -68,6 +68,9 @@ Settlement token (official test USDT): [`{W['stable']}`]({WX}address/{W['stable'
 | Holder buys a monthly Toyota floor (TSE:7203) | Holder | [tx]({find(w, 'Holder buys TSE:7203')}) |
 | Holder buys a 15-minute SPY floor (settled by the keeper from the official price) | Holder | [tx]({find(w, 'Holder buys NYSEARCA:SPY')}) |
 | T-bill custodian proceeds in USDT, then NAV and reserve attested | Issuer | [tx]({find(w, 'T-bill vault: custodian')}) · [NAV]({find(w, 'T-bill NAV')}) |
+| Saver claims the USDT coupon paid from underwriting profit | Saver | [tx]({find(w, 'Saver claims')}) |
+| **Maturity:** the demo note matures and the Saver redeems **2 USDT in, 2.000026 USDT back** (principal protected, plus T-bill accrual) | Saver | [tx]({find(w, 'Saver redeems demo note')}) |
+| Earlier full-term run (v2): 8 USDT in, 8.000113 USDT back | Saver | [mature](https://explorer.testnet.whitechain.io/tx/0x57a6e53bf0a0c82735d02cff3389ee661a97ce5d39944ec9046916b36f0a7d69) · [redeem](https://explorer.testnet.whitechain.io/tx/0x2000f6b1f4a00931ca299c9f13e92d10f75b7153670dad3ecded867d6fc41eff) |
 
 ### Hedera testnet (chain 296): with Asset Tokenization Studio
 
@@ -94,6 +97,7 @@ Settlement token (InsureVEX test USD): [`{HC['stable']}`]({HX}contract/{HC['stab
 | **Hedera Schedule Service** (HIP-1215): next coupon scheduled natively. Proven on v2: schedule 0.0.11331278 was **executed by the network at 00:06:34 UTC, paying 0.498 tUSD with no keeper** | [v3 schedule]({find(h, 'Hedera Schedule Service')}) · [v2 executed]({HX}schedule/0.0.11331278) |
 | Saver subscribes 5,000 · Pro LP 2,000 · tradfi covers on Reliance (NSE), SAP (Xetra), SPY | [sub]({find(h, 'Saver subscribes 5000')}) · [Pro]({find(h, 'Pro LP deposits')}) · [RELIANCE]({find(h, 'Holder buys NSE:RELIANCE')}) · [SAP]({find(h, 'Holder buys XETRA:SAP')}) |
 | T-bill NAV + reserve attestation | [tx]({find(h, 'T-bill NAV')}) |
+| Saver claims the coupon; the demo note matures and redeems **1,000 tUSD in, 1,000.014 tUSD back** | [coupon]({find(h, 'Saver claims')}) · [redeem]({find(h, 'Saver redeems demo note')}) |
 
 ### Arc testnet (chain 5042002): settling in USDC
 
@@ -108,6 +112,7 @@ USDC is both the settlement token (`0x3600…0000`) and the gas token, so a Save
 | Pro LP deposits 2 USDC of first-loss capital | [tx]({find(a, 'Pro LP deposits')}) |
 | Holder covers MSFT (weekly), Tencent (HKEX, 2 weeks) and SPY (15 minutes) | [MSFT]({find(a, 'Holder buys NASDAQ:MSFT')}) · [Tencent]({find(a, 'Holder buys HKEX:0700')}) · [SPY]({find(a, 'Holder buys NYSEARCA:SPY')}) |
 | T-bill NAV + reserve attestation | [tx]({find(a, 'T-bill NAV')}) |
+| Saver claims the USDC coupon; the demo note matures and redeems **1 USDC in, 1.000012 USDC back** (gas paid separately in USDC) | [coupon]({find(a, 'Saver claims')}) · [redeem]({find(a, 'Saver redeems demo note')}) |
 
 """
 
