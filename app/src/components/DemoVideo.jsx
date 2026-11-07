@@ -109,7 +109,10 @@ export function DemoPopup({ demo = DEMOS.all, title = "Watch the demo", line = (
 
   useEffect(() => {
     const t = setTimeout(() => setShow(true), 1200);
-    return () => clearTimeout(t);
+    // On phones the popup sits over the page, so once the reader scrolls on into the content, put it away.
+    const onScroll = () => { if (window.innerWidth < 640 && window.scrollY > 600) setShow(false); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { clearTimeout(t); window.removeEventListener("scroll", onScroll); };
   }, []);
 
   const dismiss = () => setShow(false);
@@ -117,13 +120,13 @@ export function DemoPopup({ demo = DEMOS.all, title = "Watch the demo", line = (
   return (
     <>
       {show && !open && (
-        <div className="fixed bottom-4 left-4 right-4 z-50 sm:left-auto sm:w-[380px] animate-[demoIn_.35s_ease-out]">
-          <div className="relative flex items-center gap-3 rounded-2xl border border-line bg-card p-3 shadow-xl">
-            <button onClick={() => setOpen(true)} className="flex min-w-0 flex-1 items-center gap-4 text-left" aria-label={`${title} video`}>
-              <DemoThumb demo={demo} className="h-[72px] w-[116px] shrink-0" />
+        <div className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-3 z-50 sm:bottom-4 sm:left-auto sm:right-4 sm:w-[380px] animate-[demoIn_.35s_ease-out]">
+          <div className="relative flex items-center gap-3 rounded-2xl border border-line bg-card p-2 pr-9 shadow-xl sm:p-3 sm:pr-3">
+            <button onClick={() => setOpen(true)} className="flex min-w-0 flex-1 items-center gap-3 text-left sm:gap-4" aria-label={`${title} video`}>
+              <DemoThumb demo={demo} className="h-12 w-[76px] shrink-0 sm:h-[72px] sm:w-[116px]" />
               <span className="min-w-0">
-                <span className="block font-medium text-ink">{title}</span>
-                <span className="block text-sm text-ink2">{line(demo)}</span>
+                <span className="block text-sm font-medium text-ink sm:text-base">{title}</span>
+                <span className="block truncate text-xs text-ink2 sm:whitespace-normal sm:text-sm">{line(demo)}</span>
               </span>
             </button>
             <button onClick={dismiss} className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full text-muted hover:bg-sunk hover:text-ink" aria-label="Dismiss">

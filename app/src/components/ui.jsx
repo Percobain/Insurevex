@@ -86,7 +86,7 @@ export function Stat({ label, value, sub, tone }) {
   return (
     <div className="card p-4 sm:p-5 min-w-0">
       <div className="label">{label}</div>
-      <div className={`mt-2 text-2xl sm:text-[28px] font-semibold tracking-tight tabular truncate ${tone === "good" ? "text-good" : tone === "bad" ? "text-bad" : ""}`}>
+      <div className={`mt-2 text-2xl sm:text-[28px] font-semibold tracking-tight tabular break-words leading-tight ${tone === "good" ? "text-good" : tone === "bad" ? "text-bad" : ""}`}>
         {value}
       </div>
       {sub && <div className="text-xs text-muted mt-1">{sub}</div>}
